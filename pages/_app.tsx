@@ -9,6 +9,7 @@ export type Props = AppProps & {
   Component: NextPageWithLayout;
 };
 
+// TODO: Add fonts
 
 const App = ({ Component, pageProps }: Props) => {
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
