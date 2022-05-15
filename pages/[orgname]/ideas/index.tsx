@@ -1,8 +1,8 @@
-import type { NextPage } from 'next';
 import Head from 'next/head';
-import Logo from '../../../components/Logo';
+import Layout from '../../../layouts/layout';
+import { NextPageWithLayout } from '../../../types/page';
 
-const Ideas: NextPage = () => {
+const Ideas: NextPageWithLayout = () => {
   return (
     <div>
       <Head>
@@ -10,12 +10,16 @@ const Ideas: NextPage = () => {
       </Head>
 
       <main>
-        <Logo />
-        <h1>
-          Ideas page
-        </h1>
       </main>
     </div>
+  );
+}
+
+Ideas.getLayout = (page: any) => {
+  return (
+    <Layout>
+      {page}
+    </Layout>
   );
 }
 
