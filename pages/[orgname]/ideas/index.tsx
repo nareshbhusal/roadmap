@@ -22,14 +22,13 @@ import type { IdeaData } from '../../../types';
 
 import NextLink from 'next/link';
 
-// TODO add page for 0 ideas
+// TODO: add better page for 0 ideas in search
 // TODO decide on outline color
-
-
-// NOTE: Create fake rest api to build out the frontend first
 
 // TODO fetch ideas
 // const fetchedIdeas: IdeaData[] = [];
+//
+// TODO: We can have tags for ideas as well as stories
 
 const fetchedIdeas: IdeaData[] = [
   {
