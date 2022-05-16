@@ -124,10 +124,12 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
           color={'gray.500'}
           fontSize={'sm'}
           flexDirection={'column'}>
-          <Text>
+          <Text
+            suppressHydrationWarning>
             Created on: {new Date(Number(createdOn)).toLocaleDateString()}
           </Text>
-          <Text>
+          <Text
+            suppressHydrationWarning>
             Updated on: {new Date(Number(updatedOn)).toLocaleDateString()}
           </Text>
         </Stack>

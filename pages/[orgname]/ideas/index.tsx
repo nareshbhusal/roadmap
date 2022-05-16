@@ -22,12 +22,8 @@ import type { IdeaData } from '../../../types';
 
 import NextLink from 'next/link';
 
-// Switching sides (vuln, nc, more?)
-// TODO hook links
 // TODO add page for 0 ideas
 // TODO decide on outline color
-// TODO add todo nvim plugin
-// TODO rename it to Ideas
 
 
 // NOTE: Create fake rest api to build out the frontend first
@@ -60,10 +56,6 @@ export interface IdeasAreaProps {
 const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }): JSX.Element => {
 
   const ideasToRender = fetchedIdeas.filter((idea: IdeaData) => {
-    // TODO: 1. Update this
-    // 2. Get and finalize data model for idea
-    // 3. Create rudimentary idea card
-    // 4. add fonts
     const { activationStatus, searchTerm, tag, sortBy } = watch();
 
     return idea.status === activationStatus.toLowerCase() &&

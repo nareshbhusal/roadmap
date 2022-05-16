@@ -905,6 +905,21 @@
     "minimatch" "^3.1.2"
     "strip-json-comments" "^3.1.1"
 
+"@fontsource/inter@^4.5.10":
+  "integrity" "sha512-YOt2/K8yo25MVBjrTImHxVimmyZEt0GcrWp2w7O29sdFX9SJqbGlOqjFJ1wI5yBbP6AmTeimyPE0UC/jjFRoIA=="
+  "resolved" "https://registry.npmjs.org/@fontsource/inter/-/inter-4.5.10.tgz"
+  "version" "4.5.10"
+
+"@fontsource/open-sans@^4.5.10":
+  "integrity" "sha512-MrtTDfWb1Tu9YxVh2KaKmsKBn6O3KL/lHZS0KRKK58jgqvdwuiDt4QW4udmW4FQf0XOWgnZ+4vKUF80F3SqBAA=="
+  "resolved" "https://registry.npmjs.org/@fontsource/open-sans/-/open-sans-4.5.10.tgz"
+  "version" "4.5.10"
+
+"@fontsource/raleway@^4.5.8":
+  "integrity" "sha512-4aHInZYFegsrX/8/roXUoZHLfgrPGkkQaH/CYDx486RKf+5V/GIIetnVt5SO9mLdOqeqKJrpgLkL7kSf24SYug=="
+  "resolved" "https://registry.npmjs.org/@fontsource/raleway/-/raleway-4.5.8.tgz"
+  "version" "4.5.8"
+
 "@humanwhocodes/config-array@^0.9.2":
   "integrity" "sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw=="
   "resolved" "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.9.5.tgz"

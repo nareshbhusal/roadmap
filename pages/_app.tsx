@@ -1,6 +1,12 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import type { AppProps } from 'next/app';
 
+// BUG: Hydration failed e
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/700.css'
+import '@fontsource/open-sans/400.css'
+import '@fontsource/open-sans/700.css'
+
 import { ReactNode } from 'react';
 import { NextPageWithLayout } from '../types/page';
 import modifiedTheme from '../theme';
