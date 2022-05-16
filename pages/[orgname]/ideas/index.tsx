@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 
 import IdeaCard from '../../../components/IdeaCard';
-import SearchAndFilters, { defaultSearchValues, SearchAndFilterKeys } from './SearchAndFilters';
+import SearchAndFilters, { defaultSearchValues, SearchAndFilterKeys } from '../../components/SearchAndFilters';
 import CreateFirstIdea from '../../../components/EmptyState/CreateFirstIdea';
 
 import { useRouter } from 'next/router'

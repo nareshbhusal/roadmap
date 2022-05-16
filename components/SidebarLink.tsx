@@ -52,7 +52,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
   return (
     <Link
       href={href}
-      color={isActive? 'blue.600' : 'gray.600'}
+      color={isActive? 'blue.500' : 'gray.600'}
       fontSize={'sm'}
       borderRadius={'2px'}
       //TODO remove padding
@@ -63,7 +63,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
         // background: 'gray.75'
       }}
       _active={{
-        background: 'gray.100'
+        background: 'gray.100',
       }}
       _focus={{
         outline: 'none',
@@ -90,7 +90,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
             marginLeft={iconLeftMargin} />
           <Box
             py={'10px'}
-            // fontWeight={'semibold'}
+            fontWeight={isActive ? 'semibold': 'normal'}
             px={'8px'}>
             {name}
           </Box>
