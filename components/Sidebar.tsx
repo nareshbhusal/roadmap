@@ -14,9 +14,11 @@ const Sidebar: React.FC = () => {
 
   return (
     <Flex
+      as={'aside'}
       minHeight={'100vh'}
       height={'100vh'}
       position={'sticky'}
+      flex={'0 0 auto'}
       top={'0%'}
       bottom={'0%'}
       align={'center'}

@@ -21,7 +21,7 @@ export type Props = AppProps & {
 const App = ({ Component, pageProps }: Props) => {
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
 
-   return <Component {...pageProps} />
+//   return <Component {...pageProps} />
 
   return (
       <ChakraProvider theme={modifiedTheme}>

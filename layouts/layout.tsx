@@ -18,6 +18,7 @@ const Layout: React.FC<ILayout> = ({ children }) => {
       <Stack
         flexDirection={'column'}
         flex={'1'}
+        overflowX={'hidden'}
         alignItems={'flex-start'}
         spacing={'35px'}
         // background={'gray.50'}

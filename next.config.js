@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false, // set false for react-beautiful-dnd
 }
 
 module.exports = nextConfig
