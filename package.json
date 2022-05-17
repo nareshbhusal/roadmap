@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@asseinfo/react-kanban": "^2.2.0",
     "@chakra-ui/icons": "^2.0.0",
     "@chakra-ui/react": "^2.0.0",
     "@emotion/react": "^11.9.0",
@@ -17,11 +18,14 @@
     "@fontsource/open-sans": "^4.5.10",
     "@fontsource/raleway": "^4.5.8",
     "framer-motion": "^6.3.3",
+    "lodash.isequal": "^4.5.0",
     "next": "12.1.6",
-    "react": "18.1.0",
-    "react-dom": "18.1.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
     "react-hook-form": "^7.31.1",
-    "react-icons": "^4.3.1"
+    "react-icons": "^4.3.1",
+    "react-kanban": "^0.1.0",
+    "react-trello": "^2.2.11"
   },
   "devDependencies": {
     "@types/node": "17.0.33",

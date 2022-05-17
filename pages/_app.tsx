@@ -16,8 +16,13 @@ export type Props = AppProps & {
   Component: NextPageWithLayout;
 };
 
+// NOTE: Both react-kanban and react-trello work with react version 17, but fail with chakra-ui (atleast version 2 of it)
+
 const App = ({ Component, pageProps }: Props) => {
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
+
+   return <Component {...pageProps} />
+
   return (
       <ChakraProvider theme={modifiedTheme}>
         {getLayout(<Component {...pageProps} />)}
