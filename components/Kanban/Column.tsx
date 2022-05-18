@@ -1,6 +1,5 @@
 import React from 'react';
 import StoryCard from '../StoryCard';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
 import dynamic from 'next/dynamic';
 import {
     Stack,
@@ -16,14 +15,6 @@ export interface ColumnProps {
 
 const Column: React.FC<ColumnProps> = (props: any) => {
     const backgroundColor = props.isDraggingOver ? '#d5f3ff' : 'inherit';
-
-    const DragDropContext: any = dynamic(
-        async () => {
-            const mod = await import('react-beautiful-dnd');
-            return mod.DragDropContext;
-        },
-        { ssr: false },
-    );
 
     const Droppable: any = dynamic(
         async () => {
@@ -44,18 +35,23 @@ const Column: React.FC<ColumnProps> = (props: any) => {
         <Draggable
             draggableId={props.column.id} index={props.index}>
             {(provided: any) => (
-                <Flex
-                    margin={'1rem'}
+                <Stack
+                    mx={'4px'}
+                    my={'2'}
                     border={'1px solid lightgrey'}
                     flexShrink={0}
-                    borderRadius={'5px'}
+                    borderRadius={'4px'}
+                    fontSize={'sm'}
                     width={'200px'}
-                    flexDirection={'column'}
-                    backgroundColor={'white'}
+                    backgroundColor={'gray.200'}
+                    py={1}
+                    px={0}
                     ref={provided.innerRef}
                     {...provided.draggableProps}>
                     <Heading
                         as={'h3'}
+                        my={'3px'}
+                        fontWeight={'semibold'}
                         textAlign={'center'}
                         size={'sm'}
                         {...provided.dragHandleProps}>
@@ -64,19 +60,24 @@ const Column: React.FC<ColumnProps> = (props: any) => {
                     <Droppable droppableId={props.column.id} type='task'>
                         {(provided: any, snapshot: any) => (
                             <Stack
-                                padding={'1em'}
                                 backgroundColor={backgroundColor}
-                                minHeight={'100px'}
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                                 // isDraggingOver={snapshot.isDraggingOver}
                             >
-                                {props.tasks.map((task: any, index: any) => <StoryCard key={task.id} task={task} index={index} />)}
-                                {provided.placeholder}
+                                <Stack
+                                    px={'7px'}
+                                    spacing={'5px'}
+                                    minHeight={'200px'}
+                                    mb={'3rem'}
+                                >
+                                    {props.tasks.map((task: any, index: any) => <StoryCard key={task.id} task={task} index={index} />)}
+                                    {provided.placeholder}
+                                </Stack>
                             </Stack>
                         )}
                     </Droppable>
-                </Flex>
+                </Stack>
 
             )}
         </Draggable>

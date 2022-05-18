@@ -112,6 +112,7 @@ const Kanban: React.FC<KanbanProps> = ({ dataset }) => {
           <Flex
             // height={'400px'}
             overflowX={'auto'}
+            // minHeight={'300px'}
             flexGrow={'1'}
             {...provided.droppableProps}
             ref={provided.innerRef}>

@@ -16,7 +16,6 @@ import {
   Box
 } from '@chakra-ui/react';
 
-
 const dataset = {
     tasks: {
         "task-1": { id: "task-1", content: "Content for task 1" },
@@ -35,6 +34,11 @@ const dataset = {
     columnOrder: ["column-1", "column-2", "column-3", "column-4", "column-5"]
 }
 
+// TODO:Model the board data
+// TODO: Add other ui controls -
+// -- adding and removing cards
+// -- adding and removing columns
+// TODO: Make the ui better
 
 const Roadmap: NextPageWithLayout = () => {
   return (

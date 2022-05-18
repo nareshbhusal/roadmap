@@ -32,6 +32,12 @@ function Task(props: any) {
         <Draggable draggableId={props.task.id} index={props.index}>
             {(provided: any, snapshot: any) => (
                 <Flex
+                    border={`1px solid #ccc`}
+                    padding={1.5}
+                    borderRadius={'4px'}
+                    fontSize={'sm'}
+                    // _last={{ marginBottom: '3rem' }}
+                    background={'#fff'}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                     ref={provided.innerRef}
