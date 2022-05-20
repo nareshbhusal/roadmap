@@ -17,6 +17,7 @@ import { SettingsIcon, EditIcon} from '@chakra-ui/icons';
 import { useRouter } from 'next/router'
 
 import NextLink from 'next/link';
+import { db } from '../../db';
 
 import { IoAnalytics, IoClose } from 'react-icons/io5';
 import { VscFile } from 'react-icons/vsc';
@@ -31,7 +32,7 @@ export interface IdeaCardProps {
 
 const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
 
-  const { title, createdOn, updatedOn, status, id } = idea;
+  const { title, createdOn, updatedOn, status, id, tags } = idea;
 
   const { orgname } = useRouter().query;
   const ideaURL = `/${orgname}/ideas/${id}/edit`;
@@ -132,6 +133,27 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
             suppressHydrationWarning>
             Updated on: {new Date(Number(updatedOn)).toLocaleDateString()}
           </Text>
+          <Flex
+            marginTop={'5px'}
+          >
+            {tags.map((tag, index) => (
+              <Badge
+                key={index}
+                bg={'teal'}
+                variant={'solid'}
+                fontSize={'sm'}
+                fontWeight={'semibold'}
+                marginRight={'5px'}
+                marginBottom={'5px'}
+                borderRadius={'10px'}
+                padding={'6px'}
+                _hover={{
+                  cursor: 'default'
+                }}>
+                {tag.text}
+              </Badge>
+            ))}
+          </Flex>
         </Stack>
       </Stack>
 

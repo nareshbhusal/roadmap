@@ -16,7 +16,9 @@ export type Props = AppProps & {
   Component: NextPageWithLayout;
 };
 
-// NOTE: Both react-kanban and react-trello work with react version 17, but fail with chakra-ui (atleast version 2 of it)
+// TODO: Model the data
+// -- Model the entire db
+// -- Model for redux and then for the views
 
 const App = ({ Component, pageProps }: Props) => {
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);

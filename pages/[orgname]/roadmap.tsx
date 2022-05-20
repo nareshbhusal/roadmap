@@ -34,6 +34,7 @@ const dataset = {
     columnOrder: ["column-1", "column-2", "column-3", "column-4", "column-5"]
 }
 
+// TODO: Add placeholder to prevent flickering when kanban data changes
 // TODO:Model the board data
 // TODO: Add other ui controls -
 // -- adding and removing cards

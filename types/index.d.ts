@@ -1,13 +1,18 @@
+export interface IdeasTag {
+    id: number;
+    text: string;
+}
+
 export interface IdeaData {
-  id: Number;
+  id?: number;
   title: string;
   description: string;
-  createdOn: string;
-  updatedOn: string;
+  createdOn: number;
+  updatedOn?: number;
   effort: number;
   impact: number;
-  storyID: number;
-  tags: string[];
+  storyID?: number;
+  tags: IdeasTag[];
   status: 'active' | 'completed' | 'archived';
   comments: string[]
 }

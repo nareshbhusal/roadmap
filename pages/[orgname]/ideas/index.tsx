@@ -1,13 +1,20 @@
 import Head from 'next/head';
 import Layout from '../../../layouts/layout';
 import { NextPageWithLayout } from '../../../types/page';
+import { useForm, useWatch } from "react-hook-form";
 import {
   Flex,
   Heading,
+  Grid,
   Stack,
   Link,
+  FormControl,
+  Input,
+  FormLabel,
+  useCheckbox,
+  useCheckboxGroup,
+  Select,
   Button,
-  Grid,
   Text,
   Box
 } from '@chakra-ui/react';
@@ -17,40 +24,19 @@ import SearchAndFilters, { defaultSearchValues, SearchAndFilterKeys } from '../.
 import CreateFirstIdea from '../../../components/EmptyState/CreateFirstIdea';
 
 import { useRouter } from 'next/router'
-import { useForm } from "react-hook-form";
 import type { IdeaData } from '../../../types';
 
 import NextLink from 'next/link';
+import { db } from '../../../db';
+import { useLiveQuery } from "dexie-react-hooks";
 
 // TODO: add better page for 0 ideas in search
-// TODO decide on outline color
-
-// TODO fetch ideas
-// const fetchedIdeas: IdeaData[] = [];
-//
-// TODO: We can have tags for ideas as well as stories
-
-const fetchedIdeas: IdeaData[] = [
-  {
-    id: 2,
-    title: 'Test Idea',
-    description: 'Idea description',
-    createdOn: '1652620008284',
-    updatedOn: '1652620008290',
-    impact: 4,
-    // tags: ['tag1', 'tag2'],
-    tags: [],
-    effort: 2,
-    status: 'active',
-    storyID: 2,
-    comments: ['c1', 'c2'],
-  },
-];
 
 export interface IdeasAreaProps {
   watch: any;
   fetchedIdeas: IdeaData[];
 }
+
 
 const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }): JSX.Element => {
 
@@ -59,7 +45,7 @@ const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }): JSX.Eleme
 
     return idea.status === activationStatus.toLowerCase() &&
       idea.title.toLowerCase().includes(searchTerm.trim().toLowerCase()) &&
-    (idea.tags.includes(tag) || !tag);
+      (!tag || idea.tags.some(ideaTag => ideaTag.id === tag.id));
   // TODO: sort
   });
 
@@ -119,6 +105,11 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
   );
 }
 
+// TODO: Add another button on the filter section where you can select number of ideas to fetch
+// -- and obviously add pagination too
+
+
+// DEV NOTE: Navigate to the page which uses indexedDB using the router instead of browser refresh
 
 const Ideas: NextPageWithLayout = () => {
   const router = useRouter();
@@ -138,6 +129,13 @@ const Ideas: NextPageWithLayout = () => {
     router.push(`/${orgname}/ideas/new`);
   }
 
+  const ideas = useLiveQuery(
+    () => db.getIdeas()
+  );
+
+  console.log('ideas');
+  console.log(ideas);
+
   return (
     <Stack
       spacing={5}
@@ -150,12 +148,26 @@ const Ideas: NextPageWithLayout = () => {
         width={'100%'}
         px={'30px'}
         spacing={'35px'}>
-      {fetchedIdeas.length?
-        <>
-          <SearchAndFilters {...{register: register, setValue: setValue}} />
-          <IdeasArea {...{watch: watch, fetchedIdeas: fetchedIdeas}} />
-        </> :
-        <CreateFirstIdea {...{createNewIdea: createNewIdea}} />}
+        {ideas?
+          <Stack>
+            {ideas.length ?
+              <Stack
+                spacing={'30px'}
+              >
+                <SearchAndFilters {...{register: register, setValue: setValue}} />
+                <IdeasArea watch={watch} fetchedIdeas={ideas} />
+              </Stack>:
+              <CreateFirstIdea {...{createNewIdea: createNewIdea}} />
+            }
+          </Stack>:
+            <Flex
+              height={'100px'}
+              justifyContent={'center'}
+              alignItems={'center'}
+            >
+              <Text>Loading ideas...</Text>
+            </Flex>
+        }
       </Stack>
     </Stack>
   );
