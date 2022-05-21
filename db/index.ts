@@ -1,10 +1,7 @@
 import Dexie, { Table } from "dexie";
-import type { IdeaData, StoriesTag, IdeasTag, IdeaPreview, IdeaCreateForm, IdeaCreateRequest, IdeaUpdateForm } from '../types';
+import type { IdeaData, User, Organization, StoriesTag, IdeasTag, IdeaPreview, IdeaCreateForm, IdeaCreateRequest, IdeaUpdateForm } from '../types';
+import { slugify } from '../lib/utils';
 
-// TODO: There must be some best-practice pattern for this problem where you need just some slight adjustment
-// to the type interface, one for form values, one for the server request, and one for the database.
-// TODO: God, please make the types less fugly
-//
 // TODO: We'll have multiple boards, multiple projects, and one organization.
 
 export interface StoreIdea extends Omit<IdeaData, 'tags'> {
@@ -12,11 +9,14 @@ export interface StoreIdea extends Omit<IdeaData, 'tags'> {
 }
 
 // TODO: Add a user by default
+// Our app will have only one user and one organization.
 
 class IdeasDB extends Dexie {
   ideas!: Table<StoreIdea, number>;
   ideasTags!: Table<IdeasTag, number>;
   storiesTags!: Table<StoriesTag, number>;
+  users!: Table<User>;
+  organizations!: Table<Organization>;
 
   constructor() {
     super("roadmapDB");
@@ -44,12 +44,44 @@ class IdeasDB extends Dexie {
       storiesTags: `
         ++id,
         &text
-      `
+      `,
+      users: 'name',
+      organizations: 'name, urlKey'
     });
 
     this.ideas = this.table("ideas");
     this.ideasTags = this.table("ideasTags");
     this.storiesTags = this.table("storiesTags");
+    this.users = this.table("users");
+    this.organizations = this.table("organizations");
+  }
+
+  public async register(orgName: string, userName: string) {
+
+    this.transaction("rw", this.organizations, this.users, async () => {
+      // Only 1 organization and only 1 user
+      await this.organizations.clear();
+      await this.users.clear();
+
+      await this.organizations.add({
+        name: orgName,
+        urlKey: slugify(orgName)
+      });
+      await this.users.add({
+        name: userName,
+      });
+    });
+  }
+
+  public async getRegisterationInfo() {
+    const [organization, user] = await Promise.all([
+      this.organizations.toArray().then(orgs => orgs[0]),
+      this.users.toArray().then(users => users[0]),
+    ]);
+    return {
+      organization,
+      user
+    };
   }
 
   public async addIdea(idea: IdeaCreateRequest) {

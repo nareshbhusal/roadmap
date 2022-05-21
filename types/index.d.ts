@@ -45,3 +45,12 @@ export interface IdeaCreateForm extends Omit<IdeaUpdateForm, 'storyID' | 'status
 export interface IdeaCreateRequest extends Omit<IdeaCreateForm, 'tagIDs'> {
   tagIDs: number[];
 }
+
+export interface User {
+  name: string;
+}
+
+export interface Organization {
+  name: string;
+  urlKey: string;
+}

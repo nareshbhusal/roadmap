@@ -35,6 +35,8 @@ export interface IdeasAreaProps {
   fetchedIdeas: IdeaPreview[];
 }
 
+// TODO: name property in react-hook-form fields should come after where register is introduced in the element
+
 const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }) => {
 
   const ideasToRender = fetchedIdeas.filter((idea: IdeaPreview) => {
