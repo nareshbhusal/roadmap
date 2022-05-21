@@ -1,9 +1,9 @@
 import Head from 'next/head';
-import React, { Component } from 'react'
+import React from 'react'
 import Layout from '../../../layouts/layout';
 import { NextPageWithLayout } from '../../../types/page';
 import { useState } from 'react';
-import { useForm, useWatch, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   Flex,
   Heading,
@@ -21,7 +21,7 @@ import {
   Box
 } from '@chakra-ui/react';
 
-import type { IdeaData } from '../../../types';
+import type { IdeaCreateForm, IdeasTag } from '../../../types';
 
 import NextLink from 'next/link';
 import { db } from '../../../db';
@@ -29,37 +29,19 @@ import { useLiveQuery } from "dexie-react-hooks";
 import CreatableSelect from 'react-select/creatable';
 import { ActionMeta, OnChangeValue } from 'react-select';
 
-
-export interface IdeasTag {
-  id: number;
-  text: string;
-}
-
 // TODO: Change the data type with react-hook-form of `effort` and `impact` to numbers
 // TODO: Schema validation with react-hook-form and yup
 
-export interface IdeaFormValues {
-  title: string;
-  description: string;
-  tagIDs: {
-    value: number;
-    label: string;
-  }[];
-  effort: number;
-  impact: number;
-}
-
-const addIdea = async (idea: IdeaFormValues) => {
-  await db.addIdea({
-    ...idea,
-    tagIDs: idea.tagIDs.map(tag => {
-      return tag.value;
-    }),
-  });
+const addIdea = async (idea: IdeaCreateForm) => {
   console.log('added idea');
 }
 
-const IdeaFormTags= ({ register, control }: { register: any; control: any }) => {
+export interface IdeaFormTagsProps {
+  register: any;
+  control: any;
+}
+
+const IdeaFormTags: React.FC<IdeaFormTagsProps> = ({ register, control }) => {
 
   const selectableTags = useLiveQuery(
     () => db.getIdeasTags()
@@ -137,6 +119,13 @@ const IdeaFormTags= ({ register, control }: { register: any; control: any }) => 
   );
 }
 
+const defaultFormValues = {
+  title: '',
+  description: '',
+  tagIDs: [],
+  effort: 1,
+  impact: 1,
+}
 
 const IdeaForm: NextPageWithLayout = () => {
 
@@ -146,31 +135,30 @@ const IdeaForm: NextPageWithLayout = () => {
     control,
     watch,
     formState
-  } = useForm<IdeaFormValues>({
-    defaultValues: {
-      title: '',
-      description: '',
-      tagIDs: [],
-      effort: 1,
-      impact: 1,
-    },
+  } = useForm<IdeaCreateForm>({
+    defaultValues: defaultFormValues,
     mode: 'onChange',
     reValidateMode: 'onChange',
     shouldUnregister: false,
-
   });
 
   const { errors }: { errors: any } = formState;
 
   const onSubmit = async (data: any) => {
-    const idea: IdeaFormValues = {
+    const idea: IdeaCreateForm = {
       title: data.title,
       description: data.description,
       tagIDs: data.tagIDs,
       effort: Number(data.effort),
       impact: Number(data.impact),
     };
-    await addIdea(idea);
+
+    await db.addIdea({
+      ...idea,
+      tagIDs: idea.tagIDs.map(tag => {
+        return tag.value;
+      }),
+    });
   }
 
   return (
@@ -230,11 +218,9 @@ const IdeaForm: NextPageWithLayout = () => {
             placeholder="Impact"
             {...register("impact")}
           >
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={5}>5</option>
+            {[1, 2, 3, 4, 5].map(i => (
+              <option key={i} value={i}>{i}</option>
+            ))}
           </Select>
         </FormControl>
         <FormControl
@@ -248,11 +234,9 @@ const IdeaForm: NextPageWithLayout = () => {
             placeholder="Effort"
             {...register("effort")}
           >
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={5}>5</option>
+            {[1, 2, 3, 4, 5].map(i => (
+              <option key={i} value={i}>{i}</option>
+            ))}
           </Select>
         </FormControl>
         <IdeaFormTags

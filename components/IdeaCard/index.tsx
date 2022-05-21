@@ -1,4 +1,4 @@
-import type { IdeaData } from '../../types';
+import type { IdeaPreview } from '../../types';
 import {
   Flex,
   Stack,
@@ -27,7 +27,7 @@ import { MdTaskAlt } from 'react-icons/md';
 // TODO non-cringe animations
 
 export interface IdeaCardProps {
-  idea: IdeaData;
+  idea: IdeaPreview;
 }
 
 const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {

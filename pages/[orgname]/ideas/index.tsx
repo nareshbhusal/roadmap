@@ -24,23 +24,20 @@ import SearchAndFilters, { defaultSearchValues, SearchAndFilterKeys } from '../.
 import CreateFirstIdea from '../../../components/EmptyState/CreateFirstIdea';
 
 import { useRouter } from 'next/router'
-import type { IdeaData } from '../../../types';
+import type { IdeaPreview } from '../../../types';
 
 import NextLink from 'next/link';
 import { db } from '../../../db';
 import { useLiveQuery } from "dexie-react-hooks";
 
-// TODO: add better page for 0 ideas in search
-
 export interface IdeasAreaProps {
-  watch: any;
-  fetchedIdeas: IdeaData[];
+  watch: () => any;
+  fetchedIdeas: IdeaPreview[];
 }
 
+const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }) => {
 
-const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }): JSX.Element => {
-
-  const ideasToRender = fetchedIdeas.filter((idea: IdeaData) => {
+  const ideasToRender = fetchedIdeas.filter((idea: IdeaPreview) => {
     const { activationStatus, searchTerm, tag, sortBy } = watch();
 
     return idea.status === activationStatus.toLowerCase() &&
@@ -64,7 +61,7 @@ const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }): JSX.Eleme
       templateColumns={{"base": "repeat(2, 1fr)", "xl": "repeat(3, 1fr)"}}
       marginBottom={"10px"}
       gap={8} rowGap={12}>
-      {ideasToRender.map((ideaData: any) => {
+      {ideasToRender.map((ideaData: IdeaPreview) => {
         return <IdeaCard key={ideaData.id} idea={ideaData} />
       })}
     </Grid>

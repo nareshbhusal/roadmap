@@ -16,6 +16,7 @@ export type Props = AppProps & {
   Component: NextPageWithLayout;
 };
 
+// TODO: Add register page
 // TODO: Model the data
 // -- Model the entire db
 // -- Model for redux and then for the views
