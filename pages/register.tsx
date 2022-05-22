@@ -9,6 +9,7 @@ import {
 
 import { useEffect } from 'react';
 import { useForm } from "react-hook-form";
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { db } from '../db';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -19,10 +20,6 @@ export interface FormValues {
   org: string;
   name: string;
 }
-
-// TODO: Handle routing to the /roadmap page after registration
-// -- If the user is already logged in, redirect to the /[orgname]/roadmap page
-// -- If the user is not logged in, redirect to the /register page, protected routes
 
 const Register = (): JSX.Element => {
   const {
@@ -35,6 +32,7 @@ const Register = (): JSX.Element => {
       name: ''
     }
   });
+  const router = useRouter();
 
   const { errors, isSubmitting }: {
     errors: any;
@@ -45,6 +43,8 @@ const Register = (): JSX.Element => {
     const { org, name } = values;
     try {
       await db.register(org, name);
+      const { organization } = await db.getRegisterationInfo();
+      router.push(`/${organization.urlKey}/ideas`);
     } catch(err){
       console.log(err);
     }
@@ -183,6 +183,14 @@ const Register = (): JSX.Element => {
       </Stack>
     </Flex>
   );
+}
+
+export const getStaticProps = async (context: any) => {
+  return {
+    props: {
+      public: true
+    }
+  }
 }
 
 export default Register;
