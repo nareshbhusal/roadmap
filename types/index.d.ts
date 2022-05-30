@@ -54,3 +54,38 @@ export interface Organization {
   name: string;
   urlKey: string;
 }
+
+export interface StoryPreview {
+  title: string;
+  listId: number;
+  boardId: number;
+  createdOn: number;
+  updatedOn: number | null;
+  tags: number[];
+  tasks: {
+    done: number;
+    total: number;
+  };
+  ideas: number[];
+  priority: '1' | '2' | '3' | '4' | '5';
+  description: string;
+  position: number;
+  id: number;
+}
+
+export interface BoardList {
+  name: string;
+  id: number;
+  boardId: number;
+  position: number;
+  stories: StoryPreview[];
+}
+
+export interface BoardData {
+  id: number;
+  name: string;
+  tags: number[];
+  createdOn: number;
+  lists: BoardList[];
+}
+

@@ -14,11 +14,14 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import modifiedTheme from '../theme';
 import { db } from '../db';
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from 'react-dnd'
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;
 };
 
+// TODO: Redirect /[orgname]/ to /[orgname]/roadmap/
 // TODO: Model the data
 // -- Model the entire db
 // -- Model for redux and then for the views
@@ -38,7 +41,7 @@ const App = ({ Component, pageProps }: Props) => {
       const isPublicRoute = publicRoutes.includes(router.pathname);
 
       if (isPublicRoute && isLoggedIn) {
-        router.push(`/${organization.urlKey}/ideas`);
+        router.push(`/${organization.urlKey}/roadmap`);
       } else if (!isPublicRoute && !isLoggedIn) {
         router.push('/register');
       }
@@ -52,9 +55,11 @@ const App = ({ Component, pageProps }: Props) => {
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
 
   return (
+    <DndProvider backend={HTML5Backend}>
       <ChakraProvider theme={modifiedTheme}>
           {getLayout(<Component {...pageProps} />)}
       </ChakraProvider>
+    </DndProvider>
   );
 };
 

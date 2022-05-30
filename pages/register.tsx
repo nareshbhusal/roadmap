@@ -44,7 +44,7 @@ const Register = (): JSX.Element => {
     try {
       await db.register(org, name);
       const { organization } = await db.getRegisterationInfo();
-      router.push(`/${organization.urlKey}/ideas`);
+      router.push(`/${organization.urlKey}/roadmap`);
     } catch(err){
       console.log(err);
     }

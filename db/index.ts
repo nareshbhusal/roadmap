@@ -1,5 +1,5 @@
 import Dexie, { Table } from "dexie";
-import type { IdeaData, User, Organization, StoriesTag, IdeasTag, IdeaPreview, IdeaCreateForm, IdeaCreateRequest, IdeaUpdateForm } from '../types';
+import type { IdeaData, User, BoardData, Organization, StoriesTag, IdeasTag, IdeaPreview, IdeaCreateForm, IdeaCreateRequest, IdeaUpdateForm } from '../types';
 import { slugify } from '../lib/utils';
 
 // TODO: We'll have multiple boards, multiple projects, and one organization.
@@ -8,13 +8,56 @@ export interface StoreIdea extends Omit<IdeaData, 'tags'> {
   tagIDs: number[];
 }
 
-// TODO: Add a user by default
+export interface Board {
+  id?: number;
+  name: string;
+  createdOn: number;
+  lists: number[];
+  tags: number[];
+}
+
+export interface BoardList {
+  id?: number;
+  boardId: number;
+  name: string;
+  stories: number[];
+  position: number;
+}
+
+export interface Story {
+  id?: number;
+  position: number;
+  title: string;
+  description: string;
+  createdOn: number;
+  updatedOn: number;
+  priority: '1' | '2' | '3' | '4' | '5';
+  boardId: number;
+  listId: number;
+  tags: number[];
+  tasks: number[];
+  ideas: number[];
+}
+
+export interface Task {
+  id?: number;
+  storyID: number;
+  name: string;
+  isCompleted: boolean;
+}
+
 // Our app will have only one user and one organization.
+
+
 
 class IdeasDB extends Dexie {
   ideas!: Table<StoreIdea, number>;
   ideasTags!: Table<IdeasTag, number>;
   storiesTags!: Table<StoriesTag, number>;
+  boards!: Table<Board, number>;
+  boardLists!: Table<BoardList, number>;
+  stories!: Table<Story, number>;
+  tasks!: Table<Task, number>;
   users!: Table<User>;
   organizations!: Table<Organization>;
 
@@ -41,6 +84,41 @@ class IdeasDB extends Dexie {
         ++id,
         &text
       `,
+      boards: `
+        ++id,
+        name,
+        createdOn,
+        *lists,
+        *tags
+      `,
+      // TODO: how to signal required
+      boardLists: `
+        ++id,
+        boardId,
+        name,
+        **stories,
+        position
+      `,
+      stories: `
+      ++id,
+      position,
+      title,
+      description,
+      createdOn,
+      updatedOn,
+      priority,
+      boardId,
+      listId,
+      *tags,
+      *tasks,
+      *ideas
+      `,
+      tasks: `
+      ++id,
+      storyID,
+      name,
+      isCompleted
+      `,
       storiesTags: `
         ++id,
         &text
@@ -51,9 +129,13 @@ class IdeasDB extends Dexie {
 
     this.ideas = this.table("ideas");
     this.ideasTags = this.table("ideasTags");
-    this.storiesTags = this.table("storiesTags");
     this.users = this.table("users");
     this.organizations = this.table("organizations");
+    this.boards = this.table("boards");
+    this.boardLists = this.table("boardLists");
+    this.stories = this.table("stories");
+    this.tasks = this.table("tasks");
+    this.storiesTags = this.table("storiesTags");
   }
 
   public async register(orgName: string, userName: string) {
@@ -70,6 +152,404 @@ class IdeasDB extends Dexie {
       await this.users.add({
         name: userName,
       });
+    });
+  }
+
+  public async addBoard(name: string) {
+    await this.boards.add({
+      name,
+      createdOn: Date.now(),
+      lists: [] as number[],
+      tags: [] as number[],
+    });
+  }
+
+  public async getBoards() {
+    return await this.boards.toArray().then(boards => {
+      return boards.map(board => {
+        return {
+          id: board.id,
+          name: board.name
+        }
+      })
+    });
+  }
+
+  public async getStoryPreview(storyID: number) {
+    // TODO: Doing this
+    const story = await this.stories.get(storyID);
+    // replace tags with actual tags instead of ids
+    const tags = await this.storiesTags.where('id').anyOf(story!.tags).toArray();
+    // replace tasks with number of tasks done vs total
+    const tasks = await this.tasks.where('storyID').equals(storyID).toArray();
+    // remove ideas and description
+
+    const storyPreview = {
+      ...story,
+      tags,
+      tasks: {
+        done: tasks.filter(task => task.isCompleted).length,
+        total: tasks.length
+      }
+    }
+    return storyPreview;
+  }
+
+  public async deleteBoardList(boardListId: number) {
+    // TODO: this will have some cascading effect
+  }
+
+  public async getBoard(boardId: number) {
+    // return the board but with board lists attached as well as stories from getStoryPreview
+    const board = await this.boards.get(boardId);
+    if (!board) return null;
+    const boardLists = await this.boardLists.where('boardId').equals(boardId).toArray();
+
+    // get stories using getStoryPreview and attach to board lists
+
+    const lists = await Promise.all(boardLists.map(async (boardList) => {
+      return {
+        ...boardList,
+        stories: await Promise.all(boardList.stories.map(async (storyID: number) => {
+          return await this.getStoryPreview(storyID);
+        })),
+      }
+    }));
+
+    return {
+      ...board,
+      lists
+    }
+  }
+
+  public async updateBoard(boardId: number, board: any) {
+    await this.boards.update(boardId, {
+      ...board,
+    })
+  }
+
+  public async moveStoryToStory(storyToMove: number, storyToMoveTo: number) {
+    const storyToMoveObj = await this.stories.get(storyToMove);
+    const storyToMoveToObj = await this.stories.get(storyToMoveTo);
+    if (!storyToMoveObj || !storyToMoveToObj) {
+      throw new Error(`Could not find story with id ${storyToMove} or ${storyToMoveTo}`);
+    }
+
+    // move card with storyToMove to card with storyToMoveTo - list and position
+    await this.transaction("rw", this.stories, this.boardLists, async () => {
+      // let's design for the case where the card is dropped in the same list
+      if (storyToMoveObj.listId === storyToMoveToObj.listId) {
+        if (storyToMoveObj.position === storyToMoveToObj.position) {
+          return;
+        } else if (storyToMoveObj.position < storyToMoveToObj.position) {
+          // every story with position more than current position and less than future position need to be decremented
+          await this.stories.where('listId').equals(storyToMoveObj.listId)
+          .and(r => r.position > storyToMoveObj.position && r.position <= storyToMoveToObj.position).modify(r => {
+            r.position--;
+          });
+          // every story with position equals to and more than future position need to be incremented
+          /* await this.stories.where('listId').equals(storyToMoveObj.listId)
+          .and(r => r.position >= storyToMoveToObj.position).modify(r => {
+            r.position++;
+          }); */
+
+          await this.stories.update(storyToMove, {
+            position: storyToMoveToObj.position
+          });
+
+        } else {
+          // stories with position equal to and more than current position, and less than future position need to be incremented
+          await this.stories.where('listId').equals(storyToMoveObj.listId)
+          .and(r => r.position < storyToMoveObj.position && r.position >= storyToMoveToObj.position).modify(r => {
+            r.position++;
+          });
+
+          await this.stories.update(storyToMove, {
+            position: storyToMoveToObj.position
+          });
+        }
+      } else {
+        const currentList = await this.boardLists.get(storyToMoveObj.listId)!;
+        const destinationList = await this.boardLists.get(storyToMoveToObj.listId)!;
+        // remove from the current list
+        await this.boardLists.update(storyToMoveObj.listId, {
+          stories: currentList!.stories.filter(id => id !== storyToMove)
+        });
+        // make position changes to the stories in the current list
+        await this.stories.where('listId').equals(storyToMoveObj.listId).and(r => r.position > storyToMoveObj.position).modify(r => {
+          r.position--;
+        });
+        // add to the destination list
+        await this.boardLists.update(storyToMoveToObj.listId, {
+          stories: [...destinationList!.stories, storyToMove]
+        });
+        // make position changes to the stories in the destination list
+        await this.stories.where('listId').equals(storyToMoveToObj.listId).and(r => r.position >= storyToMoveToObj.position).modify(r => {
+          r.position++;
+        });
+        await this.stories.update(storyToMove, {
+          listId: storyToMoveToObj.listId,
+          position: storyToMoveToObj.position
+        });
+      }
+    });
+  }
+
+  public async moveStoryToList(storyID: number, listID: number, direction: 'top' | 'bottom') {
+    const story = await this.stories.get(storyID);
+    const currentList = await this.boardLists.get(story!.listId!);
+    const destinationList = await this.boardLists.get(listID);
+    if (!story || !currentList || !destinationList) {
+      throw new Error(`Could not find story with id ${storyID} or ${listID}`);
+    }
+
+    await this.transaction("rw", this.stories, this.boardLists, async () => {
+      if (currentList.id !== destinationList.id) {
+        // remove from the current list
+        await this.boardLists.update(story!.listId!, {
+          stories: currentList!.stories.filter(id => id !== storyID)
+        });
+
+        // make changes to the positions of the stories in the currentList, decrement higher positions
+        await this.stories.where('listId').equals(story!.listId!).and(r => r.position > story!.position!).modify(r => {
+          r.position--;
+        });
+
+        // add to the destination list
+        await this.boardLists.update(listID, {
+          stories: [...destinationList!.stories, storyID]
+        });
+
+        if (direction === 'bottom') {
+          // make position of story equal to the last position in the destination list
+          const lastPosition = destinationList!.stories.length;
+          await this.stories.update(storyID, {
+            listId: listID,
+            position: lastPosition + 1
+          });
+        } else {
+          // make changes to the positions of the stories in the destinationList, increment all positions
+          await this.stories.where('listId').equals(listID).modify(r => {
+            r.position++;
+          });
+
+          // make position of story equal to the first position in the destination list
+          await this.stories.update(storyID, {
+            listId: listID,
+            position: 1
+          });
+        }
+
+      } else {
+        // when list is the same
+
+        if (direction === 'bottom') {
+          await this.stories.where('listId').equals(listID).and(r => r.position > story!.position).modify(r => {
+            r.position--;
+          });
+
+          const lastPosition = currentList!.stories.length;
+          await this.stories.update(storyID, {
+            position: lastPosition + 1 -1 // -1 because lastPosition is factoring in the current story too
+          });
+
+        } else {
+          await this.stories.where('listId').equals(listID).and(r => r.position < story!.position).modify(r => {
+            r.position++;
+          });
+          await this.stories.update(storyID, {
+            position: 1
+          });
+        }
+      }
+    });
+  }
+
+  public async addBoardList(name: string, boardId: number) {
+    const board = await this.boards.get(boardId);
+    const position = board!.lists.length+1;
+
+    const boardListId = await this.boardLists.add({
+      name,
+      boardId,
+      position,
+      stories: [] as number[]
+    });
+
+    await this.boards.update(boardId, {
+      lists: [...board!.lists, boardListId]
+    });
+  }
+
+  public async moveBoardList(targetListID: number, destinationListID: number) {
+
+    await this.transaction("rw", this.boardLists, async () => {
+      // move list with id targetList to position of destinationList in board
+      // and any cascading effect on positions of other lists in the board
+      const targetList = await this.boardLists.get(targetListID);
+      const destinationList = await this.boardLists.get(destinationListID);
+
+      await this.transaction("rw", this.boardLists, async () => {
+        const currentPosition = targetList!.position;
+        const destinationPosition = destinationList!.position;
+
+        if (currentPosition === destinationPosition) {
+          return;
+        } else if (currentPosition > destinationPosition) {
+          // move to the left
+          await this.boardLists.where('boardId').equals(targetList!.boardId).and(r => r.position >= destinationPosition && r.position < currentPosition).modify(r => {
+            r.position++;
+          });
+        } else {
+          // move to the right
+          await this.boardLists.where('boardId').equals(targetList!.boardId).and(r => r.position > currentPosition && r.position <= destinationPosition).modify(r => {
+            r.position--;
+          });
+        }
+        await this.boardLists.update(targetList!.id!, {
+          position: destinationPosition
+        });
+      });
+    });
+  }
+
+  public async updateBoardList(boardId: number, boardList: any) {
+    return await this.boardLists.update(boardId, {
+      ...boardList,
+      updatedOn: Date.now(),
+    });
+  }
+
+  public async addStory(story: any) {
+    const boardList = await this.boardLists.get(story.listId);
+    const position = boardList!.stories.length + 1;
+
+    const storyID = await this.stories.add({
+      ...story,
+      createdOn: Date.now(),
+      updatedOn: null,
+      tags: [],
+      tasks: [],
+      ideas: [],
+      priority: '1',
+      description: '',
+      position
+    });
+
+    await this.boardLists.update(story.listId, {
+      stories: [...boardList!.stories, storyID]
+    });
+  }
+
+  public async updateStory(storyID: number, story: any) {
+    return await this.stories.update(storyID, {
+      ...story,
+      updatedOn: Date.now(),
+    });
+  }
+
+  public async addTask(storyID: number, task: any) {
+    await this.transaction("rw", this.stories, this.tasks, async () => {
+      const taskId = await this.tasks.add({
+        storyID,
+        ...task,
+        isCompleted: false
+      });
+      const story = await this.stories.get(storyID);
+      const taskIDs = [...story!.tasks, taskId];
+
+      await this.stories.update(storyID, {
+        tasks: taskIDs
+      });
+    })
+  }
+
+  public async updateTask(taskID: number, task: any) {
+    return await this.tasks.update(taskID, {
+      ...task
+    });
+  }
+
+  public async removeTask(taskID: number, storyID: number) {
+    await this.transaction("rw", this.stories, this.tasks, async () => {
+      const story = await this.stories.get(storyID);
+      const taskIDs = story!.tasks.filter(id => id !== taskID);
+
+      await this.stories.update(storyID, {
+        tasks: taskIDs
+      });
+
+      await this.tasks.delete(taskID);
+    });
+  }
+
+  public async addStoriesTag(text: string, storyID: number) {
+    // use transaction: add tag to storiesTag table, to stories table, and to the board of the story with the storyID
+    await this.transaction("rw", this.storiesTags, this.stories, this.boards, async () => {
+      const tagId = await this.storiesTags.add({
+        text
+      });
+      const story = await this.stories.get(storyID);
+      const tagIDs = [...story!.tags, tagId];
+
+      await this.stories.update(storyID, {
+        tags: tagIDs
+      });
+
+      const board = await this.boards.get(story!.boardId);
+      const tags = [...board!.tags, tagId];
+
+      await this.boards.update(story!.boardId, {
+        tags
+      });
+    });
+  }
+
+  public async removeStory(storyID: number) {
+    await this.transaction("rw", this.stories, this.boardLists, async () => {
+      const story = await this.stories.get(storyID);
+      const boardList = await this.boardLists.get(story!.listId);
+      const stories = boardList!.stories.filter(id => id !== storyID);
+
+      await this.boardLists.update(story!.listId, {
+        stories
+      });
+
+      await this.stories.delete(storyID);
+
+      // also make updates to the position props of other stories in the same list
+      await this.stories.where('listId').equals(story!.listId).and(r => r.position > story!.position).modify(r => {
+        r.position--;
+      });
+
+    });
+  }
+
+  public async removeStoriesTag(tagID: number, boardID: number) {
+    // remove the storiesTag with tagID from the storiesTag table, and from the board table with boardID, and from
+    // every stories in that board with the tagID
+    await this.transaction("rw", this.storiesTags, this.boards, this.stories, async () => {
+      const story = await this.stories.get(tagID);
+      const board = await this.boards.get(story!.boardId);
+      const tagIDs = board!.tags.filter(id => id !== tagID);
+
+      await this.boards.update(story!.boardId, {
+        tags: tagIDs
+      });
+
+      await this.storiesTags.delete(tagID);
+      // remove the tag from every stories of the boardID that has the tag
+
+      const stories = await this.stories.where({
+        boardId: boardID
+      }).toArray();
+
+      for (const story of stories) {
+        const tagIDs = story!.tags.filter(id => id !== tagID);
+        await this.stories.update(story!.id!, {
+          tags: tagIDs
+        });
+      }
     });
   }
 
