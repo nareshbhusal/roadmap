@@ -1,6 +1,6 @@
 import Head from 'next/head';
-import Layout from '../../../layouts/layout';
-import { NextPageWithLayout } from '../../../types/page';
+import Layout from '../../layouts/layout';
+import { NextPageWithLayout } from '../../types/page';
 import { useForm, useWatch } from "react-hook-form";
 import {
   Flex,
@@ -19,41 +19,40 @@ import {
   Box
 } from '@chakra-ui/react';
 
-import IdeaCard from '../../../components/IdeaCard';
-import SearchAndFilters, { defaultSearchValues, SearchAndFilterKeys } from '../../../components/FilterIdeas';
-import CreateFirstIdea from '../../../components/EmptyState/CreateFirstIdea';
+import BoardCard from '../../components/BoardCard';
+import SearchAndFilters, { defaultSearchValues, SearchAndFilterKeys } from '../../components/FilterBoards';
+import CreateFirstBoard from '../../components/EmptyState/CreateFirstBoard';
 
 import { useRouter } from 'next/router'
-import type { IdeaPreview } from '../../../types';
+import type { BoardPreview } from '../../types';
 
 import NextLink from 'next/link';
-import { db } from '../../../db';
+import { db } from '../../db';
 import { useLiveQuery } from "dexie-react-hooks";
 
-export interface IdeasAreaProps {
+export interface BoardsAreaProps {
   watch: () => any;
-  fetchedIdeas: IdeaPreview[];
+  fetchedBoards: BoardPreview[];
 }
 
-// TODO: name property in react-hook-form fields should come after where register is introduced in the element
+// TODO: Implement new board
+// -- opens with focus on new column title input
 
-const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }) => {
+const BoardsArea: React.FC<BoardsAreaProps> = ({ watch, fetchedBoards }) => {
 
-  const ideasToRender = fetchedIdeas.filter((idea: IdeaPreview) => {
-    const { activationStatus, searchTerm, tag, sortBy } = watch();
+  const boardsToRender = fetchedBoards.filter((board: BoardPreview) => {
+    const { searchTerm, sortBy } = watch();
 
-    return idea.status === activationStatus.toLowerCase() &&
-      idea.title.toLowerCase().includes(searchTerm.trim().toLowerCase()) &&
-      (!tag || idea.tags.some(ideaTag => ideaTag.id === tag.id));
+    return board.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   // TODO: sort
   });
 
 
-  if(!ideasToRender.length) {
+  if(!boardsToRender.length) {
     return (
       <Flex>
         <Text fontWeight={'semibold'}>
-          No resulting idea for that criteria!
+          No resulting board for that criteria!
         </Text>
       </Flex>
     );
@@ -63,8 +62,8 @@ const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }) => {
       templateColumns={{"base": "repeat(2, 1fr)", "xl": "repeat(3, 1fr)"}}
       marginBottom={"10px"}
       gap={8} rowGap={12}>
-      {ideasToRender.map((ideaData: IdeaPreview) => {
-        return <IdeaCard key={ideaData.id} idea={ideaData} />
+      {boardsToRender.map((boardData: BoardPreview) => {
+        return <BoardCard key={boardData.id} board={boardData} />
       })}
     </Grid>
   );
@@ -86,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
       >
         <Heading
           variant={"page-main-heading"}>
-          Ideas
+          Boards
         </Heading>
         <Button
           onClick={buttonOnClick}
@@ -98,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
             background: 'blue.500'
           }}
           background={'blue.400'}>
-          Add New Idea
+          Add New Board
         </Button>
       </Flex>
   );
@@ -106,11 +105,10 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
 
 // TODO: Add another button on the filter section where you can select number of ideas to fetch
 // -- and obviously add pagination too
+// TODO: Finish filter implementation
+// TODO: Add `add new board` feature
 
-
-// DEV NOTE: Navigate to the page which uses indexedDB using the router instead of browser refresh
-
-const Ideas: NextPageWithLayout = () => {
+const Boards: NextPageWithLayout = () => {
   const router = useRouter();
   const { orgname } = router.query;
 
@@ -123,40 +121,41 @@ const Ideas: NextPageWithLayout = () => {
   } = useForm<Partial<SearchAndFilterKeys>>({
     defaultValues: defaultSearchValues
   });
+  console.log(watch())
 
-  const createNewIdea = () => {
-    router.push(`/${orgname}/ideas/new`);
+  const createNewBoard = () => {
+    router.push(`/${orgname}/boards/new`);
   }
 
-  const ideas = useLiveQuery(
-    () => db.getIdeas()
+  const boards = useLiveQuery(
+    () => db.getBoards()
   );
 
-  console.log('ideas');
-  console.log(ideas);
+  console.log('boards');
+  console.log(boards);
 
   return (
     <Stack
       spacing={5}
       width={'100%'}>
       <Head>
-        <title>Roadmap App | Ideas</title>
+        <title>Roadmap App | Boards</title>
       </Head>
-      <Header buttonOnClick={createNewIdea} />
+      <Header buttonOnClick={createNewBoard} />
       <Stack
         width={'100%'}
         px={'30px'}
         spacing={'35px'}>
-        {ideas?
+        {boards?
           <Stack>
-            {ideas.length ?
+            {boards.length ?
               <Stack
                 spacing={'30px'}
               >
                 <SearchAndFilters {...{register: register, setValue: setValue}} />
-                <IdeasArea watch={watch} fetchedIdeas={ideas} />
+                <BoardsArea watch={watch} fetchedBoards={boards} />
               </Stack>:
-              <CreateFirstIdea {...{createNewIdea: createNewIdea}} />
+              <CreateFirstBoard {...{createNewBoard: createNewBoard}} />
             }
           </Stack>:
             <Flex
@@ -164,7 +163,7 @@ const Ideas: NextPageWithLayout = () => {
               justifyContent={'center'}
               alignItems={'center'}
             >
-              <Text>Loading ideas...</Text>
+              <Text>Loading boards...</Text>
             </Flex>
         }
       </Stack>
@@ -172,7 +171,7 @@ const Ideas: NextPageWithLayout = () => {
   );
 }
 
-Ideas.getLayout = (page: any) => {
+Boards.getLayout = (page: any) => {
   return (
     <Layout>
       {page}
@@ -180,4 +179,4 @@ Ideas.getLayout = (page: any) => {
   );
 }
 
-export default Ideas;
+export default Boards;

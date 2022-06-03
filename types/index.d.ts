@@ -20,7 +20,6 @@ export interface IdeaData {
   tags: IdeasTag[];
   status: IdeaStatus;
   comments: string[]
-  // TODO: ^ getIdeas should only send number of comments
 }
 
 export interface StoriesTag {
@@ -31,6 +30,11 @@ export interface StoriesTag {
 // Define an interface `IdeaPreview` which will extend IdeaData, ommit `description` and making `comments` into number
 export interface IdeaPreview extends Omit<IdeaData, 'description' | 'comments'> {
   comments: number;
+}
+
+export interface BoardPreview {
+  id?: number;
+  name: string;
 }
 
 export interface IdeaUpdateForm extends Omit<IdeaData, 'id' | 'updatedOn' | 'createdOn'> {

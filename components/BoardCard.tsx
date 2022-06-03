@@ -1,4 +1,3 @@
-import type { IdeaPreview } from '../../types';
 import {
   Flex,
   Stack,
@@ -11,6 +10,8 @@ import {
   MenuItem,
   IconButton
 } from '@chakra-ui/react';
+import { BoardPreview } from '../types';
+
 
 import { SettingsIcon, EditIcon} from '@chakra-ui/icons';
 
@@ -25,45 +26,31 @@ import { MdTaskAlt } from 'react-icons/md';
 
 // TODO: non-cringe animations
 
-export interface IdeaCardProps {
-  idea: IdeaPreview;
+export interface BoardCardProps {
+  board: BoardPreview;
 }
 
-const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
+const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
 
-  const { title, createdOn, updatedOn, status, id, tags } = idea;
+  const { name, id } = board;
 
   const { orgname } = useRouter().query;
-  const ideaURL = `/${orgname}/ideas/${id}/edit`;
+  const ideaURL = `/${orgname}/roadmap/${id}`;
 
   const deleteGuide = () => {
     //
     window.alert('deleted');
   }
-  const archiveGuide = (): void => {
+  const archiveBoard = (): void => {
     //
     window.alert('archiving');
   }
 
-  const unarchiveGuide = (): void => {
+  const unarchiveBoard = (): void => {
     //
     window.alert('un-archiving');
   }
 
-  const addToStory = (): void => {
-    //
-    window.alert('add to story');
-  }
-
-  const completeGuide = (): void => {
-    //
-    window.alert('complete guide');
-  }
-
-  const undoCompleteGuide = (): void => {
-    //
-    window.alert('undo complete');
-  }
   const removeMenuFocus = (): void => {
     // window.alert('removing focus');
     setTimeout(() => {
@@ -115,45 +102,10 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
               maxWidth={'170px'}
               // isTruncated // TODO: truncate somehow
             >
-              {title}
+              {name}
             </Text>
           </Link>
         </NextLink>
-        <Stack
-          spacing={'0'}
-          color={'gray.500'}
-          fontSize={'sm'}
-          flexDirection={'column'}>
-          <Text
-            suppressHydrationWarning>
-            Created on: {new Date(Number(createdOn)).toLocaleDateString()}
-          </Text>
-          <Text
-            suppressHydrationWarning>
-            Updated on: {new Date(Number(updatedOn)).toLocaleDateString()}
-          </Text>
-          <Flex
-            marginTop={'5px'}
-          >
-            {tags.map((tag, index) => (
-              <Badge
-                key={index}
-                bg={'teal'}
-                variant={'solid'}
-                fontSize={'sm'}
-                fontWeight={'semibold'}
-                marginRight={'5px'}
-                marginBottom={'5px'}
-                borderRadius={'10px'}
-                padding={'6px'}
-                _hover={{
-                  cursor: 'default'
-                }}>
-                {tag.text}
-              </Badge>
-            ))}
-          </Flex>
-        </Stack>
       </Stack>
 
       <Flex
@@ -193,7 +145,6 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
               padding={'0px'} />
           </MenuButton>
           <MenuList fontSize={'sm'}>
-            <MenuItem onClick={addToStory} icon={<MdTaskAlt />}>Add to story</MenuItem>
             <NextLink
               href={ideaURL}
             >
@@ -202,16 +153,12 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
                   textDecoration: 'none'
                 }}
               >
-                <MenuItem icon={<EditIcon />}>Settings</MenuItem>
+                <MenuItem icon={<EditIcon />}>Open</MenuItem>
               </Link>
             </NextLink>
-            {status==='completed'?
-              <MenuItem onClick={undoCompleteGuide} icon={<VscFile />}>Undo completion</MenuItem>:
-              <MenuItem onClick={completeGuide} icon={<VscFile />}>Complete</MenuItem>
-            }
             {status !== 'archived'?
-              <MenuItem icon={<HiOutlineDuplicate />} onClick={archiveGuide}>Archive</MenuItem>:
-              <MenuItem icon={<HiOutlineDuplicate />} onClick={unarchiveGuide}>Unarchive</MenuItem>
+              <MenuItem icon={<HiOutlineDuplicate />} onClick={archiveBoard}>Archive</MenuItem>:
+              <MenuItem icon={<HiOutlineDuplicate />} onClick={unarchiveBoard}>Unarchive</MenuItem>
             }
             <MenuItem icon={<IoClose />} onClick={deleteGuide}>Delete</MenuItem>
           </MenuList>
@@ -227,4 +174,4 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
   );
 }
 
-export default IdeaCard;
+export default BoardCard;

@@ -75,8 +75,8 @@ const Sidebar: React.FC = () => {
             href={`/${orgname}/ideas`}
             name={'Ideas'} />
           <SidebarLink
-            href={`/${orgname}/checklists`}
-            name={'Checklists'} />
+            href={`/${orgname}/boards`}
+            name={'Boards'} />
           <SidebarLink
             href={`/${orgname}/nps`}
             name={'NPS'} />

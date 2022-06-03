@@ -1,7 +1,8 @@
-import { NextPageWithLayout } from '../../types/page';
-import Layout from '../../layouts/layout';
+import { NextPageWithLayout } from '../../../types/page';
+import Layout from '../../../layouts/layout';
 import Head from 'next/head';
 import { useState } from 'react';
+import { useRouter } from 'next/router'
 import {
   Flex,
   Stack,
@@ -9,17 +10,21 @@ import {
   Heading
 } from '@chakra-ui/react';
 
-import BoardsPanel from '../../components/BoardsPanel';
-import Board from '../../components/Board';
-import { listIdToString } from '../../components/Column';
-import { db } from '../../db';
+import BoardsPanel from '../../../components/BoardsPanel';
+import Board from '../../../components/Board';
+import { listIdToString } from '../../../components/Column';
+import { db } from '../../../db';
 import { useLiveQuery } from 'dexie-react-hooks';
 
+// TODO: Add ability to archive, unarchive, and delete boards
+
 const Kanban: NextPageWithLayout = () => {
-  const [activeBoardId, setActiveBoardId] = useState(1);
+  const router = useRouter();
+  const boardId = parseInt(router.query.boardId as string);
+
   let boardData = null;
   const data = useLiveQuery(
-    () => db.getBoard(activeBoardId), [activeBoardId]);
+    () => db.getBoard(boardId));
 
     if (data) {
       // Doing this because DndContext won't allow stories and lists having the same ids
@@ -55,7 +60,6 @@ const Kanban: NextPageWithLayout = () => {
               Kanban Board
             </Heading>
           </Flex>
-          <BoardsPanel activeBoardId={activeBoardId} setActiveBoard={setActiveBoardId} />
         </Stack>
         {data ?
           <Stack flexGrow={1}>
