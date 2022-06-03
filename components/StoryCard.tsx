@@ -1,157 +1,68 @@
-import React, { useRef } from 'react'
-import { Flex, Text, Button } from '@chakra-ui/react';
+import { useSortable } from "@dnd-kit/sortable";
+import {
+  Flex,
+  Text,
+  Button
+} from '@chakra-ui/react';
+import {CSS} from '@dnd-kit/utilities';
 import { db } from '../db';
-import { useDrop, useDrag } from "react-dnd";
 import { StoryPreview } from '../types';
-import { ItemTypes, StoryDragItem } from './Kanban/types';
-import { motion } from 'framer-motion';
 
-const MotionFlex = motion(Flex);
-
-// TODO: What about listId
-// -- like, it could be that id and position are the same, but they're on different lists
-let lastDraggingStory = {
-  id: -11,
-  position: -11,
-  // listId: -11,
-};
-
-export function getLastDraggingStory() {
-  return lastDraggingStory;
-}
-
-export function setLastDraggingStory(story: { id: number, position: number; listId?: number }) {
-  lastDraggingStory = JSON.parse(JSON.stringify({
-    id: story.id,
-    position: story.position,
-    listId: story.listId
-  }));
-}
-// BUG: isDragging is false once the story is dragging over to another list --
-// https://www.google.com/search?q=react-dnd+isDragging+false
-
-export function resetLastDraggingStory() {
-  setLastDraggingStory({
-    id: -11,
-    position: -11,
-    // listId: -11,
-  });
-}
-
-export interface StoryCardProps {
+export interface CardProps {
   story: StoryPreview;
-  index: number;
+  isOverlay?: boolean;
 }
 
+const Card: React.FC<CardProps> = ({
+  story,
+  isOverlay
+}) => {
+  const {
+    setNodeRef,
+    listeners,
+    isDragging,
+    isSorting,
+    over,
+    overIndex,
+    transform,
+    transition,
+  } = useSortable({
+    id: story.id,
+  });
 
-const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
+  // console.log("card: ", over?.id);
 
-  const ref = useRef(null);
-
-  const [collected, dragRef, dragPreview] = useDrag(() => ({
-    type: ItemTypes.STORY,
-    item: {
-      title: story.title,
-      id: story.id,
-      listId: story.listId,
-      position: story.position,
-    },
-    collect: (monitor: any) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [story]);
-
-  const [, dropRef] = useDrop({
-    accept: ItemTypes.STORY,
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId(),
-      }
-    },
-    hover(item: any, monitor: any) {
-      if (!ref.current) {
-        return;
-      }
-      const draggingStory = item;
-      const draggedOverStory = story;
-      // Don't replace items with themselves
-      if (draggingStory.id === draggedOverStory.id) {
-        // console.log('dragging story is the same as the dragged over story');
-        return;
-      }
-      // Determine rectangle on screen
-      const hoverBoundingRect = (ref.current as any)?.getBoundingClientRect();
-      // Get vertical middle
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      // Determine mouse position
-      const mousePosition = monitor.getClientOffset();
-      // Get pixels to the top
-      const hoverClientY = mousePosition.y - hoverBoundingRect.top;
-
-      // TODO: Have better logic than this, it's like the cards hesitate to actually move directions
-
-      // Dragging downwards
-      if (draggingStory.position < draggedOverStory.position && hoverClientY < hoverMiddleY) {
-        return;
-      }
-      // Dragging upwards
-      if (draggingStory.position > draggedOverStory.position && hoverClientY > hoverMiddleY) {
-        return;
-      }
-      // What the hell is happening to the state inside the hover
-      // console.log(`hoverClientY: ${hoverClientY}`);
-      // console.log(`hoverMiddleY: ${hoverMiddleY}`);
-      const differenceInY = Math.abs(Math.abs(hoverClientY) - Math.abs(hoverMiddleY));
-      // console.log(`difference in y: ${differenceInY}`);
-      if (differenceInY < 5) {
-        return;
-      }
-      // HACK: To see if the last api call to move story is finished
-      let lastDraggingStory = getLastDraggingStory();
-      if (lastDraggingStory.id === draggingStory.id && lastDraggingStory.position === draggingStory.position) {
-        // waiting for last move card api call to finish
-        return;
-      }
-      // console.log(`${draggingStory.title}(${draggingStory.position}) over ${draggedOverStory.title}(${draggedOverStory.position})`);
-      setLastDraggingStory(draggingStory);
-      db.moveStoryToStory(draggingStory.id, draggedOverStory.id)
-      .then(() => {
-        resetLastDraggingStory();
-        console.log(item.position, story.position, draggedOverStory.position);
-        // console.log(item.id, story.id, draggedOverStory.id);
-        // item.position = draggedOverStory.position;
-        // item.id = draggedOverStory.id;
-        // console.log('moved');
-        // console.log(`${draggedOverStory.title} is now at position ${draggedOverStory.position}`);
-        // console.log(item.position, draggingStory.position)
-      });
-    },
-  }, [story]);
-
-  const { isDragging } = collected;
-  // console.log(isDragging)
-  dragRef(dropRef(ref));
-  const opacity = isDragging ? 0.4 : 1;
+  const opacity = isDragging ? 0.5 : 1;
 
   return (
-    <MotionFlex
+    <Flex
+      {...listeners}
+      ref={setNodeRef}
+      borderRadius={'4px'}
+      opacity={opacity}
       border={`1px solid #ccc`}
       padding={1.5}
-      ref={ref}
-      data-type={'story'}
-      borderRadius={'4px'}
       fontSize={'sm'}
+      className={`story-${story.id} ${isOverlay ? 'story-overlay' : ''}`}
       background={'#fff'}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity, scale: 1 }}
-      exit={{ opacity: 0, scale: 0 }}
-      // layout
+      style={{
+        // ...wrapperStyle,
+        transition,
+        transform: CSS.Transform.toString(transform),
+      }}
     >
       <Flex
         alignItems={'center'}
         justifyContent={'space-between'}
         width={'100%'}
+        style={{
+          // @ts-ignore
+          // value: cardIndex,
+          // isDragging,
+          // isSorting,
+          // overIndex: over ? getIndex(over.id) : overIndex,
+          // panelId,
+        }}
       >
         <Text>
           {story.title}
@@ -172,9 +83,8 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
           X
         </Button>
       </Flex>
-    </MotionFlex>
+    </Flex>
   );
 }
 
-
-export default StoryCard;
+export default Card;
