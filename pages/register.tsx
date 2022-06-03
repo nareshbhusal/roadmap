@@ -7,12 +7,11 @@ import {
   Heading,
 } from '@chakra-ui/react';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { db } from '../db';
-import { useLiveQuery } from 'dexie-react-hooks';
 
 import Logo from '../components/Logo';
 
@@ -25,7 +24,8 @@ const Register = (): JSX.Element => {
   const {
     handleSubmit,
     register,
-    formState
+    formState,
+    setFocus
   } = useForm<FormValues>({
     defaultValues: {
       org: '',
@@ -67,7 +67,7 @@ const Register = (): JSX.Element => {
   },);
 
   useEffect(() => {
-    document.getElementById('org')!.focus();
+    setFocus('org');
   }, []);
 
   return (
