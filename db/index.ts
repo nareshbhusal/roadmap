@@ -564,6 +564,17 @@ class IdeasDB extends Dexie {
     };
   }
 
+  public async updateAccountInfo(organization: Organization, user: User) {
+    await this.transaction("rw", this.organizations, this.users, async () => {
+      // there's only one organization and one user, update those sole records
+      await this.organizations.clear();
+      await this.users.clear();
+      await this.organizations.bulkPut([organization]);
+      await this.users.bulkPut([user]);
+    });
+  }
+
+
   public async addIdea(idea: IdeaCreateRequest) {
     const newIdeaData: StoreIdea = {
       ...idea,
