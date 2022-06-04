@@ -10,7 +10,6 @@ import {
   Heading
 } from '@chakra-ui/react';
 
-import BoardsPanel from '../../../components/BoardsPanel';
 import Board from '../../../components/Board';
 import { listIdToString } from '../../../components/Column';
 import { db } from '../../../db';
@@ -24,7 +23,8 @@ const Kanban: NextPageWithLayout = () => {
 
   let boardData = null;
   const data = useLiveQuery(
-    () => db.getBoard(boardId));
+    () => db.getBoard(boardId), [boardId]
+  );
 
     if (data) {
       // Doing this because DndContext won't allow stories and lists having the same ids
