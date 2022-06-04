@@ -1,17 +1,25 @@
 import {
   Flex,
-  Divider
+  Divider,
+  Text,
+  Heading,
+  Stack
 } from '@chakra-ui/react';
 
 import { useRouter } from 'next/router';
+import { db } from '../db';
+import { useLiveQuery } from "dexie-react-hooks";
 
 import Logo from './Logo';
-import SidebarLink from './SidebarLink';
+import SidebarLink, { LINK_MARGIN_LEFT, SidebarExternalLink } from './SidebarLink';
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const { orgname } = router.query;
-  console.log(router)
+
+  const boards = useLiveQuery(
+    () => db.getBoards()
+  );
 
   return (
     <Flex
@@ -69,28 +77,52 @@ const Sidebar: React.FC = () => {
           justify={'center'}>
 
           <SidebarLink
-            href={`/${orgname}/roadmap`}
-            name={'Roadmap'} />
-          <Divider my={'1rem'} color={'red'} />
-          <SidebarLink
             href={`/${orgname}/ideas`}
             name={'Ideas'} />
           <SidebarLink
             href={`/${orgname}/boards`}
             name={'Boards'} />
-          <SidebarLink
-            href={`/${orgname}/nps`}
-            name={'NPS'} />
-          <Divider my={'1rem'} color={'red'} />
-          <SidebarLink
-            href={`/${orgname}/segments`}
-            name={'Segments'} />
-          <SidebarLink
-            href={`/${orgname}/goals`}
-            name={'Goals'} />
-          <SidebarLink
-            href={`/${orgname}/themes`}
-            name={'Themes'} />
+
+          {boards?
+            <>
+              <Divider my={'1rem'} color={'red'} />
+              <Stack
+                width={'100%'}
+              >
+                <Heading
+                  as={'h3'}
+                  marginLeft={LINK_MARGIN_LEFT}
+                  size={'sm'}
+                  color={'gray.700'}
+                  fontWeight={'semibold'}
+                >
+                  My Boards
+                </Heading>
+                <Stack
+                  overflowY={'auto'}
+                  height={{ base: '250px', md: '300px' }}
+                  spacing={'0px'}>
+                  {boards.map((board: any) => (
+                    <SidebarLink
+                      key={board.id}
+                      name={board.name}
+                      href={`/${orgname}/roadmap/${board.id}`} />
+                  ))}
+                </Stack>
+                <Divider my={'1rem'} color={'red'} />
+              </Stack>
+            </>
+            :
+            <Flex
+              width={'100%'}
+              align={'center'}
+              justify={'center'}
+              color={'gray.600'}
+            >
+              <Text>Loading Boards...</Text>
+            </Flex>
+          }
+
         </Flex>
         <Flex
           // misc links
@@ -101,13 +133,16 @@ const Sidebar: React.FC = () => {
           <SidebarLink
             href={`/${orgname}/settings`}
             name={'Settings'} />
-          <SidebarLink
-            href={'/help'}
-            name={'Help'} />
+          <SidebarExternalLink
+            href={'https://github.com/nareshbhusal/roadmap'}
+            name={'Github'} />
         </Flex>
       </Flex>
     </Flex>
   );
 }
+
+{/* <ExternalLink href={`https://github.com/nareshbhusal/roadmap`}>
+    </ExternalLink> */}
 
 export default Sidebar;

@@ -31,7 +31,7 @@ type FormValues = {
 
 // TODO: Implement app-wide length limit on org name and urlKey
 // TODO: How do you validate these form/data values, especially across different places in the app,
-// including fe to be full-cover?
+// including FE to BE full-cover?
 
 // TODO: https://www.30secondsofcode.org/css/p/1
 

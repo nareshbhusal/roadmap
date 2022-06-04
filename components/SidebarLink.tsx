@@ -9,24 +9,23 @@ import { useRouter } from 'next/router'
 
 import NextLink from 'next/link';
 
-import { IoAnalytics, IoColorPalette, IoSettingsSharp, IoHelpCircleSharp, IoBarChart, IoSpeedometer, IoFlag } from 'react-icons/io5';
-import { FaCheckCircle, FaLightbulb, FaUsers, FaLocationArrow } from 'react-icons/fa';
+import { IoSettingsSharp } from 'react-icons/io5';
+import { FaLightbulb } from 'react-icons/fa';
+import { AiFillGithub } from 'react-icons/ai';
 import { BsKanbanFill } from 'react-icons/bs';
+import ExternalLink from '../components/ExternalLink';
+import { HiClipboard as BoardIcon } from 'react-icons/hi';
+// import { HiOutlineViewBoards as BoardIcon } from 'react-icons/hi';
 
 export interface Icons {
   [key: string]: React.FC<any>;
 }[];
 
 const icons: Icons = {
-  'roadmap': BsKanbanFill,
+  'boards': BsKanbanFill,
   'ideas': FaLightbulb,
-  'checklists': FaCheckCircle,
-  'nps': IoSpeedometer,
-  'segments': FaUsers,
-  'goals': IoFlag,
-  'themes': IoColorPalette,
   'settings': IoSettingsSharp,
-  'help': IoHelpCircleSharp
+  'github': AiFillGithub,
 }
 
 export interface SidebarLinkProps {
@@ -34,16 +33,17 @@ export interface SidebarLinkProps {
   name: string;
 }
 
+export const LINK_MARGIN_LEFT='10px';
+
 const SidebarLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
 
   const router = useRouter();
   // is href contained in asPath
   const isActive = router.asPath.toString().includes(href);
   // const isActive = router.asPath.toString() === href;
-  const isActivee=false;
 
   const widthOfActiveBar='5px';
-  let iconLeftMargin='10px';
+  let iconLeftMargin = LINK_MARGIN_LEFT;
 
   if (isActive){
     iconLeftMargin='5px';
@@ -84,7 +84,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
               </Box>:
           null}
           <Icon
-            as={icons[name.toLowerCase()]}
+            as={icons[name.toLowerCase()] || BoardIcon}
             alignSelf={'center'}
             fontSize={'md'}
             marginLeft={iconLeftMargin} />
@@ -96,6 +96,51 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
           </Box>
         </Flex>
       </NextLink>
+    </Link>
+  );
+}
+
+export const SidebarExternalLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
+
+  const iconLeftMargin = LINK_MARGIN_LEFT;
+
+  return (
+    <Link
+      href={href}
+      color={'gray.600'}
+      fontSize={'sm'}
+      borderRadius={'2px'}
+      _hover={{
+        textDecoration: 'none',
+        color: 'blue.600',
+      }}
+      _active={{
+        background: 'gray.100',
+      }}
+      _focus={{
+        outline: 'none',
+        background: 'gray.100'
+      }}
+      background={'transparent'}
+      width={'100%'}>
+      <ExternalLink href={href}>
+        <Flex
+          flexDirection={'row'}
+          alignItems={'stretch'}
+          align={'center'}>
+          <Icon
+            as={icons[name.toLowerCase()]}
+            alignSelf={'center'}
+            fontSize={'md'}
+            marginLeft={iconLeftMargin} />
+          <Box
+            py={'10px'}
+            fontWeight={'normal'}
+            px={'8px'}>
+            {name}
+          </Box>
+        </Flex>
+      </ExternalLink>
     </Link>
   );
 }
