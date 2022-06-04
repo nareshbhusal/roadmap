@@ -41,12 +41,14 @@ const App = ({ Component, pageProps }: Props) => {
       const isPublicRoute = publicRoutes.includes(router.pathname);
 
       if (isPublicRoute && isLoggedIn) {
-        router.push(`/${organization.urlKey}/roadmap`);
+        router.push(`/${organization.urlKey}/ideas`);
       } else if (!isPublicRoute && !isLoggedIn) {
         router.push('/register');
+      } else if (!isPublicRoute && isLoggedIn && router.query.orgname !== organization.urlKey && router.isReady) {
+        router.push(`/${organization.urlKey}/ideas`);
       }
     })();
-  }, [router.pathname]);
+  }, [router.pathname, router.isReady]);
 
   if (!pageProps.public && !isAuthenticated) {
     return <div>Loading...</div>;
@@ -62,5 +64,9 @@ const App = ({ Component, pageProps }: Props) => {
     </DndProvider>
   );
 };
+
+export const getStaticProps = () => {
+  console.log(useRouter())
+}
 
 export default App;

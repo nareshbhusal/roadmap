@@ -11,6 +11,7 @@ import SidebarLink from './SidebarLink';
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const { orgname } = router.query;
+  console.log(router)
 
   return (
     <Flex
