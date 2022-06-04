@@ -103,7 +103,7 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
   );
 }
 
-// TODO: Add another button on the filter section where you can select number of ideas to fetch
+// TODO: Add another button on the filter section where you can select number of boards to fetch
 // -- and obviously add pagination too
 // TODO: Finish filter implementation
 // TODO: Add `add new board` feature
@@ -124,7 +124,8 @@ const Boards: NextPageWithLayout = () => {
   console.log(watch())
 
   const createNewBoard = () => {
-    router.push(`/${orgname}/boards/new`);
+    // router.push(`/${orgname}/boards/new`);
+    window.alert('create new board')
   }
 
   const boards = useLiveQuery(
