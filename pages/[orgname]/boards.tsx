@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Layout from '../../layouts/layout';
+import { useEffect } from 'react';
 import { NextPageWithLayout } from '../../types/page';
 import { useForm, useWatch } from "react-hook-form";
 import {
@@ -31,24 +32,13 @@ import { db } from '../../db';
 import { useLiveQuery } from "dexie-react-hooks";
 
 export interface BoardsAreaProps {
-  watch: () => any;
-  fetchedBoards: BoardPreview[];
+  boards: BoardPreview[];
+  totalBoards: number;
 }
 
-// TODO: Implement new board
-// -- opens with focus on new column title input
+const BoardsArea: React.FC<BoardsAreaProps> = ({ boards, totalBoards }) => {
 
-const BoardsArea: React.FC<BoardsAreaProps> = ({ watch, fetchedBoards }) => {
-
-  const boardsToRender = fetchedBoards.filter((board: BoardPreview) => {
-    const { searchTerm, sortBy } = watch();
-
-    return board.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
-  // TODO: sort
-  });
-
-
-  if(!boardsToRender.length) {
+  if(!boards.length) {
     return (
       <Flex>
         <Text fontWeight={'semibold'}>
@@ -61,8 +51,9 @@ const BoardsArea: React.FC<BoardsAreaProps> = ({ watch, fetchedBoards }) => {
     <Grid
       templateColumns={{"base": "repeat(2, 1fr)", "xl": "repeat(3, 1fr)"}}
       marginBottom={"10px"}
-      gap={8} rowGap={12}>
-      {boardsToRender.map((boardData: BoardPreview) => {
+      gap={8}
+      rowGap={12}>
+      {boards.map((boardData: BoardPreview) => {
         return <BoardCard key={boardData.id} board={boardData} />
       })}
     </Grid>
@@ -118,22 +109,27 @@ const Boards: NextPageWithLayout = () => {
     watch,
     setValue,
     formState: { errors, isSubmitting }
-  } = useForm<Partial<SearchAndFilterKeys>>({
+  } = useForm<SearchAndFilterKeys>({
     defaultValues: defaultSearchValues
   });
-  console.log(watch())
 
   const createNewBoard = () => {
     // router.push(`/${orgname}/boards/new`);
     window.alert('create new board')
   }
 
-  const boards = useLiveQuery(
-    () => db.getBoards()
-  );
+  const { searchTerm, sortBy } = watch();
 
-  console.log('boards');
-  console.log(boards);
+  const boards = useLiveQuery(
+    () => db.getBoards({
+      searchTerm,
+      sortBy
+    }),
+    [searchTerm, sortBy]
+  );
+  const totalBoards = useLiveQuery(
+    () => db.getTotalBoards()
+  ) || 0;
 
   return (
     <Stack
@@ -149,12 +145,12 @@ const Boards: NextPageWithLayout = () => {
         spacing={'35px'}>
         {boards?
           <Stack>
-            {boards.length ?
+            {totalBoards ?
               <Stack
                 spacing={'30px'}
               >
                 <SearchAndFilters {...{register: register, setValue: setValue}} />
-                <BoardsArea watch={watch} fetchedBoards={boards} />
+                <BoardsArea totalBoards={totalBoards} boards={boards} />
               </Stack>:
               <CreateFirstBoard {...{createNewBoard: createNewBoard}} />
             }

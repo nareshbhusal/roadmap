@@ -10,8 +10,7 @@ import { SmallCloseIcon } from '@chakra-ui/icons';
 
 const makeFirstLetterUppercase = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-const sortByValues = ['Most recently active', 'Least recently active', 'Alphabetically', 'Reverse alphabetically', 'Archived'];
-// TODO: Archived boards have options to unarchive and delete the board
+export const sortByValues = ['Most recently active', 'Least recently active', 'Alphabetically', 'Reverse alphabetically', 'Archived'];
 
 export interface SearchAndFilterKeys {
   searchTerm: string;

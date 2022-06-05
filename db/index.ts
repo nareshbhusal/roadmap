@@ -12,6 +12,7 @@ import type {
   IdeaUpdateForm
 } from '../types';
 import { slugify } from '../lib/utils';
+import { defaultSearchValues, sortByValues, SearchAndFilterKeys } from '../components/FilterBoards';
 
 export interface StoreIdea extends Omit<IdeaData, 'tags'> {
   tagIDs: number[];
@@ -58,6 +59,11 @@ export interface Task {
 }
 
 // Our app will have only one user and one organization.
+
+export interface BoardsFilters {
+  searchTerm: string;
+  sortBy: string;
+}
 
 class IdeasDB extends Dexie {
   ideas!: Table<StoreIdea, number>;
@@ -205,16 +211,48 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async getBoards() {
-    return await this.boards.toArray().then(boards => {
-      return boards.map(({ id, name, archived }) => {
+  public async getBoards({ searchTerm, sortBy }: BoardsFilters) {
+    const boards = await this.boards.toArray().then(boards => {
+      return boards.map(({ id, name, archived, lastAccessed }) => {
         return {
           id,
           name,
           archived,
+          lastAccessed
         }
-      })
+      }).filter(board => {
+        return board.name.toLowerCase().includes(searchTerm.toLowerCase());
+      }).sort((a: any, b: any) => {
+        if (sortBy === sortByValues[0]) {
+          // most recently active
+          return b.lastAccessed - a.lastAccessed;
+        } else if (sortBy === sortByValues[1]) {
+          // least recently active
+          return b.lastAccessed - a.lastAccessed;
+        } else if (sortBy === sortByValues[2]) {
+          // alphabetical
+          return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+        } else if (sortBy === sortByValues[3]) {
+          // reverse alphabetical
+          return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+        } else if (sortBy === sortByValues[4]) {
+        } else {
+          window.alert('sortBy value not recognized' +' '+sortBy);
+        }
+        // default
+        return b.lastAccessed - a.lastAccessed;
+      });
     });
+
+    if (sortBy === sortByValues[4]) {
+      // archived
+      return boards.filter(board => board.archived);
+    }
+    return boards.filter(board => !board.archived);
+  }
+
+  public async getTotalBoards() {
+    return this.boards.count();
   }
 
   public async getStoryPreview(storyID: number) {

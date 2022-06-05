@@ -12,6 +12,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 
 import Logo from './Logo';
 import SidebarLink, { LINK_MARGIN_LEFT, SidebarExternalLink } from './SidebarLink';
+import { defaultSearchValues } from '../components/FilterBoards';
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
@@ -20,7 +21,10 @@ const Sidebar: React.FC = () => {
   // TODO: Fetch filtering by recently opened
   // -- add lastOpened prop to boards table which updates every time getBoard is called
   const boards = useLiveQuery(
-    () => db.getBoards()
+    () => db.getBoards({
+      searchTerm: '',
+      sortBy: defaultSearchValues.sortBy
+    })
   );
 
   return (
