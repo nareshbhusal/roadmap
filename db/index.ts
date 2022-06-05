@@ -24,6 +24,7 @@ export interface Board {
   lists: number[];
   tags: number[];
   archived: boolean;
+  lastAccessed: number;
 }
 
 export interface BoardList {
@@ -168,7 +169,8 @@ class IdeasDB extends Dexie {
       createdOn: Date.now(),
       lists: [] as number[],
       tags: [] as number[],
-      archived: false
+      archived: false,
+      lastAccessed: Date.now()
     });
   }
 
@@ -265,6 +267,7 @@ class IdeasDB extends Dexie {
 
     // get stories using getStoryPreview and attach to board lists
 
+
     const lists = await Promise.all(boardLists.map(async (boardList) => {
       return {
         ...boardList,
@@ -273,6 +276,11 @@ class IdeasDB extends Dexie {
         })),
       }
     }));
+
+    // update board's lastAccessed
+    await this.boards.update(boardId, {
+      lastAccessed: Date.now()
+    });
 
     return {
       ...board,

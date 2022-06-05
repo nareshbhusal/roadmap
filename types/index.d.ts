@@ -91,6 +91,7 @@ export interface BoardData {
   name: string;
   tags: number[];
   createdOn: number;
+  lastAccessed: number;
   lists: BoardList[];
 }
 
