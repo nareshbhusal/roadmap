@@ -28,6 +28,8 @@ const icons: Icons = {
   'github': AiFillGithub,
 }
 
+// TODO: For ExternalLink, change Link to Box to fix that error message
+
 export interface SidebarLinkProps {
   href: string;
   name: string;

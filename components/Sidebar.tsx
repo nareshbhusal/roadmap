@@ -17,6 +17,8 @@ const Sidebar: React.FC = () => {
   const router = useRouter();
   const { orgname } = router.query;
 
+  // TODO: Fetch filtering by recently opened
+  // -- add lastOpened prop to boards table which updates every time getBoard is called
   const boards = useLiveQuery(
     () => db.getBoards()
   );

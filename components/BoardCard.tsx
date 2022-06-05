@@ -11,6 +11,7 @@ import {
   IconButton
 } from '@chakra-ui/react';
 import { BoardPreview } from '../types';
+import { db } from '../db';
 
 
 import { SettingsIcon, EditIcon} from '@chakra-ui/icons';
@@ -24,15 +25,13 @@ import { VscFile } from 'react-icons/vsc';
 import { HiOutlineDuplicate } from 'react-icons/hi';
 import { MdTaskAlt } from 'react-icons/md';
 
-// TODO: non-cringe animations
-
 export interface BoardCardProps {
   board: BoardPreview;
 }
 
 const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
 
-  const { name, id } = board;
+  const { name, id, archived } = board;
 
   const { orgname } = useRouter().query;
   const ideaURL = `/${orgname}/roadmap/${id}`;
@@ -42,13 +41,15 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
     window.alert('deleted');
   }
   const archiveBoard = (): void => {
-    //
-    window.alert('archiving');
+    db.archiveBoard(id!);
   }
 
+  // TODO: We should prolly first grab the list of ids and then individually fetch their data, even if in overview form
+  // -- but maybe that's overkill since the parent component is listening to the data anyway
+  // -- and how does pagination fit into that consideration?
+
   const unarchiveBoard = (): void => {
-    //
-    window.alert('un-archiving');
+    db.unarchiveBoard(id!);
   }
 
   const removeMenuFocus = (): void => {
@@ -112,12 +113,15 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
         justify={'space-between'}
         align={'flex-end'}
         flexDirection={'column'}>
+        {archived ?
+
         <Badge
           textTransform={'capitalize'}
           variant={`badge-${status}`}
           size={'sm'}>
-          {status}
+          {'archived'}
         </Badge>
+        : null}
         <Menu onClose={removeMenuFocus}>
           <MenuButton
             as={IconButton}
@@ -156,7 +160,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
                 <MenuItem icon={<EditIcon />}>Open</MenuItem>
               </Link>
             </NextLink>
-            {status !== 'archived'?
+            {!archived ?
               <MenuItem icon={<HiOutlineDuplicate />} onClick={archiveBoard}>Archive</MenuItem>:
               <MenuItem icon={<HiOutlineDuplicate />} onClick={unarchiveBoard}>Unarchive</MenuItem>
             }

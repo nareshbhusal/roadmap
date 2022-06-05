@@ -14,6 +14,7 @@ export interface Board {
   createdOn: number;
   lists: number[];
   tags: number[];
+  archived: boolean;
 }
 
 export interface BoardList {
@@ -161,15 +162,29 @@ class IdeasDB extends Dexie {
       createdOn: Date.now(),
       lists: [] as number[],
       tags: [] as number[],
+      archived: false
+    });
+  }
+
+  public async archiveBoard(boardId: number) {
+    await this.boards.update(boardId, {
+      archived: true
+    });
+  }
+
+  public async unarchiveBoard(boardId: number) {
+    await this.boards.update(boardId, {
+      archived: false
     });
   }
 
   public async getBoards() {
     return await this.boards.toArray().then(boards => {
-      return boards.map(board => {
+      return boards.map(({ id, name, archived }) => {
         return {
-          id: board.id,
-          name: board.name
+          id,
+          name,
+          archived,
         }
       })
     });

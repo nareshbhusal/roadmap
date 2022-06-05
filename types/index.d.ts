@@ -35,6 +35,7 @@ export interface IdeaPreview extends Omit<IdeaData, 'description' | 'comments'> 
 export interface BoardPreview {
   id?: number;
   name: string;
+  archived: boolean;
 }
 
 export interface IdeaUpdateForm extends Omit<IdeaData, 'id' | 'updatedOn' | 'createdOn'> {
