@@ -41,6 +41,7 @@ const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }) => {
 
   const ideasToRender = fetchedIdeas.filter((idea: IdeaPreview) => {
     const { activationStatus, searchTerm, tag, sortBy } = watch();
+    console.log(watch())
 
     return idea.status === activationStatus.toLowerCase() &&
       idea.title.toLowerCase().includes(searchTerm.trim().toLowerCase()) &&
@@ -106,9 +107,6 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
 
 // TODO: Add another button on the filter section where you can select number of ideas to fetch
 // -- and obviously add pagination too
-
-
-// DEV NOTE: Navigate to the page which uses indexedDB using the router instead of browser refresh
 
 const Ideas: NextPageWithLayout = () => {
   const router = useRouter();

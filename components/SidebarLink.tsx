@@ -28,8 +28,6 @@ const icons: Icons = {
   'github': AiFillGithub,
 }
 
-// TODO: For ExternalLink, change Link to Box to fix that error message
-
 export interface SidebarLinkProps {
   href: string;
   name: string;
@@ -107,8 +105,7 @@ export const SidebarExternalLink: React.FC<SidebarLinkProps> = ({ href, name }) 
   const iconLeftMargin = LINK_MARGIN_LEFT;
 
   return (
-    <Link
-      href={href}
+    <Box
       color={'gray.600'}
       fontSize={'sm'}
       borderRadius={'2px'}
@@ -143,7 +140,7 @@ export const SidebarExternalLink: React.FC<SidebarLinkProps> = ({ href, name }) 
           </Box>
         </Flex>
       </ExternalLink>
-    </Link>
+    </Box>
   );
 }
 
