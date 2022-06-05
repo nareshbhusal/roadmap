@@ -36,9 +36,10 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
   const { orgname } = useRouter().query;
   const ideaURL = `/${orgname}/roadmap/${id}`;
 
-  const deleteGuide = () => {
-    //
-    window.alert('deleted');
+  const deleteBoard = () => {
+    if (window.confirm('Are you sure you want to delete this board?')) {
+      db.deleteBoard(id!);
+    }
   }
   const archiveBoard = (): void => {
     db.archiveBoard(id!);
@@ -164,7 +165,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
               <MenuItem icon={<HiOutlineDuplicate />} onClick={archiveBoard}>Archive</MenuItem>:
               <MenuItem icon={<HiOutlineDuplicate />} onClick={unarchiveBoard}>Unarchive</MenuItem>
             }
-            <MenuItem icon={<IoClose />} onClick={deleteGuide}>Delete</MenuItem>
+            <MenuItem icon={<IoClose />} onClick={deleteBoard}>Delete</MenuItem>
           </MenuList>
         </Menu>
         {/* <Text

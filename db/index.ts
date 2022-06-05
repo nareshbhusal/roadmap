@@ -1,8 +1,17 @@
 import Dexie, { Table } from "dexie";
-import type { IdeaData, User, BoardData, Organization, StoriesTag, IdeasTag, IdeaPreview, IdeaCreateForm, IdeaCreateRequest, IdeaUpdateForm } from '../types';
+import type {
+  IdeaData,
+  User,
+  BoardData,
+  Organization,
+  StoriesTag,
+  IdeasTag,
+  IdeaPreview,
+  IdeaCreateForm,
+  IdeaCreateRequest,
+  IdeaUpdateForm
+} from '../types';
 import { slugify } from '../lib/utils';
-
-// TODO: We'll have multiple boards, multiple projects, and one organization.
 
 export interface StoreIdea extends Omit<IdeaData, 'tags'> {
   tagIDs: number[];
@@ -49,8 +58,6 @@ export interface Task {
 
 // Our app will have only one user and one organization.
 
-
-
 class IdeasDB extends Dexie {
   ideas!: Table<StoreIdea, number>;
   ideasTags!: Table<IdeasTag, number>;
@@ -92,7 +99,6 @@ class IdeasDB extends Dexie {
         *lists,
         *tags
       `,
-      // TODO: how to signal required
       boardLists: `
         ++id,
         boardId,
@@ -178,6 +184,25 @@ class IdeasDB extends Dexie {
     });
   }
 
+  public async deleteBoard(boardId: number) {
+    // delete lists, and tags associated with board
+    await this.transaction("rw", this.stories, this.tasks, this.boards, this.boardLists, this.storiesTags, async () => {
+      const board = await this.boards.get(boardId);
+      // board.tags is a list of storyTag ids, delete those tags
+      const storyTags = await this.storiesTags.where('id').anyOf(board!.tags).toArray();
+      await this.storiesTags.bulkDelete((storyTags as unknown) as number[]);
+
+      // run all boardList through this.deleteBoardList
+      const boardLists = await this.boardLists.where('boardId').equals(boardId).toArray();
+      for (const boardList of boardLists) {
+        await this.deleteBoardList(boardList.id!);
+      }
+
+      // delete board
+      await this.boards.delete(boardId);
+    });
+  }
+
   public async getBoards() {
     return await this.boards.toArray().then(boards => {
       return boards.map(({ id, name, archived }) => {
@@ -211,7 +236,25 @@ class IdeasDB extends Dexie {
   }
 
   public async deleteBoardList(boardListId: number) {
-    // TODO: this will have some cascading effect
+    await this.transaction("rw", this.boardLists, this.stories, async () => {
+      // remove all stories in list
+      // run all stories with listId ids through this.removeStory
+      await this.stories.where('listId').equals(boardListId).toArray().then(stories => {
+        stories.forEach(story => {
+          this.removeStory(story.id!);
+        })
+      });
+
+      // remove board list from board's list array
+      const board = await this.boardLists.where('id').equals(boardListId).first();
+      const boardId = board!.boardId;
+      const boardLists = await this.boardLists.where('boardId').equals(boardId).toArray();
+      await this.boards.update(boardId, {
+        lists: boardLists.filter(list => list.id !== boardListId).map(list => list.id)
+      });
+
+      await this.boardLists.delete(boardListId);
+    });
   }
 
   public async getBoard(boardId: number) {
@@ -485,8 +528,9 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async removeTask(taskID: number, storyID: number) {
+  public async removeTask(taskID: number) {
     await this.transaction("rw", this.stories, this.tasks, async () => {
+      const storyID = await this.tasks.get(taskID).then(task => task!.storyID);
       const story = await this.stories.get(storyID);
       const taskIDs = story!.tasks.filter(id => id !== taskID);
 
@@ -531,12 +575,14 @@ class IdeasDB extends Dexie {
       });
 
       await this.stories.delete(storyID);
+      // Remove associated tasks and ideas
+      story!.tasks.forEach(taskID => this.removeTask(taskID));
+      story!.ideas.forEach(ideaID => this.removeIdea(ideaID));
 
       // also make updates to the position props of other stories in the same list
       await this.stories.where('listId').equals(story!.listId).and(r => r.position > story!.position).modify(r => {
         r.position--;
       });
-
     });
   }
 
@@ -553,8 +599,8 @@ class IdeasDB extends Dexie {
       });
 
       await this.storiesTags.delete(tagID);
-      // remove the tag from every stories of the boardID that has the tag
 
+      // remove the tag from every stories of the boardID that has the tag
       const stories = await this.stories.where({
         boardId: boardID
       }).toArray();
@@ -628,6 +674,19 @@ class IdeasDB extends Dexie {
       }
       return ideaToSend;
     }
+  }
+
+  public async removeIdea(ideaID: number) {
+    await this.transaction("rw", this.ideas, this.stories, async () => {
+      const idea = await this.ideas.get(ideaID);
+      const storyID = idea!.storyID!;
+      const story = await this.stories.get(storyID);
+      const ideaIDs = story!.ideas.filter(id => id !== ideaID);
+      await this.stories.update(storyID, {
+        ideas: ideaIDs
+      });
+      await this.ideas.delete(ideaID);
+    });
   }
 
   public async getIdeas(): Promise<IdeaPreview[]> {
