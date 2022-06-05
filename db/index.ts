@@ -228,7 +228,7 @@ class IdeasDB extends Dexie {
           return b.lastAccessed - a.lastAccessed;
         } else if (sortBy === sortByValues[1]) {
           // least recently active
-          return b.lastAccessed - a.lastAccessed;
+          return a.lastAccessed - b.lastAccessed;
         } else if (sortBy === sortByValues[2]) {
           // alphabetical
           return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
@@ -237,7 +237,7 @@ class IdeasDB extends Dexie {
           return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
         } else if (sortBy === sortByValues[4]) {
         } else {
-          window.alert('sortBy value not recognized' +' '+sortBy);
+          // console.log('sortBy value not recognized' +' '+sortBy);
         }
         // default
         return b.lastAccessed - a.lastAccessed;
