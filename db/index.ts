@@ -12,7 +12,8 @@ import type {
   IdeaUpdateForm
 } from '../types';
 import { slugify } from '../lib/utils';
-import { defaultSearchValues, sortByValues, SearchAndFilterKeys } from '../components/FilterBoards';
+import { defaultSearchValues, sortByValues as boardsSortByValues, SearchAndFilterKeys } from '../components/FilterBoards';
+import { sortByValues as ideasSortByValues } from '../components/FilterIdeas';
 
 export interface StoreIdea extends Omit<IdeaData, 'tags'> {
   tagIDs: number[];
@@ -62,7 +63,13 @@ export interface Task {
 
 export interface BoardsFilters {
   searchTerm: string;
-  sortBy: string;
+  sortBy: typeof boardsSortByValues[number];
+}
+
+export interface IdeasFilters {
+  searchTerm: string;
+  status: IdeaData['status'];
+  sortBy: typeof ideasSortByValues[number];
 }
 
 class IdeasDB extends Dexie {
@@ -223,19 +230,19 @@ class IdeasDB extends Dexie {
       }).filter(board => {
         return board.name.toLowerCase().includes(searchTerm.toLowerCase());
       }).sort((a: any, b: any) => {
-        if (sortBy === sortByValues[0]) {
+        if (sortBy === boardsSortByValues[0]) {
           // most recently active
           return b.lastAccessed - a.lastAccessed;
-        } else if (sortBy === sortByValues[1]) {
+        } else if (sortBy === boardsSortByValues[1]) {
           // least recently active
           return a.lastAccessed - b.lastAccessed;
-        } else if (sortBy === sortByValues[2]) {
+        } else if (sortBy === boardsSortByValues[2]) {
           // alphabetical
           return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-        } else if (sortBy === sortByValues[3]) {
+        } else if (sortBy === boardsSortByValues[3]) {
           // reverse alphabetical
           return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
-        } else if (sortBy === sortByValues[4]) {
+        } else if (sortBy === boardsSortByValues[4]) {
         } else {
           // console.log('sortBy value not recognized' +' '+sortBy);
         }
@@ -244,7 +251,7 @@ class IdeasDB extends Dexie {
       });
     });
 
-    if (sortBy === sortByValues[4]) {
+    if (sortBy === boardsSortByValues[4]) {
       // archived
       return boards.filter(board => board.archived);
     }
@@ -722,6 +729,10 @@ class IdeasDB extends Dexie {
     }
   }
 
+  public async getTotalIdeas(): Promise<number> {
+    return await this.ideas.toCollection().count();
+  }
+
   public async removeIdea(ideaID: number) {
     await this.transaction("rw", this.ideas, this.stories, async () => {
       const idea = await this.ideas.get(ideaID);
@@ -735,10 +746,10 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async getIdeas(): Promise<IdeaPreview[]> {
+  public async getIdeas({ searchTerm, status, sortBy }: IdeasFilters): Promise<IdeaPreview[]> {
     const ideas = await this.ideas.toArray();
 
-    return await Promise.all(ideas.map(async (idea: StoreIdea) => {
+    const ideasPreviews = await Promise.all(ideas.map(async (idea: StoreIdea) => {
 
       let tags = await Promise.all(idea.tagIDs.map(async (tagID: number) => {
         const tag = await this.ideasTags.get(tagID) as IdeasTag;
@@ -746,21 +757,42 @@ class IdeasDB extends Dexie {
       }));
 
       tags = tags.filter((tag: IdeasTag | undefined) => tag !== undefined);
+      const { id, title, impact, effort, description, status, createdOn, updatedOn, storyID } = idea;
 
       let previewIdea = {
-        id: idea.id,
-        title: idea.title,
-        impact: idea.impact,
-        effort: idea.effort,
-        status: idea.status,
-        createdOn: idea.createdOn,
-        updatedOn: idea.updatedOn,
-        storyID: idea.storyID,
-        tags,
+        id,
+        title,
+        impact,
+        effort,
+        status,
+        createdOn,
+        updatedOn,
+        storyID,
         comments: idea.comments.length,
+        tags,
       };
       return previewIdea;
     }));
+
+    return ideasPreviews.filter(idea => {
+      return idea.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        idea.status === status;
+    }).sort((a, b) => {
+      switch (sortBy) {
+        case ideasSortByValues[0]:
+          // sort by creation time
+          return a.createdOn - b.createdOn;
+        case ideasSortByValues[1]:
+          // sort by increasing effort
+          return a.effort - b.effort;
+        case ideasSortByValues[2]:
+          // sort by decreasing impact
+          return b.impact - a.impact;
+        default:
+          // console.log("sortBy value not recognized");
+          return a.createdOn - b.createdOn;
+      }
+    });
   }
 
   public async getIdeasTags(): Promise<IdeasTag[]> {

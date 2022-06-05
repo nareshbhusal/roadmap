@@ -24,33 +24,20 @@ import SearchAndFilters, { defaultSearchValues, SearchAndFilterKeys } from '../.
 import CreateFirstIdea from '../../../components/EmptyState/CreateFirstIdea';
 
 import { useRouter } from 'next/router'
-import type { IdeaPreview } from '../../../types';
+import type { IdeaPreview, IdeasTag } from '../../../types';
 
 import NextLink from 'next/link';
 import { db } from '../../../db';
 import { useLiveQuery } from "dexie-react-hooks";
 
 export interface IdeasAreaProps {
-  watch: () => any;
-  fetchedIdeas: IdeaPreview[];
+  ideas: IdeaPreview[];
+  totalIdeas: number;
 }
 
-// TODO: name property in react-hook-form fields should come after where register is introduced in the element
+const IdeasArea: React.FC<IdeasAreaProps> = ({ ideas, totalIdeas }) => {
 
-const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }) => {
-
-  const ideasToRender = fetchedIdeas.filter((idea: IdeaPreview) => {
-    const { activationStatus, searchTerm, tag, sortBy } = watch();
-    console.log(watch())
-
-    return idea.status === activationStatus.toLowerCase() &&
-      idea.title.toLowerCase().includes(searchTerm.trim().toLowerCase()) &&
-      (!tag || idea.tags.some(ideaTag => ideaTag.id === tag.id));
-  // TODO: sort
-  });
-
-
-  if(!ideasToRender.length) {
+  if(!ideas.length) {
     return (
       <Flex>
         <Text fontWeight={'semibold'}>
@@ -64,7 +51,7 @@ const IdeasArea: React.FC<IdeasAreaProps> = ({ watch, fetchedIdeas }) => {
       templateColumns={{"base": "repeat(2, 1fr)", "xl": "repeat(3, 1fr)"}}
       marginBottom={"10px"}
       gap={8} rowGap={12}>
-      {ideasToRender.map((ideaData: IdeaPreview) => {
+      {ideas.map((ideaData: IdeaPreview) => {
         return <IdeaCard key={ideaData.id} idea={ideaData} />
       })}
     </Grid>
@@ -118,20 +105,26 @@ const Ideas: NextPageWithLayout = () => {
     watch,
     setValue,
     formState: { errors, isSubmitting }
-  } = useForm<Partial<SearchAndFilterKeys>>({
+  } = useForm<SearchAndFilterKeys>({
     defaultValues: defaultSearchValues
   });
 
   const createNewIdea = () => {
     router.push(`/${orgname}/ideas/new`);
   }
+  const { searchTerm, activationStatus: status, sortBy } = watch();
 
   const ideas = useLiveQuery(
-    () => db.getIdeas()
+    () => db.getIdeas({
+      searchTerm,
+      status,
+      sortBy
+    }), [searchTerm, status, sortBy]
   );
 
-  console.log('ideas');
-  console.log(ideas);
+  const totalIdeas = useLiveQuery(
+    () => db.getTotalIdeas()
+  ) || 0;
 
   return (
     <Stack
@@ -147,12 +140,12 @@ const Ideas: NextPageWithLayout = () => {
         spacing={'35px'}>
         {ideas?
           <Stack>
-            {ideas.length ?
+            {totalIdeas ?
               <Stack
                 spacing={'30px'}
               >
                 <SearchAndFilters {...{register: register, setValue: setValue}} />
-                <IdeasArea watch={watch} fetchedIdeas={ideas} />
+                <IdeasArea totalIdeas={totalIdeas} ideas={ideas} />
               </Stack>:
               <CreateFirstIdea {...{createNewIdea: createNewIdea}} />
             }

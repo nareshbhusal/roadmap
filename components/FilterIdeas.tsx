@@ -7,27 +7,27 @@ import {
 import { useEffect } from 'react';
 
 import { SmallCloseIcon } from '@chakra-ui/icons';
+import { IdeaStatus } from '../types';
 
 const makeFirstLetterUppercase = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-const activationStatuses = ['active', 'completed', 'archived'];
 
 // TODO: Let's have the rendered values for sortByValues, activationStatuses, and tags be different than the ones in the database.
 
-const allTags = ['Product', 'Customer feedback', 'Engineering'];
-const sortByValues = ['Most recent', 'Most popular', 'Least effort', 'Highest impact'];
+export const sortByValues = ['Most recent', 'Least effort', 'Highest impact'];
 
 export interface SearchAndFilterKeys {
   searchTerm: string;
   sortBy: typeof sortByValues[number];
   activationStatus: typeof activationStatuses[number];
-  tag: typeof allTags[number];
+  // tag: typeof allTags[number];
 }
+
+const activationStatuses = (['active', 'completed', 'archived'] as unknown) as IdeaStatus[];
 
 export const defaultSearchValues: SearchAndFilterKeys = {
   searchTerm: '',
   activationStatus: activationStatuses[0],
-  tag: '',
   sortBy: sortByValues[0],
 }
 
@@ -69,7 +69,7 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
         {...register("searchTerm")}
         placeholder={'Search'} />
 
-      <Select
+      {/* <Select
         placeholder={'All tags'}
         borderColor={borderColor}
         color={color}
@@ -82,7 +82,7 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
         {allTags.map((tag, index) => (
           <option key={index} value={tag}>{tag}</option>
         ))}
-      </Select>
+      </Select> */}
 
       <Select
         borderColor={borderColor}
