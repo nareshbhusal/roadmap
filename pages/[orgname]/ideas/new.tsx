@@ -32,10 +32,6 @@ import { ActionMeta, OnChangeValue } from 'react-select';
 // TODO: Change the data type with react-hook-form of `effort` and `impact` to numbers
 // TODO: Schema validation with react-hook-form and yup
 
-const addIdea = async (idea: IdeaCreateForm) => {
-  console.log('added idea');
-}
-
 export interface IdeaFormTagsProps {
   register: any;
   control: any;
@@ -155,12 +151,11 @@ const IdeaForm: NextPageWithLayout = () => {
 
     await db.addIdea({
       ...idea,
-      tagIDs: idea.tagIDs.map(tag => {
+      tagIDs: idea.tagIDs.map((tag: any) => {
         return tag.value;
       }),
     });
   }
-  console.log(watch())
 
   return (
     <Stack
@@ -187,12 +182,12 @@ const IdeaForm: NextPageWithLayout = () => {
           <FormLabel htmlFor="title">Title</FormLabel>
           <Input
             id="title"
-            // name="title"
             placeholder="Title"
             {...register("title", {
               required: true,
               maxLength: 250
             })}
+            name="title"
           />
         </FormControl>
         <FormControl
@@ -203,9 +198,9 @@ const IdeaForm: NextPageWithLayout = () => {
           <Input
             id="description"
             isRequired={false}
-            // name="description"
             placeholder="Description"
             {...register("description", { required: false })}
+            name="description"
           />
         </FormControl>
         <FormControl
@@ -215,9 +210,9 @@ const IdeaForm: NextPageWithLayout = () => {
           <FormLabel htmlFor="impact">Impact</FormLabel>
           <Select
             id="impact"
-            // name="impact"
             placeholder="Impact"
             {...register("impact")}
+            name="impact"
           >
             {[1, 2, 3, 4, 5].map(i => (
               <option key={i} value={i}>{i}</option>
@@ -231,9 +226,9 @@ const IdeaForm: NextPageWithLayout = () => {
           <FormLabel htmlFor="effort">Effort</FormLabel>
           <Select
             id="effort"
-            // name="effort"
             placeholder="Effort"
             {...register("effort")}
+            name="effort"
           >
             {[1, 2, 3, 4, 5].map(i => (
               <option key={i} value={i}>{i}</option>

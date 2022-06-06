@@ -120,7 +120,6 @@ const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: an
       value: ''
     });
   };
-  console.log(fields)
 
   return (
     <Stack as={"form"}
@@ -159,9 +158,6 @@ const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: an
   );
 }
 
-
-// TODO:
-// select with all stories
 const LinkToStory: React.FC<{ideaID: number; storyID: number;}> = ({ ideaID, storyID }) => {
   const stories = useLiveQuery(
     () => db.getStories()
@@ -179,7 +175,6 @@ const LinkToStory: React.FC<{ideaID: number; storyID: number;}> = ({ ideaID, sto
   });
   const linkToStory = async (option: any) => {
     await db.setStoryToIdea(ideaID, option.value);
-    console.log('linked')
   }
 
   return (
@@ -241,8 +236,8 @@ const EditIdea: NextPageWithLayout = () => {
 
 
   const { fields, append, remove } = useFieldArray({
-    control, // control props comes from useForm (optional: if you are using FormContext)
-    name: "comments", // unique name for your Field Array
+    control,
+    name: "comments",
   });
 
   const { errors }: { errors: any } = formState;
@@ -299,7 +294,7 @@ const EditIdea: NextPageWithLayout = () => {
         fontSize={'2rem'}
         my={'15px'}
       >
-        Create Idea
+        Edit Idea
       </Heading>
       <Stack
         spacing={'25px'}
@@ -311,12 +306,12 @@ const EditIdea: NextPageWithLayout = () => {
           <FormLabel htmlFor="title">Title</FormLabel>
           <Input
             id="title"
-            // name="title"
             placeholder="Title"
             {...register("title", {
               required: true,
               maxLength: 250
             })}
+            name="title"
           />
         </FormControl>
         <FormControl
@@ -327,9 +322,9 @@ const EditIdea: NextPageWithLayout = () => {
           <Input
             id="description"
             isRequired={false}
-            // name="description"
             placeholder="Description"
             {...register("description", { required: false })}
+            name="description"
           />
         </FormControl>
         <FormControl
@@ -339,9 +334,9 @@ const EditIdea: NextPageWithLayout = () => {
           <FormLabel htmlFor="impact">Impact</FormLabel>
           <Select
             id="impact"
-            // name="impact"
             placeholder="Impact"
             {...register("impact")}
+            name="impact"
           >
             {[1, 2, 3, 4, 5].map(i => (
               <option key={i} value={i}>{i}</option>
@@ -355,9 +350,9 @@ const EditIdea: NextPageWithLayout = () => {
           <FormLabel htmlFor="effort">Effort</FormLabel>
           <Select
             id="effort"
-            // name="effort"
             placeholder="Effort"
             {...register("effort")}
+            name="effort"
           >
             {[1, 2, 3, 4, 5].map(i => (
               <option key={i} value={i}>{i}</option>
@@ -369,10 +364,8 @@ const EditIdea: NextPageWithLayout = () => {
           register={register} />
         <Comments fields={fields} append={append} remove={remove} register={register} />
         {idea?
-          <>
-              <LinkToStory storyID={idea.storyID} ideaID={parseInt(ideaID as string)} />
-              </>:
-              <></>}
+          <LinkToStory storyID={idea.storyID} ideaID={parseInt(ideaID as string)} />:
+          <></>}
         <Button
           onClick={handleSubmit(onSubmit)}
           color={'white'}
