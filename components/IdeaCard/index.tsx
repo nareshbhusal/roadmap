@@ -22,8 +22,7 @@ import { IoAnalytics, IoClose } from 'react-icons/io5';
 import { VscFile } from 'react-icons/vsc';
 import { HiOutlineDuplicate } from 'react-icons/hi';
 import { MdTaskAlt } from 'react-icons/md';
-
-// TODO: non-cringe animations
+import { db } from '../../db';
 
 export interface IdeaCardProps {
   idea: IdeaPreview;
@@ -33,36 +32,31 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
 
   const { title, createdOn, updatedOn, status, id, tags } = idea;
 
-  const { orgname } = useRouter().query;
+  const router = useRouter();
+  const { orgname } = router.query;
   const ideaURL = `/${orgname}/ideas/${id}/edit`;
 
-  const deleteGuide = () => {
-    //
-    window.alert('deleted');
+  const deleteIdea = () => {
+    db.removeIdea(id!);
   }
-  const archiveGuide = (): void => {
-    //
-    window.alert('archiving');
+  const archiveIdea = (): void => {
+    db.setIdeaStatus(id!, 'archived');
   }
 
-  const unarchiveGuide = (): void => {
-    //
-    window.alert('un-archiving');
+  const unarchiveIdea = (): void => {
+    db.setIdeaStatus(id!, 'active');
   }
 
   const addToStory = (): void => {
-    //
-    window.alert('add to story');
+    router.push(ideaURL);
   }
 
-  const completeGuide = (): void => {
-    //
-    window.alert('complete guide');
+  const completeIdea = (): void => {
+    db.setIdeaStatus(id!, 'completed');
   }
 
-  const undoCompleteGuide = (): void => {
-    //
-    window.alert('undo complete');
+  const undoCompleteIdea = (): void => {
+    db.setIdeaStatus(id!, 'active');
   }
   const removeMenuFocus = (): void => {
     // window.alert('removing focus');
@@ -206,14 +200,14 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
               </Link>
             </NextLink>
             {status==='completed'?
-              <MenuItem onClick={undoCompleteGuide} icon={<VscFile />}>Undo completion</MenuItem>:
-              <MenuItem onClick={completeGuide} icon={<VscFile />}>Complete</MenuItem>
+              <MenuItem onClick={undoCompleteIdea} icon={<VscFile />}>Undo completion</MenuItem>:
+              <MenuItem onClick={completeIdea} icon={<VscFile />}>Complete</MenuItem>
             }
             {status !== 'archived'?
-              <MenuItem icon={<HiOutlineDuplicate />} onClick={archiveGuide}>Archive</MenuItem>:
-              <MenuItem icon={<HiOutlineDuplicate />} onClick={unarchiveGuide}>Unarchive</MenuItem>
+              <MenuItem icon={<HiOutlineDuplicate />} onClick={archiveIdea}>Archive</MenuItem>:
+              <MenuItem icon={<HiOutlineDuplicate />} onClick={unarchiveIdea}>Unarchive</MenuItem>
             }
-            <MenuItem icon={<IoClose />} onClick={deleteGuide}>Delete</MenuItem>
+            <MenuItem icon={<IoClose />} onClick={deleteIdea}>Delete</MenuItem>
           </MenuList>
         </Menu>
         {/* <Text

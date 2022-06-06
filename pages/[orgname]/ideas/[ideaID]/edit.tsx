@@ -21,7 +21,7 @@ import {
   Box
 } from '@chakra-ui/react';
 
-import type { IdeaUpdateForm, IdeasTag } from '../../../../types';
+import type { IdeaUpdateForm, IdeasTag, IdeaStatus } from '../../../../types';
 
 import NextLink from 'next/link';
 import { db } from '../../../../db';
@@ -210,6 +210,56 @@ const LinkToStory: React.FC<{ideaID: number; storyID: number;}> = ({ ideaID, sto
   );
 }
 
+const Status: React.FC<{ status: IdeaStatus; ideaID: number }> = ({ status, ideaID }) => {
+  if (status === 'active') {
+    // display 2 buttons with click handlers that
+    // - change the status to archived
+    // - change the status to completed
+    return (
+      <Flex>
+        <Button
+          type="button"
+          colorScheme={'green'}
+          marginRight={'5px'}
+          onClick={() => db.setIdeaStatus(ideaID, 'archived')}
+        >
+          Archive
+        </Button>
+        <Button
+          type="button"
+          colorScheme={'green'}
+          onClick={() => db.setIdeaStatus(ideaID, 'completed')}
+        >
+          Complete
+        </Button>
+      </Flex>
+    );
+  } else if (status === 'archived') {
+    // display a button that changes the status to active
+    return (
+      <Button
+        type="button"
+        colorScheme={'green'}
+        onClick={() => db.setIdeaStatus(ideaID, 'active')}
+      >
+        Activate
+      </Button>
+    );
+  } else if (status === 'completed') {
+    // display a button that changes the status to active
+    return (
+      <Button
+        type="button"
+        colorScheme={'green'}
+        onClick={() => db.setIdeaStatus(ideaID, 'active')}
+      >
+        Activate
+      </Button>
+    );
+  }
+  return null;
+}
+
 const defaultFormValues = {
   title: '',
   description: '',
@@ -364,6 +414,7 @@ const EditIdea: NextPageWithLayout = () => {
         {idea?
           <LinkToStory storyID={idea.storyID} ideaID={parseInt(ideaID as string)} />:
           <></>}
+        <Status status={idea.status} ideaID={parseInt(ideaID as string)} />
         <Button
           onClick={handleSubmit(onSubmit)}
           color={'white'}

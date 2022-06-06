@@ -9,7 +9,8 @@ import type {
   IdeaPreview,
   IdeaCreateForm,
   IdeaCreateRequest,
-  IdeaUpdateForm
+  IdeaUpdateForm,
+  IdeaStatus
 } from '../types';
 import { slugify } from '../lib/utils';
 import { defaultSearchValues, sortByValues as boardsSortByValues, SearchAndFilterKeys } from '../components/FilterBoards';
@@ -807,6 +808,12 @@ class IdeasDB extends Dexie {
           // console.log("sortBy value not recognized");
           return a.createdOn - b.createdOn;
       }
+    });
+  }
+
+  public async setIdeaStatus(ideaID: number, status: IdeaStatus) {
+    await this.ideas.update(ideaID, {
+      status
     });
   }
 

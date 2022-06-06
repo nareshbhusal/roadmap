@@ -20,7 +20,7 @@ export interface SearchAndFilterKeys {
   activationStatus: typeof activationStatuses[number];
 }
 
-const activationStatuses = (['active', 'completed', 'archived'] as unknown) as IdeaStatus[];
+export const activationStatuses = (['active', 'completed', 'archived'] as unknown) as IdeaStatus[];
 
 export const defaultSearchValues: SearchAndFilterKeys = {
   searchTerm: '',
