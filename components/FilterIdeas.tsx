@@ -11,16 +11,13 @@ import { IdeaStatus } from '../types';
 
 const makeFirstLetterUppercase = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-
-// TODO: Let's have the rendered values for sortByValues, activationStatuses, and tags be different than the ones in the database.
-
+// TODO: Work with these as centralised constants
 export const sortByValues = ['Most recent', 'Least effort', 'Highest impact'];
 
 export interface SearchAndFilterKeys {
   searchTerm: string;
   sortBy: typeof sortByValues[number];
   activationStatus: typeof activationStatuses[number];
-  // tag: typeof allTags[number];
 }
 
 const activationStatuses = (['active', 'completed', 'archived'] as unknown) as IdeaStatus[];

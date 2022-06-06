@@ -552,10 +552,26 @@ class IdeasDB extends Dexie {
     });
   }
 
+  public async getStories() {
+    const stories = await this.stories.toArray();
+    return stories.map(({ id, title }) => {
+      return {
+        id,
+        title,
+      }
+    });
+  }
+
   public async updateStory(storyID: number, story: any) {
     return await this.stories.update(storyID, {
       ...story,
       updatedOn: Date.now(),
+    });
+  }
+
+  public async setStoryToIdea(ideaID: number, storyID: number | null) {
+    await this.ideas.update(ideaID, {
+      storyID
     });
   }
 
@@ -711,22 +727,20 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async getIdea(ideaID: number): Promise<IdeaData | undefined> {
+  public async getIdea(ideaID: number): Promise<any> {
     const idea = await this.ideas.get(ideaID);
     // return idea, but with tagIDs replaced by actual ideasTags objects
-    if (idea) {
-      let tags = await Promise.all(idea.tagIDs.map(async (tagID: number) => {
-        const tag = await this.ideasTags.get(tagID) as IdeasTag;
-        return tag;
-      }));
-      tags = tags.filter((tag: IdeasTag | undefined) => tag !== undefined);
+    let tags = await Promise.all(idea!.tagIDs.map(async (tagID: number) => {
+      const tag = await this.ideasTags.get(tagID) as IdeasTag;
+      return tag;
+    }));
+    tags = tags.filter((tag: IdeasTag | undefined) => tag !== undefined) as IdeasTag[];
 
-      const ideaToSend = {
-        ...idea,
-        tags
-      }
-      return ideaToSend;
+    const ideaToSend = {
+      ...idea,
+      tags
     }
+    return ideaToSend;
   }
 
   public async getTotalIdeas(): Promise<number> {
@@ -805,10 +819,13 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async updateIdea(id: number, idea: IdeaUpdateForm) {
+  public async updateIdea(id: number, idea: any) {
+    const currentIdea = await this.ideas.get(id)!;
     return await this.ideas.update(id, {
       ...idea,
       updatedOn: Date.now(),
+      status: currentIdea!.status,
+      storyID: currentIdea!.storyID,
     });
   }
 }

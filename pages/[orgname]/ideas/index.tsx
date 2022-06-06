@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useState } from 'react';
 import Layout from '../../../layouts/layout';
 import { NextPageWithLayout } from '../../../types/page';
 import { useForm, useWatch } from "react-hook-form";
@@ -92,9 +93,6 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
   );
 }
 
-// TODO: Add another button on the filter section where you can select number of ideas to fetch
-// -- and obviously add pagination too
-
 const Ideas: NextPageWithLayout = () => {
   const router = useRouter();
   const { orgname } = router.query;
@@ -103,6 +101,7 @@ const Ideas: NextPageWithLayout = () => {
     handleSubmit,
     register,
     watch,
+    control,
     setValue,
     formState: { errors, isSubmitting }
   } = useForm<SearchAndFilterKeys>({
@@ -144,7 +143,7 @@ const Ideas: NextPageWithLayout = () => {
               <Stack
                 spacing={'30px'}
               >
-                <SearchAndFilters {...{register: register, setValue: setValue}} />
+                <SearchAndFilters {...{register: register, setValue: setValue, control: control}} />
                 <IdeasArea totalIdeas={totalIdeas} ideas={ideas} />
               </Stack>:
               <CreateFirstIdea {...{createNewIdea: createNewIdea}} />

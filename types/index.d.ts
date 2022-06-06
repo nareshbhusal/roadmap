@@ -38,11 +38,9 @@ export interface BoardPreview {
   archived: boolean;
 }
 
-export interface IdeaUpdateForm extends Omit<IdeaData, 'id' | 'updatedOn' | 'createdOn'> {
-  tagIDs: {
-    value: number;
-    label: string;
-  }[];
+export interface IdeaUpdateForm extends Omit<IdeaData, 'id' | 'updatedOn' | 'createdOn' | 'tags' | 'status' | 'storyID' | 'comments'> {
+  tagIDs: number[];
+  comments: { value: string }[];
 }
 
 export interface IdeaCreateForm extends Omit<IdeaUpdateForm, 'storyID' | 'status' | 'comments' | 'tags'> {}

@@ -160,6 +160,7 @@ const IdeaForm: NextPageWithLayout = () => {
       }),
     });
   }
+  console.log(watch())
 
   return (
     <Stack
