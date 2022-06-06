@@ -243,7 +243,6 @@ const EditIdea: NextPageWithLayout = () => {
   const { errors }: { errors: any } = formState;
   const router = useRouter();
   const ideaID = router.query.ideaID;
-  console.log(watch());
 
   const idea = useLiveQuery(
     () => db.getIdea(parseInt(ideaID as string)
@@ -273,7 +272,6 @@ const EditIdea: NextPageWithLayout = () => {
     idea.comments = idea.comments.map((comment: string) => {
       return { value: comment };
     });
-    console.log(idea);
     reset(idea);
   }
 

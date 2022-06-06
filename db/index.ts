@@ -790,6 +790,7 @@ class IdeasDB extends Dexie {
 
     return ideasPreviews.filter(idea => {
       return idea.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        idea.storyID === null &&
         idea.status === status;
     }).sort((a, b) => {
       switch (sortBy) {
