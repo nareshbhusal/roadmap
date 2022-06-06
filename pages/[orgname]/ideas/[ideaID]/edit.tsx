@@ -412,9 +412,11 @@ const EditIdea: NextPageWithLayout = () => {
           register={register} />
         <Comments fields={fields} append={append} remove={remove} register={register} />
         {idea?
-          <LinkToStory storyID={idea.storyID} ideaID={parseInt(ideaID as string)} />:
+          <>
+          <LinkToStory storyID={idea.storyID} ideaID={parseInt(ideaID as string)} />
+            <Status status={idea.status} ideaID={parseInt(ideaID as string)} />
+          </>:
           <></>}
-        <Status status={idea.status} ideaID={parseInt(ideaID as string)} />
         <Button
           onClick={handleSubmit(onSubmit)}
           color={'white'}
