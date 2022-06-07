@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 
 import Board from '../../../components/Board';
+import StoryModal from '../../../components/StoryModal';
 import { listIdToString } from '../../../components/Column';
 import { db } from '../../../db';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -41,6 +42,8 @@ const Kanban: NextPageWithLayout = () => {
     }
   }
 
+  const modalStoryId = parseInt(router.query.story as string);
+
   return (
     <Stack
       width={'100%'}
@@ -53,6 +56,10 @@ const Kanban: NextPageWithLayout = () => {
           <title>Roadmap</title>
         </Head>
       </Stack>
+      {modalStoryId ?
+        <StoryModal id={modalStoryId} />:
+        null
+      }
       {boardData ?
         <Stack flexGrow={1}>
           <Heading

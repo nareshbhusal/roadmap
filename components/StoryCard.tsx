@@ -2,11 +2,21 @@ import { useSortable } from "@dnd-kit/sortable";
 import {
   Flex,
   Text,
-  Button
+  Button,
+
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from '@chakra-ui/react';
 import {CSS} from '@dnd-kit/utilities';
 import { db } from '../db';
 import { StoryPreview } from '../types';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export interface CardProps {
   story: StoryPreview;
@@ -34,9 +44,27 @@ const Card: React.FC<CardProps> = ({
 
   // console.log("card: ", over?.id);
 
+  const router = useRouter();
+  const { orgname, boardId } = router.query;
+  const storyURL = `/${orgname}/roadmap/${boardId}?story=${story.id}`;
   const opacity = isDragging ? 0.5 : 1;
+  let dragged = false
 
   return (
+    <Link href={storyURL}>
+      <a
+        onPointerDown={() => {
+          dragged=false;
+        }}
+        onPointerMove={() => {
+          dragged=true;
+        }}
+        onPointerUp={() => {
+          if(!dragged) {
+            router.push(storyURL);
+          }
+        }}
+      >
     <Flex
       ref={setNodeRef}
       {...listeners}
@@ -90,6 +118,8 @@ const Card: React.FC<CardProps> = ({
         </Button>
       </Flex>
     </Flex>
+      </a>
+    </Link>
   );
 }
 
