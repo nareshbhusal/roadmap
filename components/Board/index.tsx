@@ -191,6 +191,7 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
                   <Column
                     key={list.id}
                     list={list}
+                    refreshData={refreshData}
                   >
                     <SortableContext
                       id={'story'}
@@ -203,6 +204,7 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
                         .find((l: BoardList) => l.id === list.id)!.stories.map(
                           (story: StoryPreview) => (
                             <StoryCard
+                              refreshData={refreshData}
                               key={story.id}
                               story={story}
                             />
@@ -211,7 +213,7 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
                     </SortableContext>
                   </Column>
                 ))}
-              <CreateColumn boardId={boardData.id} />
+              <CreateColumn refreshData={refreshData} boardId={boardData.id} />
             </Flex>
           </Flex>
         </SortableContext>

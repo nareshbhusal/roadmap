@@ -11,11 +11,13 @@ import { StoryPreview } from '../types';
 export interface CardProps {
   story: StoryPreview;
   isOverlay?: boolean;
+  refreshData?: Function;
 }
 
 const Card: React.FC<CardProps> = ({
   story,
-  isOverlay
+  isOverlay,
+  refreshData
 }) => {
   const {
     setNodeRef,
@@ -36,8 +38,8 @@ const Card: React.FC<CardProps> = ({
 
   return (
     <Flex
-      {...listeners}
       ref={setNodeRef}
+      {...listeners}
       borderRadius={'4px'}
       opacity={opacity}
       border={`1px solid #ccc`}
@@ -64,16 +66,20 @@ const Card: React.FC<CardProps> = ({
           // panelId,
         }}
       >
-        <Text>
+        <Text
+          onClick={isSorting ? undefined: () => window.alert(`clicked ${story.id}`)}
+        >
           {story.title}
         </Text>
         <Button
           background={'red.300'}
           color={'gray.100'}
-          onClick={() => {
-            if (window.confirm(`Delete story with id: ${story.id}?`)) {
-              db.removeStory(story.id);
-            }
+          onPointerDown={async () => {
+            console.log('delete using event pointer down')
+            // if (window.confirm(`Delete story with id: ${story.id}?`)) {
+            //   await db.removeStory(story.id);
+            //   refreshData && refreshData();
+            // }
           }}
           _hover={{
             bg: 'red',

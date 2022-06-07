@@ -42,7 +42,7 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({ children, styleProps, inn
 }
 
 
-export const CreateColumn: React.FC<{boardId: number}> = ({ boardId }) => {
+export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> = ({ boardId, refreshData }) => {
 
   return (
     <ColumnWrapper
@@ -59,6 +59,7 @@ export const CreateColumn: React.FC<{boardId: number}> = ({ boardId }) => {
           const columnName = window.prompt('Enter a column name:');
           if (columnName != null) {
             await db.addBoardList(columnName, boardId);
+            refreshData();
           } else {
             console.log('cancelled');
           }
@@ -73,7 +74,7 @@ export const CreateColumn: React.FC<{boardId: number}> = ({ boardId }) => {
 }
 
 
-export default function Panel({ list, children }: any) {
+export default function Panel({ list, children, refreshData }: any) {
   const {
     active,
     attributes,
@@ -160,6 +161,7 @@ export default function Panel({ list, children }: any) {
                   listId: listStringToId(list.id),
                   boardId: list.boardId
                 });
+                refreshData();
               }
             }}
             bg={'gray.200'}
