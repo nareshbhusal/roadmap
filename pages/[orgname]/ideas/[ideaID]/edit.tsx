@@ -284,7 +284,6 @@ const EditIdea: NextPageWithLayout = () => {
     shouldUnregister: false,
   });
 
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: "comments",
@@ -296,7 +295,7 @@ const EditIdea: NextPageWithLayout = () => {
 
   const idea = useLiveQuery(
     () => db.getIdea(parseInt(ideaID as string)
-  ));
+  ), [ideaID]);
 
   const onSubmit = async (data: any) => {
     const idea: IdeaUpdateForm = {

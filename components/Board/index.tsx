@@ -37,7 +37,7 @@ export interface ActiveDragItem {
   type: 'list' | 'story';
 };
 
-const Board: React.FC<{ boardData: any; }> = ({ boardData }) => {
+const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData, refreshData }) => {
 
   const [activeDragItem, setActiveDragItem] = useState<null | ActiveDragItem>(null);
   const [canMove, setCanMove] = useState<boolean>(true);
@@ -128,6 +128,7 @@ const Board: React.FC<{ boardData: any; }> = ({ boardData }) => {
         if (activeDragItem!.type === 'story' && overType === 'story') {
           db.moveStoryToStory(active!.id as number, over!.id as number).then(() => {
             setCanMove(true);
+            refreshData();
           });
 
         } else if (activeDragItem!.type === 'story' && overType === 'list') {
@@ -147,12 +148,14 @@ const Board: React.FC<{ boardData: any; }> = ({ boardData }) => {
           const listId = listStringToId(over!.id as string);
           db.moveStoryToList(activeDragItem!.id as number, listId, direction).then(() => {
             setCanMove(true);
+            refreshData();
           });
         } else {
           const listToMove = listStringToId(activeDragItem!.id as string);
           const listToMoveTo = listStringToId(over!.id as string);
           db.moveBoardList(listToMove, listToMoveTo).then(() => {
             setCanMove(true);
+            refreshData();
           });
         }
       }}
