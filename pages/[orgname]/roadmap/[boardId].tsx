@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 
 import Board from '../../../components/Board';
-import StoryModal from '../../../components/StoryModal';
+import StoryModal from '../../../components/StoryModal/';
 import { listIdToString } from '../../../components/Column';
 import { db } from '../../../db';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -57,7 +57,7 @@ const Kanban: NextPageWithLayout = () => {
         </Head>
       </Stack>
       {modalStoryId ?
-        <StoryModal id={modalStoryId} />:
+        <StoryModal refreshData={refreshData} id={modalStoryId} />:
         null
       }
       {boardData ?

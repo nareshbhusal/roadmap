@@ -103,6 +103,10 @@ const Boards: NextPageWithLayout = () => {
   const router = useRouter();
   const { orgname } = router.query;
 
+  // useEffect(() => {
+  //   db.addBoard('first board')
+  // }, [])
+
   const {
     handleSubmit,
     register,

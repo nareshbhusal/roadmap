@@ -563,6 +563,36 @@ class IdeasDB extends Dexie {
     });
   }
 
+  public async getStory(storyID: number) {
+    // send back the whole story
+    const story = await this.stories.get(storyID)!;
+    const detailedStory = {
+      ...story,
+      tags: await Promise.all(story!.tags.map(async tagID => {
+        const tag = await this.storiesTags.get(tagID);
+        return {
+          id: tagID,
+          text: tag!.text
+        }
+      })),
+      tasks: await Promise.all(story!.tasks.map(async taskID => {
+        const task = await this.tasks.get(taskID);
+        return {
+          id: taskID,
+          name: task!.name,
+        }
+      })),
+      ideas: await Promise.all(story!.ideas.map(async ideaID => {
+        const idea = await this.getIdea(ideaID);
+        return {
+          id: ideaID,
+          title: idea!.title,
+        }
+      })),
+    }
+    return detailedStory;
+  }
+
   public async updateStory(storyID: number, story: any) {
     return await this.stories.update(storyID, {
       ...story,
@@ -571,8 +601,29 @@ class IdeasDB extends Dexie {
   }
 
   public async setStoryToIdea(ideaID: number, storyID: number | null) {
-    await this.ideas.update(ideaID, {
-      storyID
+    const idea = await this.ideas.get(ideaID);
+    // TODO:
+
+    await this.transaction("rw", this.stories, this.ideas, async () => {
+
+      // if storyID is null, remove the ideaID from story.ideas
+      if (storyID === null) {
+        const currentStory = await this.stories.get(idea!.storyID!);
+
+        await this.stories.update(idea!.storyID!, {
+          ideas: currentStory!.ideas.filter((id: number) => id !== ideaID)
+        });
+      } else {
+        // if story is not null, add the ideaID to story.ideas
+        const story = await this.stories.get(storyID);
+        await this.stories.update(storyID, {
+          ideas: [...story!.ideas, ideaID]
+        });
+      }
+
+      await this.ideas.update(ideaID, {
+        storyID
+      });
     });
   }
 
@@ -614,7 +665,7 @@ class IdeasDB extends Dexie {
 
   public async addStoriesTag(text: string, storyID: number) {
     // use transaction: add tag to storiesTag table, to stories table, and to the board of the story with the storyID
-    await this.transaction("rw", this.storiesTags, this.stories, this.boards, async () => {
+    return await this.transaction("rw", this.storiesTags, this.stories, this.boards, async () => {
       const tagId = await this.storiesTags.add({
         text
       });
@@ -631,7 +682,21 @@ class IdeasDB extends Dexie {
       await this.boards.update(story!.boardId, {
         tags
       });
+      return tagId;
     });
+  }
+
+  public async getBoardTags(boardId: number) {
+    const board = await this.boards.get(boardId);
+    const tags = await Promise.all(board!.tags.map(async tagID => {
+      const tag = await this.storiesTags.get(tagID);
+      return {
+        id: tagID,
+        text: tag!.text
+      }
+    }
+    ));
+    return tags;
   }
 
   public async removeStory(storyID: number) {
