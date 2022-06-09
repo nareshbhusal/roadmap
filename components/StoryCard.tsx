@@ -48,21 +48,12 @@ const Card: React.FC<CardProps> = ({
   const { orgname, boardId } = router.query;
   const storyURL = `/${orgname}/roadmap/${boardId}?story=${story.id}`;
   const opacity = isDragging ? 0.5 : 1;
-  let dragged = false
 
   return (
     <Link href={storyURL}>
       <a
-        onPointerDown={() => {
-          dragged=false;
-        }}
-        onPointerMove={() => {
-          dragged=true;
-        }}
-        onPointerUp={() => {
-          if(!dragged) {
-            router.push(storyURL);
-          }
+        onClick={() => {
+          router.push(storyURL);
         }}
       >
     <Flex
@@ -99,23 +90,6 @@ const Card: React.FC<CardProps> = ({
         >
           {story.title}
         </Text>
-        <Button
-          background={'red.300'}
-          color={'gray.100'}
-          onPointerDown={async () => {
-            console.log('delete using event pointer down')
-            // if (window.confirm(`Delete story with id: ${story.id}?`)) {
-            //   await db.removeStory(story.id);
-            //   refreshData && refreshData();
-            // }
-          }}
-          _hover={{
-            bg: 'red',
-            color: '#fff'
-          }}
-        >
-          X
-        </Button>
       </Flex>
     </Flex>
       </a>

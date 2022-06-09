@@ -47,7 +47,12 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
   );
 
   const findContainer = (id: UniqueIdentifier) => {
