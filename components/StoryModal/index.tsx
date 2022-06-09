@@ -20,13 +20,10 @@ import {
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 import NextLink from 'next/link';
 import { db } from '../../db';
 import { useLiveQuery } from "dexie-react-hooks";
-import { ActionMeta, OnChangeValue } from 'react-select';
-import { default as ReactSelect } from 'react-select';
 
 import Tags from './Tags';
 import Ideas from './Ideas';
@@ -34,6 +31,8 @@ import Tasks from './Tasks';
 import Priority from './Priority';
 import Description from './Description';
 import Delete from './Delete';
+
+// TODO: On small screen, make the right and left pane stack vertically instead of side-by-side
 
 const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refreshData}) => {
   const router = useRouter();
@@ -90,7 +89,7 @@ const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refres
                 </ModalHeader>
                 <Tags storyID={id} boardId={Number(boardId)} tags={story.tags}/>
                 <Description updateHandler={updateDescription} description={story.description!}/>
-                <Tasks tasks={story.tasks}/>
+                <Tasks storyID={id} tasks={story.tasks}/>
                 <Ideas ideas={story.ideas}/>
               </Stack>
               <Stack

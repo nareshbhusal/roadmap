@@ -10,7 +10,8 @@ import type {
   IdeaCreateForm,
   IdeaCreateRequest,
   IdeaUpdateForm,
-  IdeaStatus
+  IdeaStatus,
+  Task
 } from '../types';
 import { slugify } from '../lib/utils';
 import { defaultSearchValues, sortByValues as boardsSortByValues, SearchAndFilterKeys } from '../components/FilterBoards';
@@ -51,13 +52,6 @@ export interface Story {
   tags: number[];
   tasks: number[];
   ideas: number[];
-}
-
-export interface Task {
-  id?: number;
-  storyID: number;
-  name: string;
-  isCompleted: boolean;
 }
 
 // Our app will have only one user and one organization.
@@ -580,6 +574,8 @@ class IdeasDB extends Dexie {
         return {
           id: taskID,
           name: task!.name,
+          isCompleted: task!.isCompleted,
+          position: task!.position,
         }
       })),
       ideas: await Promise.all(story!.ideas.map(async ideaID => {
@@ -627,18 +623,18 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async addTask(storyID: number, task: any) {
+  public async addTask(storyID: number, task: string) {
     await this.transaction("rw", this.stories, this.tasks, async () => {
+      const story = await this.stories.get(storyID);
       const taskId = await this.tasks.add({
         storyID,
-        ...task,
-        isCompleted: false
+        name: task,
+        isCompleted: false,
+        position: story!.tasks.length + 1
       });
-      const story = await this.stories.get(storyID);
-      const taskIDs = [...story!.tasks, taskId];
 
       await this.stories.update(storyID, {
-        tasks: taskIDs
+        tasks: [...story!.tasks, taskId]
       });
     })
   }
@@ -660,6 +656,36 @@ class IdeasDB extends Dexie {
       });
 
       await this.tasks.delete(taskID);
+    });
+  }
+
+  public async moveTask(taskID: number, destinationTaskID: number) {
+    await this.transaction("rw", this.tasks, async () => {
+      // story has a list of taskIDs inside story.tasks[], tasks have a property `position`
+      const task = await this.tasks.get(taskID);
+      const destinationTask = await this.tasks.get(destinationTaskID);
+
+      const currentPosition = task!.position;
+      const destinationPosition = destinationTask!.position;
+
+      if (currentPosition === destinationPosition) {
+        return;
+      }
+      if (currentPosition > destinationPosition) {
+        // make every task with position less than currentPosition and equals to or greater than destinationPosition incremenet position by 1
+        await this.tasks.where('storyID').equals(task!.storyID).and(r => r.position >= destinationPosition && r.position < currentPosition).modify(r => {
+          r.position++;
+        });
+      } else {
+        // make every task with position greater than currentPosition and equals to or less than destinationPosition decrement position by 1
+        await this.tasks.where('storyID').equals(task!.storyID).and(r => r.position > currentPosition && r.position <= destinationPosition).modify(r => {
+          r.position--;
+        });
+      }
+
+      await this.tasks.update(taskID, {
+        position: destinationPosition
+      });
     });
   }
 

@@ -27,6 +27,15 @@ export interface StoriesTag {
   text: string;
 }
 
+export interface Task {
+  id?: number;
+  storyID: number;
+  name: string;
+  isCompleted: boolean;
+  position: number;
+}
+
+
 // Define an interface `IdeaPreview` which will extend IdeaData, ommit `description` and making `comments` into number
 export interface IdeaPreview extends Omit<IdeaData, 'description' | 'comments'> {
   comments: number;
