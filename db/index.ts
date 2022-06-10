@@ -576,6 +576,7 @@ class IdeasDB extends Dexie {
           name: task!.name,
           isCompleted: task!.isCompleted,
           position: task!.position,
+          storyID: task!.storyID
         }
       })),
       ideas: await Promise.all(story!.ideas.map(async ideaID => {

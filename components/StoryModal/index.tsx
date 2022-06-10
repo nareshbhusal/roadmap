@@ -67,7 +67,8 @@ const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refres
             <ModalBody
               display={'flex'}
               flex={1}
-              flexDirection={'row'}
+              // if size is md or lower, flexDirection should be column, else row
+              flexDirection={{ base: 'column', md: 'row' }}
             >
               <Stack
                 p={4}

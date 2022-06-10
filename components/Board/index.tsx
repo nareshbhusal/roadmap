@@ -105,6 +105,116 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
     );
   }
 
+  const dragHandler = (
+    { active, over, handler }:
+      { active: any; over: any; handler: 'onDragEnd' | 'onDragOver'}) => {
+
+    if (!over) return;
+
+    const overType = over!.data.current!.sortable.containerId;
+
+    if (!canMove) return;
+    if (activeDragItem!.type === overType && activeDragItem!.id === over!.id) return;
+    if (activeDragItem!.type === 'list' && overType === 'story') return;
+
+    const shouldBeRunByOnDragOver = () => {
+      if (activeDragItem!.type === 'story' && overType === 'story') {
+        const isListSame = findContainer(activeDragItem!.id)!.id === findContainer(over.id)!.id;
+        if (isListSame) {
+            return false;
+        }
+      }
+      return true;
+    }
+
+    if ((shouldBeRunByOnDragOver() && handler === 'onDragOver') ||
+        (!shouldBeRunByOnDragOver() && handler === 'onDragEnd')) {
+    } else return;
+
+    // to prevent these set of db calls if the last call of the kind hasn't finished yet
+    // we're limiting the drags to one request per backend at a time, not ideal but it's ok for now
+    setCanMove(false);
+    if (activeDragItem!.type === 'story' && overType === 'story') {
+
+      if (handler === 'onDragEnd') {
+        // Calculate and update board state locally to prevent render issues while
+        // the data from db gets refetched
+        // -- all of this is done when both stories are on the same list
+        // -- - db calls run only on onDragEnd not onDragOver
+        let updatedList = findContainer(activeDragItem!.id)!;
+        const draggingStory = updatedList.stories.find((story: StoryPreview) => {
+          return story.id === activeDragItem!.id;
+        })!;
+        const overStory = updatedList.stories.find((story: StoryPreview) => {
+          return story.id === over.id;
+        })!;
+
+        const currentPosition = draggingStory.position;
+        const destinationPosition = overStory.position;
+        if (currentPosition === destinationPosition) return;
+
+        if (currentPosition < destinationPosition) {
+          updatedList.stories = updatedList.stories.map((story: StoryPreview) => {
+            if (story.position > currentPosition && story.position <= destinationPosition) {
+              story.position -= 1;
+            }
+            return story;
+          });
+        } else {
+          updatedList.stories = updatedList.stories.map((story: StoryPreview) => {
+            if (story.position >= destinationPosition && story.position < currentPosition) {
+              story.position += 1;
+            }
+            return story;
+          });
+        }
+
+        draggingStory.position = destinationPosition;
+        boardData.lists = boardData.lists.map((list: BoardList) => {
+          if (list.id === updatedList.id) {
+            return updatedList;
+          }
+          return list;
+        });
+      }
+
+      db.moveStoryToStory(active!.id as number, over!.id as number).then(() => {
+        setCanMove(true);
+        refreshData();
+      });
+
+    } else if (activeDragItem!.type === 'story' && overType === 'list') {
+      const headerElement = document.querySelector(`.${over.id} .column-header`) as HTMLElement;
+      const footerElement = document.querySelector(`.${over.id} .column-footer`) as HTMLElement;
+      const dragElement = document.querySelector('.story-overlay') as HTMLElement;
+      let direction: 'top' | 'bottom' = 'bottom';
+
+      if (getDistanceBetweenElements(dragElement, headerElement) <
+          getDistanceBetweenElements(dragElement, footerElement))
+        {
+          direction = 'top';
+        } else {
+          direction = 'bottom';
+        }
+
+        const listId = listStringToId(over!.id as string);
+        db.moveStoryToList(activeDragItem!.id as number, listId, direction).then(() => {
+          setCanMove(true);
+          refreshData();
+        });
+    } else {
+      const listToMove = listStringToId(activeDragItem!.id as string);
+      const listToMoveTo = listStringToId(over!.id as string);
+      db.moveBoardList(listToMove, listToMoveTo).then(() => {
+        setCanMove(true);
+        refreshData();
+      });
+    }
+    if(handler === 'onDragEnd') {
+      setActiveDragItem(null);
+    }
+  }
+
   return (
     <DndContext
       sensors={sensors}
@@ -116,56 +226,13 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
           id: active.id,
         });
       }}
-      onDragOver={({ active, over }) => {
-        if (!over) return;
-        const overType = over!.data.current!.sortable.containerId;
-        if (activeDragItem!.type === overType && activeDragItem!.id === over!.id) {
-          return;
-        }
-        if (activeDragItem!.type === 'list' && overType === 'story') {
-          return;
-        }
-        if (!canMove) return;
-
-        // to prevent these set of db calls if the last call of the kind hasn't finished yet
-        // we're limiting the drags to one request per backend at a time, not ideal but it's ok for now
-        setCanMove(false);
-        if (activeDragItem!.type === 'story' && overType === 'story') {
-          db.moveStoryToStory(active!.id as number, over!.id as number).then(() => {
-            setCanMove(true);
-            refreshData();
-          });
-
-        } else if (activeDragItem!.type === 'story' && overType === 'list') {
-          const headerElement = document.querySelector(`.${over.id} .column-header`) as HTMLElement;
-          const footerElement = document.querySelector(`.${over.id} .column-footer`) as HTMLElement;
-          const dragElement = document.querySelector('.story-overlay') as HTMLElement;
-          let direction: 'top' | 'bottom' = 'bottom';
-
-          if (getDistanceBetweenElements(dragElement, headerElement) <
-              getDistanceBetweenElements(dragElement, footerElement))
-            {
-              direction = 'top';
-            } else {
-              direction = 'bottom';
-            }
-
-          const listId = listStringToId(over!.id as string);
-          db.moveStoryToList(activeDragItem!.id as number, listId, direction).then(() => {
-            setCanMove(true);
-            refreshData();
-          });
-        } else {
-          const listToMove = listStringToId(activeDragItem!.id as string);
-          const listToMoveTo = listStringToId(over!.id as string);
-          db.moveBoardList(listToMove, listToMoveTo).then(() => {
-            setCanMove(true);
-            refreshData();
-          });
-        }
-      }}
+      onDragEnd={(event) =>
+        dragHandler({ ...event, handler: 'onDragEnd' })
+      }
       onDragCancel={onDragCancel}
-      onDragEnd={handleDragEnd}
+      onDragOver={(event) =>
+        dragHandler({ ...event, handler: 'onDragOver' })
+      }
     >
       <Flex
         height={'100%'}
