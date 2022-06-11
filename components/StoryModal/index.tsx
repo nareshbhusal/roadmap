@@ -32,6 +32,8 @@ import Priority from './Priority';
 import Description from './Description';
 import Delete from './Delete';
 
+import { PriorityValue } from '../../types';
+
 // TODO: On small screen, make the right and left pane stack vertically instead of side-by-side
 
 const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refreshData}) => {
@@ -101,7 +103,9 @@ const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refres
                 p={4}
               >
                 <Delete refreshData={refreshData} />
-                <Priority id={story.id!} priority={parseInt(story.priority!)} />
+                <Priority
+                  id={story.id!}
+                  priority={Number(story.priority!) as PriorityValue} />
 
               </Stack>
             </ModalBody>

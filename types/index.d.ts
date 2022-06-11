@@ -35,6 +35,8 @@ export interface Task {
   position: number;
 }
 
+export type PriorityValue = 1 | 2 | 3 | 4 | 5;
+// export type PriorityValue = '1' | '2' | '3' | '4' | '5';
 
 // Define an interface `IdeaPreview` which will extend IdeaData, ommit `description` and making `comments` into number
 export interface IdeaPreview extends Omit<IdeaData, 'description' | 'comments'> {

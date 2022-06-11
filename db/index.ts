@@ -11,7 +11,8 @@ import type {
   IdeaCreateRequest,
   IdeaUpdateForm,
   IdeaStatus,
-  Task
+  Task,
+  PriorityValue
 } from '../types';
 import { slugify } from '../lib/utils';
 import { defaultSearchValues, sortByValues as boardsSortByValues, SearchAndFilterKeys } from '../components/FilterBoards';
@@ -46,7 +47,7 @@ export interface Story {
   description: string;
   createdOn: number;
   updatedOn: number;
-  priority: '1' | '2' | '3' | '4' | '5';
+  priority: PriorityValue;
   boardId: number;
   listId: number;
   tags: number[];
@@ -537,7 +538,7 @@ class IdeasDB extends Dexie {
       tags: [],
       tasks: [],
       ideas: [],
-      priority: '1',
+      priority: 1,
       description: '',
       position
     });
