@@ -258,7 +258,6 @@ class IdeasDB extends Dexie {
   }
 
   public async getStoryPreview(storyID: number) {
-    // TODO: Doing this
     const story = await this.stories.get(storyID);
     // replace tags with actual tags instead of ids
     const tags = await this.storiesTags.where('id').anyOf(story!.tags).toArray();
@@ -272,7 +271,8 @@ class IdeasDB extends Dexie {
       tasks: {
         done: tasks.filter(task => task.isCompleted).length,
         total: tasks.length
-      }
+      },
+      description: story!.description.length > 0
     }
     return storyPreview;
   }

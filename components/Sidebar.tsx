@@ -14,6 +14,8 @@ import Logo from './Logo';
 import SidebarLink, { LINK_MARGIN_LEFT, SidebarExternalLink } from './SidebarLink';
 import { defaultSearchValues } from '../components/FilterBoards';
 
+// TODO: Add option to close and open sidebar
+
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const { orgname } = router.query;
