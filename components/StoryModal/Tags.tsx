@@ -19,6 +19,7 @@ import { StoriesTag } from '../../types';
 import { SmallCloseIcon } from '@chakra-ui/icons';
 
 // TODO: Add ability to click on tag to edit or delete it entirely
+// TODO: Add color mechanism to tags
 
 const StoryTag = ({ tag, removeProps }: any) => {
   return (
@@ -65,7 +66,8 @@ const StoryTag = ({ tag, removeProps }: any) => {
 
 const Option = (props: any) => {
   const { innerRef, innerProps } = props;
-  console.log(props)
+  const isNew = props.data.__isNew__;
+
   return (
     <Flex
       {...props.getStyles('option', props)}
@@ -78,7 +80,15 @@ const Option = (props: any) => {
       mr={'auto'}
       ref={innerRef}>
       <Flex
+        alignItems={'center'}
       >
+        {isNew ?
+        <Text
+          mr={'3px'}
+          fontSize={'sm'}>
+          Add
+        </Text> :
+        null}
         <Tag
           padding={'0.3rem 0.5rem'}
           colorScheme={'teal'}
@@ -86,7 +96,7 @@ const Option = (props: any) => {
           borderRadius={'1rem'}
           alignSelf={'flex-start'}
         >
-            {props.label}
+          {isNew? props.value : props.label}
         </Tag>
       </Flex>
     </Flex>
@@ -175,10 +185,13 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
               isMulti
               isClearable={false}
               placeholder={'Add tags'}
+              backspaceRemovesValue={false}
+              closeMenuOnScroll={false}
+              noOptionsMessage={() => <p>No tags found</p>}
               name="tagIDs"
               components={{
                 MultiValue ,
-                Option
+                Option,
               }}
               defaultValue={selectedTags}
               options={allTags.map((tag: StoriesTag) => {
