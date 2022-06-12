@@ -95,9 +95,6 @@ const Option = (props: any) => {
 
 const MultiValue = (props: any) => {
   const { innerRef, innerProps } = props;
-  // BUG: What's with this rendering/update issue
-  console.log('rendering multivalue component of react-select')
-  // console.log(props)
   return (
     <Flex
       {...props.getStyles('multiValue', props)}
@@ -121,11 +118,15 @@ const MultiValue = (props: any) => {
   );
 }
 
-const Tags: React.FC<{ tags: any[], boardId: number; storyID: number; }> = ({ tags, boardId, storyID }) => {
+export interface TagsProps {
+ tags: StoriesTag[];
+ storyID: number;
+ allTags: any[];
+}
 
-  const allStoriesTags = useLiveQuery(
-    () => db.getBoardTags(boardId)
-  );
+// TODO: Some more changes needed to the selector
+
+const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
 
   const selectedTags = tags.map(tag => {
     return {
@@ -138,7 +139,7 @@ const Tags: React.FC<{ tags: any[], boardId: number; storyID: number; }> = ({ ta
   const changeHandler = async (values: any) => {
 
     // see if all values exists in allStoriesTags
-    const isTagCreated = !values.every((v: any) => allStoriesTags!.some((tag: StoriesTag) => tag.id === v.value));
+    const isTagCreated = !values.every((v: any) => allTags!.some((tag: StoriesTag) => tag.id === v.value));
 
     if (isTagCreated) {
       const newTagLabel = values[values.length - 1].label;
@@ -169,7 +170,7 @@ const Tags: React.FC<{ tags: any[], boardId: number; storyID: number; }> = ({ ta
           flexDirection={'column'}
           width={'auto'}
           justifyContent={'flex-left'}>
-          {selectedTags && allStoriesTags?
+          {selectedTags && allTags?
             <CreatableSelect
               isMulti
               isClearable={false}
@@ -180,7 +181,7 @@ const Tags: React.FC<{ tags: any[], boardId: number; storyID: number; }> = ({ ta
                 Option
               }}
               defaultValue={selectedTags}
-              options={allStoriesTags.map((tag: StoriesTag) => {
+              options={allTags.map((tag: StoriesTag) => {
                 return {
                   value: tag.id,
                   label: tag.text

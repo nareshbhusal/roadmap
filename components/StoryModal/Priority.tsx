@@ -90,7 +90,6 @@ const Priority: React.FC<{ id: number; priority: PriorityValue; }> = ({ id, prio
     value: v.value,
     label: v.text,
   }))
-  console.log('running Priority component');
 
   return (
     <Stack spacing={'10px'}>

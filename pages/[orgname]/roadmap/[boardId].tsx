@@ -56,8 +56,8 @@ const Kanban: NextPageWithLayout = () => {
           <title>Roadmap</title>
         </Head>
       </Stack>
-      {modalStoryId ?
-        <StoryModal refreshData={refreshData} id={modalStoryId} />:
+      {modalStoryId && data ?
+        <StoryModal tags={data.tags} refreshData={refreshData} id={modalStoryId} />:
         null
       }
       {boardData ?

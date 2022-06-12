@@ -18,7 +18,7 @@ import {
   ModalCloseButton,
 } from '@chakra-ui/react';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 
 import NextLink from 'next/link';
@@ -32,12 +32,9 @@ import Priority from './Priority';
 import Description from './Description';
 import Delete from './Delete';
 
-import { PriorityValue } from '../../types';
+import { PriorityValue, StoriesTag } from '../../types';
 
-// TODO: On small screen, make the right and left pane stack vertically instead of side-by-side
-// BUG: Any update in any of the children components is causing the entire tree to re-render in continuos loop
-
-const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refreshData}) => {
+const StoryModal: React.FC<{id: number; refreshData: Function; tags: StoriesTag[]}> = ({ id, refreshData, tags}) => {
   const router = useRouter();
   const { orgname, boardId } = router.query;
 
@@ -45,13 +42,12 @@ const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refres
     () =>
       db.getStory(id)
   );
-  console.log('running StoryModal component');
 
-  const updateTitle = (e: any) => {
-    db.updateStory(id, { title: e.target.innerText });
+  const updateTitle = async (e: any) => {
+    await db.updateStory(id, { title: e.target.innerText });
   };
-  const updateDescription = (e: any) => {
-    db.updateStory(id, { description: e.target.innerHTML });
+  const updateDescription = async (e: any) => {
+    await db.updateStory(id, { description: e.target.innerHTML });
   }
 
   return (
@@ -92,7 +88,9 @@ const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refres
                   contentEditable={true}>
                   {story.title}
                 </ModalHeader>
-                <Tags storyID={id} boardId={Number(boardId)} tags={story.tags}/>
+
+                <Tags storyID={id} allTags={tags} tags={story.tags}/>
+
                 <Description updateHandler={updateDescription} description={story.description!}/>
                 <Tasks storyID={id} tasks={story.tasks}/>
                 <Ideas ideas={story.ideas}/>

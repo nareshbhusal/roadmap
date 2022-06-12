@@ -308,7 +308,6 @@ class IdeasDB extends Dexie {
 
     // get stories using getStoryPreview and attach to board lists
 
-
     const lists = await Promise.all(boardLists.map(async (boardList) => {
       return {
         ...boardList,
@@ -318,6 +317,7 @@ class IdeasDB extends Dexie {
       }
     }));
 
+    const tags = await this.getBoardTags(boardId);
     // update board's lastAccessed
     await this.boards.update(boardId, {
       lastAccessed: Date.now()
@@ -325,7 +325,8 @@ class IdeasDB extends Dexie {
 
     return {
       ...board,
-      lists
+      lists,
+      tags
     }
   }
 
