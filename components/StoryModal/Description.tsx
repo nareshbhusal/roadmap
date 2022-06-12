@@ -18,6 +18,7 @@ export interface DescriptionProps {
 const Description: React.FC<DescriptionProps> = ({ description, updateHandler }) => {
 
   const descriptionRef = useRef(null);
+  console.log('running Description component');
 
   return (
     <Stack spacing={'10px'}>

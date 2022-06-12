@@ -35,6 +35,7 @@ import Delete from './Delete';
 import { PriorityValue } from '../../types';
 
 // TODO: On small screen, make the right and left pane stack vertically instead of side-by-side
+// BUG: Any update in any of the children components is causing the entire tree to re-render in continuos loop
 
 const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refreshData}) => {
   const router = useRouter();
@@ -44,6 +45,7 @@ const StoryModal: React.FC<{id: number; refreshData: Function;}> = ({ id, refres
     () =>
       db.getStory(id)
   );
+  console.log('running StoryModal component');
 
   const updateTitle = (e: any) => {
     db.updateStory(id, { title: e.target.innerText });
