@@ -74,13 +74,14 @@ const Tags: React.FC<any> = ({ tags }) => {
     return null;
   }
   return (
-    <Flex>
+    <Flex wrap={'wrap'}>
       {tags.map((tag: StoriesTag) => (
         <Tag
           key={tag.id}
           fontSize={'xs'}
           variant={'subtle'}
           mr={'2px'}
+          mb={'2px'}
           borderRadius={'10px'}
           p={'0.2rem 0.5rem'}
           colorScheme="teal">
