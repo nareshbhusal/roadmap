@@ -14,6 +14,8 @@ import { PrioritiesMappingArray } from '../../lib/constants';
 import { PriorityValue } from '../../types';
 import StoryPriority from '../StoryPriority';
 
+// NOTE: What about the contrast between the background and the flag icon?
+
 const customStyles = {
   option: (provided: any, state: any) => {
     return  {...provided,
