@@ -12,6 +12,7 @@ import Button from "./components/button";
 import Link from "./components/link";
 import Heading from "./components/heading";
 import Badge from "./components/badge";
+import Popover from "./components/popover";
 
 
 const overrides = {
@@ -25,7 +26,8 @@ const overrides = {
     Button,
     Link,
     Heading,
-    Badge
+    Badge,
+    Popover
     // Other components go here
   },
 };

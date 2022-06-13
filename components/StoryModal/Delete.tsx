@@ -26,6 +26,7 @@ import {
   AlertDialogOverlay,
   useDisclosure
 } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
@@ -51,6 +52,7 @@ const Delete: React.FC<{ refreshData: Function }> = ({ refreshData }) => {
         variant={'outline'}
         colorScheme='red'
         onClick={onOpen}>
+        <DeleteIcon mr={'3px'} />
         Delete Story
       </Button>
 

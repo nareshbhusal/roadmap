@@ -4,6 +4,7 @@ import {
   Box,
   HStack,
   Button,
+  ButtonGroup,
   Stack,
   Heading,
   IconButton,
@@ -11,76 +12,141 @@ import {
   CheckboxGroup,
   Tag,
   Input,
+  FormControl,
+  FormLabel,
 
   Popover,
-  PopoverTrigger,
   PopoverContent,
   PopoverHeader,
   PopoverBody,
-  PopoverFooter,
   PopoverArrow,
   PopoverCloseButton,
   PopoverAnchor,
-  useDisclosure
+  useBoolean,
 } from '@chakra-ui/react';
 
 import NextLink from 'next/link';
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import { db } from '../../db';
 import CreatableSelect from 'react-select/creatable';
 import { components } from 'react-select';
 import { StoriesTag } from '../../types';
 import { SmallCloseIcon, AddIcon, SmallAddIcon } from '@chakra-ui/icons';
 
-// TODO: Add ability to click on tag to edit or delete it entirely
 // TODO: Add color mechanism to tags
+// TODO: Refactor into files like /Tasks
 
+const TagEditForm = ({ tag, firstFieldRef, closeForm }: any) => {
+  const [name, setName] = useState(tag.label);
+  const [color, setColor] = useState(tag.color);
 
-const Form = (props: any) => {
+  const router = useRouter();
+  const boardId = parseInt(router.query.boardId as string);
+
+  const deleteTagHandler = async () => {
+    await db.removeStoriesTag(tag.value, boardId);
+    closeForm();
+  }
+  const submitHandler = async () => {
+    await db.editStoriesTag(tag.value, name);
+    closeForm();
+  }
+
   return (
     <Stack
+      minWidth={'100px'}
+      spacing={2}
     >
-      <Text>
-        form
-      </Text>
+      <FormControl>
+        <FormLabel htmlFor={'tag-name'}>Name</FormLabel>
+        <Input
+          id={'tag-name'}
+          ref={firstFieldRef}
+          defaultValue={name}
+          size={'sm'}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </FormControl>
+        <ButtonGroup display='flex' justifyContent='flex-end'>
+          <Button
+            colorScheme={'red'}
+            size={'sm'}
+            variant={'outline'}
+            onClick={deleteTagHandler}
+          >
+            Delete
+          </Button>
+          <Button
+            colorScheme={'blue'}
+            size={'sm'}
+            onClick={submitHandler}
+          >
+            Save
+          </Button>
+        </ButtonGroup>
     </Stack>
   );
 }
 
 const StoryTag = ({ tag, removeHandler }: any) => {
-  const { onOpen, onClose, isOpen } = useDisclosure();
+  const [ isOpen, setIsOpen ] = useBoolean(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const firstFieldRef = useRef<HTMLInputElement>(null);
+  const tagRef = useRef<HTMLDivElement>(null);
+
   return (
     <Popover
       isOpen={isOpen}
-      onOpen={onOpen}
-      onClose={onClose}
-      placement='right'
+      onOpen={setIsOpen.on}
+      onClose={setIsOpen.off}
+      placement='bottom'
       closeOnBlur={true}
+      // initialFocusRef={firstFieldRef}
+      arrowSize={13}
+      returnFocusOnClose={false}
+      size={'sm'}
+      variant='responsive'
     >
-      <PopoverTrigger>
+      <PopoverAnchor>
         <Tag
           padding={'0.45rem 0.45rem'}
           colorScheme={'teal'}
+          ref={tagRef}
           variant={'subtle'}
           mb={'3px'}
           size={'sm'}
           mr={'3px'}
           borderRadius={'1rem'}
           display={'flex'}
-          onClick={() => {
-            if (isOpen) {
-              // onClose();
-            } else {
-              onOpen();
-            }
+          cursor={'default'}
+          onClick={(e) => {
+            console.log('clicked');
+            if (e.target === closeButtonRef.current ||
+                closeButtonRef.current!.contains(e.target)
+               ) {
+                 console.log('clicked close button');
+                 if (isOpen) {
+                   setIsOpen.off();
+                 }
+                 return;
+               }
+               console.log('===')
+               console.log(`isOpen: ${isOpen}`);
+               if (isOpen){
+                 return setIsOpen.off();
+               }
+               setIsOpen.on();
+               console.log(`isOpen: ${isOpen}`);
+               console.log('===')
           }}
         >
-          <Text>
             {tag.label}
-          </Text>
           <IconButton
             aria-label={'Delete tag'}
             icon={<SmallCloseIcon />}
             padding={'1px 0px'}
+            ref={closeButtonRef}
             height={'auto'}
             width={'auto'}
             size={'xs'}
@@ -100,11 +166,20 @@ const StoryTag = ({ tag, removeHandler }: any) => {
             onClick={removeHandler}
           />
         </Tag>
-      </PopoverTrigger>
-      <PopoverContent p={5}>
+      </PopoverAnchor>
+      <PopoverContent w={'inherit'}>
         <PopoverArrow />
         <PopoverCloseButton />
-        <Form onCancel={onClose} />
+        <PopoverHeader>
+          Edit Tag
+        </PopoverHeader>
+        <PopoverBody>
+          <TagEditForm
+            closeForm={() => {
+              setIsOpen.off();
+            }}
+            firstFieldRef={firstFieldRef} tag={tag} />
+        </PopoverBody>
       </PopoverContent>
     </Popover>
   );
@@ -180,15 +255,16 @@ export interface TagsProps {
   allTags: any[];
 }
 
-
 const customStyles = {
   menu: (base: any) => ({
     ...base,
     width: "max-content",
   }),
+  control: (base: any) => ({
+    ...base,
+    cursor: 'pointer'
+  }),
 }
-
-// https://stackoverflow.com/questions/61895814/keeping-placeholder-on-react-select
 
 const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
 
@@ -224,6 +300,13 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
     await db.updateStory(storyID, {
       tags: newTags.map((v: any) => v.value)
     });
+  }
+
+  const noOptionsMessage = () => {
+    if (allTags.length === 0){
+      return <p>No tags found</p>;
+    }
+    return <p>Type to create new tag</p>;
   }
 
   return (
@@ -268,7 +351,7 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
                 styles={customStyles}
                 backspaceRemovesValue={false}
                 closeMenuOnScroll={false}
-                noOptionsMessage={() => <p>No tags found</p>}
+                noOptionsMessage={noOptionsMessage}
                 name="tagIDs"
                 components={{
                   MultiValue: () => null,

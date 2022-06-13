@@ -750,31 +750,38 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async removeStoriesTag(tagID: number, boardID: number) {
+  public async removeStoriesTag(tagID: number, boardId: number) {
     // remove the storiesTag with tagID from the storiesTag table, and from the board table with boardID, and from
     // every stories in that board with the tagID
     await this.transaction("rw", this.storiesTags, this.boards, this.stories, async () => {
-      const story = await this.stories.get(tagID);
-      const board = await this.boards.get(story!.boardId);
-      const tagIDs = board!.tags.filter(id => id !== tagID);
+      const board = await this.boards.get(boardId);
 
-      await this.boards.update(story!.boardId, {
-        tags: tagIDs
+      // remove from board
+      await this.boards.update(boardId, {
+        tags: board!.tags.filter(id => id !== tagID)
       });
 
       await this.storiesTags.delete(tagID);
 
-      // remove the tag from every stories of the boardID that has the tag
+      // remove the tag from all stories with the board id boardID that has the tag
       const stories = await this.stories.where({
-        boardId: boardID
+        boardId: boardId
       }).toArray();
 
       for (const story of stories) {
-        const tagIDs = story!.tags.filter(id => id !== tagID);
-        await this.stories.update(story!.id!, {
-          tags: tagIDs
-        });
+        if (story!.tags.includes(tagID)) {
+          const tagIDs = story!.tags.filter(id => id !== tagID);
+          await this.stories.update(story!.id!, {
+            tags: tagIDs
+          });
+        }
       }
+    });
+  }
+
+  public async editStoriesTag(tagID: number, text: string) {
+    await this.storiesTags.update(tagID, {
+      text
     });
   }
 
