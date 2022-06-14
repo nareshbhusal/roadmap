@@ -3,188 +3,21 @@ import {
   Text,
   Box,
   HStack,
-  Button,
-  ButtonGroup,
   Stack,
   Heading,
-  IconButton,
-  Checkbox,
-  CheckboxGroup,
   Tag,
-  Input,
-  FormControl,
-  FormLabel,
-
-  Popover,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverAnchor,
-  useBoolean,
 } from '@chakra-ui/react';
 
 import NextLink from 'next/link';
-import { useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import { db } from '../../db';
+import { db } from '../../../db';
 import CreatableSelect from 'react-select/creatable';
 import { components } from 'react-select';
-import { StoriesTag } from '../../types';
-import { SmallCloseIcon, AddIcon, SmallAddIcon } from '@chakra-ui/icons';
+import { StoriesTag } from '../../../types';
+import { SmallAddIcon } from '@chakra-ui/icons';
+import StoryTag from './StoryTag';
 
 // TODO: Add color mechanism to tags
 // TODO: Refactor into files like /Tasks
-
-const TagEditForm = ({ tag, firstFieldRef, closeForm }: any) => {
-  const [name, setName] = useState(tag.label);
-  const [color, setColor] = useState(tag.color);
-
-  const router = useRouter();
-  const boardId = parseInt(router.query.boardId as string);
-
-  const deleteTagHandler = async () => {
-    await db.removeStoriesTag(tag.value, boardId);
-    closeForm();
-  }
-  const submitHandler = async () => {
-    await db.editStoriesTag(tag.value, name);
-    closeForm();
-  }
-
-  return (
-    <Stack
-      minWidth={'100px'}
-      spacing={2}
-    >
-      <FormControl>
-        <FormLabel htmlFor={'tag-name'}>Name</FormLabel>
-        <Input
-          id={'tag-name'}
-          ref={firstFieldRef}
-          defaultValue={name}
-          size={'sm'}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </FormControl>
-        <ButtonGroup display='flex' justifyContent='flex-end'>
-          <Button
-            colorScheme={'red'}
-            size={'sm'}
-            variant={'outline'}
-            onClick={deleteTagHandler}
-          >
-            Delete
-          </Button>
-          <Button
-            colorScheme={'blue'}
-            size={'sm'}
-            onClick={submitHandler}
-          >
-            Save
-          </Button>
-        </ButtonGroup>
-    </Stack>
-  );
-}
-
-const StoryTag = ({ tag, removeHandler }: any) => {
-  const [ isOpen, setIsOpen ] = useBoolean(false);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const firstFieldRef = useRef<HTMLInputElement>(null);
-  const tagRef = useRef<HTMLDivElement>(null);
-
-  return (
-    <Popover
-      isOpen={isOpen}
-      onOpen={setIsOpen.on}
-      onClose={setIsOpen.off}
-      placement='bottom'
-      closeOnBlur={true}
-      // initialFocusRef={firstFieldRef}
-      arrowSize={13}
-      returnFocusOnClose={false}
-      size={'sm'}
-      variant='responsive'
-    >
-      <PopoverAnchor>
-        <Tag
-          padding={'0.45rem 0.45rem'}
-          colorScheme={'teal'}
-          ref={tagRef}
-          variant={'subtle'}
-          mb={'3px'}
-          size={'sm'}
-          mr={'3px'}
-          borderRadius={'1rem'}
-          display={'flex'}
-          cursor={'default'}
-          onClick={(e) => {
-            console.log('clicked');
-            if (e.target === closeButtonRef.current ||
-                closeButtonRef.current!.contains(e.target)
-               ) {
-                 console.log('clicked close button');
-                 if (isOpen) {
-                   setIsOpen.off();
-                 }
-                 return;
-               }
-               console.log('===')
-               console.log(`isOpen: ${isOpen}`);
-               if (isOpen){
-                 return setIsOpen.off();
-               }
-               setIsOpen.on();
-               console.log(`isOpen: ${isOpen}`);
-               console.log('===')
-          }}
-        >
-            {tag.label}
-          <IconButton
-            aria-label={'Delete tag'}
-            icon={<SmallCloseIcon />}
-            padding={'1px 0px'}
-            ref={closeButtonRef}
-            height={'auto'}
-            width={'auto'}
-            size={'xs'}
-            isRound={true}
-            m={0}
-            backgroundColor={'transparent'}
-            _hover={{
-              backgroundColor: 'transparent',
-            }}
-            _focus={{
-              backgroundColor: 'transparent',
-            }}
-            _active={{
-              backgroundColor: 'transparent',
-            }}
-            className={'remove-tag-button'}
-            onClick={removeHandler}
-          />
-        </Tag>
-      </PopoverAnchor>
-      <PopoverContent w={'inherit'}>
-        <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader>
-          Edit Tag
-        </PopoverHeader>
-        <PopoverBody>
-          <TagEditForm
-            closeForm={() => {
-              setIsOpen.off();
-            }}
-            firstFieldRef={firstFieldRef} tag={tag} />
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
 
 const Option = (props: any) => {
   const { innerRef, innerProps } = props;

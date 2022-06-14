@@ -26,3 +26,16 @@ export const PrioritiesMappingArray = [
     color: 'red.500'
   },
 ];
+
+export const TAG_COLORS = [
+  'red',
+  'pink',
+  'purple',
+  'blue',
+  'green',
+  'orange',
+  'yellow',
+  'teal',
+  'telegram',
+  'gray'
+]

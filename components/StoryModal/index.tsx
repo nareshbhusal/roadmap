@@ -25,7 +25,7 @@ import NextLink from 'next/link';
 import { db } from '../../db';
 import { useLiveQuery } from "dexie-react-hooks";
 
-import Tags from './Tags';
+import Tags from './Tags/';
 import Ideas from './Ideas';
 import Tasks from './Tasks';
 import Priority from './Priority';
