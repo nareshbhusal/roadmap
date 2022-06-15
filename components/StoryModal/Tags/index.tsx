@@ -111,7 +111,6 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
       color: tag.color,
     }
   });
-  console.log('running Tags component');
 
   const changeHandler = async (values: any) => {
 

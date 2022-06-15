@@ -1,29 +1,30 @@
 import { useEffect } from 'react';
+import { createPortal } from "react-dom";
 import {
   Stack,
   Flex,
-  Box,
   Heading,
   Text,
   HStack,
   Input,
-  Button,
-  Checkbox,
-  CheckboxGroup
+  IconButton
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon, PlusSquareIcon, SmallCloseIcon, CheckIcon } from '@chakra-ui/icons';
 import { Task as TaskType } from '../../../types';
 
 import {
   DndContext,
   closestCenter,
+  defaultDropAnimation,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
+  UniqueIdentifier,
+  MouseSensor,
+  TouchSensor
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -33,14 +34,14 @@ import { db } from '../../../db';
 import { useState, useRef } from 'react';
 import Task from './Task';
 
-// TODO: Input elements not receiving focus
-// TODO: Add DragOverlay
+import { GrFormClose } from 'react-icons/gr';
+import { MdCheck, MdAddBox } from 'react-icons/md';
 
 const Tasks: React.FC<{ storyID: number; tasks: TaskType[] }> = ({ storyID, tasks }) => {
-  // tasks is a list of tasks objects that have a property called 'id' and 'name' and 'isCompleted', and position
-  // render a list of tasks as checklists that can be completed or not completed
+
   const [newTaskOpen, setNewTaskOpen] = useState<boolean>(false);
   const newTaskRef = useRef<HTMLInputElement>(null);
+  const [activeDragId, setActiveDragId] = useState<UniqueIdentifier | null>(null);
 
   const addTask = async () => {
     if (newTaskRef.current?.value) {
@@ -50,30 +51,72 @@ const Tasks: React.FC<{ storyID: number; tasks: TaskType[] }> = ({ storyID, task
   }
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
+    useSensor(PointerSensor),
   );
+
+  const renderSortableCardDragOverlay = (dragId: UniqueIdentifier) => {
+    return (
+      <Task
+        isOverlay={true}
+        task={tasks.find(task => task.id == dragId) as any} />
+    );
+  }
 
   let lastDragProcessed = true;
   const handleDragEnd = async ({ active, over }: any) => {
-    // BUG:: running this on onDragOver doesn't work as intended,
-    // likely because of all the requests that have to be processed for all
-    // the dragovers that take place between the start and the destination positions
-    // -- Passing to onDragEnd works except the rendering is funny as the item first
-    // goes back to where it came from, and then goes to the destination after the request is processed
-    // and new data comes in
-    if (lastDragProcessed){
-      lastDragProcessed = false;
-      await db.moveTask(active.id, over.id);
-      lastDragProcessed = true;
+    if (!lastDragProcessed) return;
+
+    // modify local state
+    const draggingTask = tasks.find(task => task.id === active.id);
+    const overTask = tasks.find(task => task.id === over.id);
+    if (!draggingTask || !overTask) return;
+    if (draggingTask.id === overTask.id) return;
+
+    const currentPosition = draggingTask.position;
+    const destinationPosition = overTask.position;
+    if (currentPosition === destinationPosition) return;
+
+    lastDragProcessed = false;
+
+    let updatedTasks = tasks;
+
+    if (currentPosition < destinationPosition) {
+      updatedTasks = updatedTasks.map((task: any) => {
+        if (task.position > currentPosition && task.position <= destinationPosition) {
+          task.position -= 1;
+        }
+        return task;
+      });
     } else {
-      console.log('==waiting==')
+      updatedTasks = updatedTasks.map((task: any) => {
+        if (task.position >= destinationPosition && task.position < currentPosition) {
+          task.position += 1;
+        }
+        return task;
+      });
     }
+
+    updatedTasks.find(task => task.id === draggingTask.id)!.position = destinationPosition;
+    tasks = updatedTasks;
+    // console.log('client updated tasks');
+    // console.log(tasks);
+
+    await db.moveTask(active.id, over.id);
+    lastDragProcessed = true;
   }
 
   const sortedTaskList = tasks.sort((a: TaskType, b: TaskType) => a.position - b.position);
+
+  useEffect(() => {
+    if (newTaskRef.current){
+      newTaskRef.current.focus();
+    }
+  }, [newTaskOpen]);
 
   return (
     <Stack
@@ -94,61 +137,90 @@ const Tasks: React.FC<{ storyID: number; tasks: TaskType[] }> = ({ storyID, task
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
+            onDragStart={({ active }) => {
+              setActiveDragId(active.id);
+            }}
+            onDragCancel={() => {
+              setActiveDragId(null);
+            }}
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={sortedTaskList
+              items={tasks
+                .sort((a, b) => a.position - b.position)
                 .map(task => task.id!)}
               strategy={verticalListSortingStrategy}
             >
-              {sortedTaskList
-                .map((task: TaskType) => <Task key={task.id} task={task} />)}
+              <Stack
+                spacing={'2px'}>
+                {tasks
+                  .sort((a, b) => a.position - b.position)
+                  .map((task: TaskType) =>
+                    <Task
+                      key={task.id}
+                      task={task as TaskType & { id: number }} />
+                      )}
+              </Stack>
             </SortableContext>
+            <DragOverlay
+              adjustScale={false}
+              dropAnimation={{
+                ...defaultDropAnimation,
+              }}
+            >
+              {activeDragId && renderSortableCardDragOverlay(activeDragId)}
+            </DragOverlay>
           </DndContext>
+
+
           {newTaskOpen?
             <Flex
               alignItems={'center'}
               justifyContent={'center'}>
               <Input
+                size={'sm'}
+                ref={newTaskRef}
                 onKeyUp={(e) => {
                   if (e.key === 'Enter') {
                     addTask();
                   }
                 }}
-                ref={newTaskRef}
                 placeholder={'New task'} />
-              <HStack spacing={'0.2rem'}>
-                <Button
+              <HStack spacing={'0.1rem'}>
+                <IconButton
+                  aria-label={'cancel'}
                   onClick={() => setNewTaskOpen(false)}
+                  icon={<GrFormClose />}
                   color="grey"
                   variant="ghost"
+                  isRound={true}
                   size="sm"
-                  p={0.5}
-                  rightIcon={<SmallCloseIcon />}
+                  p={0.1}
                 />
-                <Button
+                <IconButton
+                  aria-label={'add task'}
                   onClick={addTask}
+                  icon={<MdCheck />}
                   color="grey"
                   variant="ghost"
                   size="sm"
-                  p={0.5}
-                  rightIcon={<CheckIcon/>}
+                  isRound={true}
+                  p={0.1}
                 />
               </HStack>
             </Flex> :
-            <Button
+            <IconButton
+              aria-label={'create task'}
+              icon={<MdAddBox />}
               onClick={() => {
                 setNewTaskOpen(true);
-                if (newTaskRef.current){
-                  newTaskRef.current.focus();
-                }
               }}
               color="blue"
+              alignSelf={'flex-start'}
               variant="ghost"
-              p={0.25}
-              size="sm"
+              p={0}
+              size="md"
               width={'auto'}
-              rightIcon={<PlusSquareIcon />}
             />
           }
         </Flex>

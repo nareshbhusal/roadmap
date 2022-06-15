@@ -52,6 +52,7 @@ const Delete: React.FC<{ refreshData: Function }> = ({ refreshData }) => {
         variant={'outline'}
         leftIcon={<DeleteIcon />}
         colorScheme='red'
+        maxWidth={'200px'}
         onClick={onOpen}>
         Delete Story
       </Button>

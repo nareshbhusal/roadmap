@@ -1,26 +1,30 @@
 import {
-  Stack,
   Flex,
-  Box,
-  Heading,
   Text,
   HStack,
   Input,
+  IconButton,
   Button,
   Checkbox,
-  CheckboxGroup
 } from '@chakra-ui/react';
-import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Task as TaskType } from '../../../types';
 
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 
 import { db } from '../../../db';
 import DragHandle from './DragHandle';
+import { MdEdit } from 'react-icons/md';
+import { FiDelete } from 'react-icons/fi';
 
-const Task: React.FC<{task: any}> = ({ task }) => {
+export interface TaskProps {
+  task: TaskType & { id: number; }
+  isOverlay?: boolean;
+}
+
+const Task: React.FC<TaskProps> = ({ task, isOverlay }) => {
   const [editing, setEditing] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,29 +48,38 @@ const Task: React.FC<{task: any}> = ({ task }) => {
     listeners,
     setNodeRef,
     transform,
+    isDragging,
     transition,
   } = useSortable({id: task.id});
 
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  useEffect(() => {
+    if (inputRef.current){
+      inputRef.current.focus();
+    }
+  }, [editing]);
 
   return (
     <Flex
       key={task.id}
       ref={setNodeRef}
-      style={style}
       border={'1px solid #ccc'}
       bg={'#fff'}
       p={0.5}
+      style={{
+        transition,
+        boxShadow: isDragging? 'md' : '',
+        opacity: isDragging ? 0.07 : 1,
+        filter: isDragging ? 'saturate(10%) brightness(0%)' : '',
+        transform: CSS.Transform.toString(transform),
+      }}
       w={'100%'}
-      justifyContent={'space-between'}
-      marginBottom={'5px'}>
+      minWidth={'270px'}
+      justifyContent={'space-between'}>
       {editing?
         <Input
           ref={inputRef}
+          size={'sm'}
           onBlur={editHandler}
           onKeyUp={(e) => {
             if (e.key === 'Enter') {
@@ -86,37 +99,56 @@ const Task: React.FC<{task: any}> = ({ task }) => {
                 isChecked={task.isCompleted}
                 onChange={() => db.updateTask(task.id, { isCompleted: !task.isCompleted })}
               >
-                {task.name}
+                <Text fontSize={'sm'}>{task.name}</Text>
+
               </Checkbox>
             </HStack>
       }
       {editing? null :
         <HStack
-          spacing={'0.2rem'}
+          spacing={'0.1rem'}
         >
-          <Button
-            onClick={deleteHandler}
-            color="red"
+          <IconButton
+            aria-label="Edit"
+            icon={<MdEdit />}
+            isRound={true}
+            onClick={() => {
+              setEditing(true);
+            }}
+            color="gray.500"
+            _hover={{
+              color: 'blue.500',
+            }}
+            _focus={{
+              color: 'blue.500',
+            }}
+            _active={{
+              color: 'blue.500',
+            }}
             variant="ghost"
-            size="sm"
-            p={0.5}
-            rightIcon={<DeleteIcon />}
+            p={0.1}
+            size="xs"
+          />
+          <IconButton
+            aria-label={'Delete'}
+            icon={<FiDelete />}
+            onClick={deleteHandler}
+            color="gray.500"
+            _hover={{
+              color: 'red.500',
+            }}
+            _focus={{
+              color: 'red.500',
+            }}
+            _active={{
+              color: 'red.500',
+            }}
+            isRound={true}
+            variant="ghost"
+            size="xs"
+            p={0.1}
           />
 
-          <Button
-            onClick={() => {
-              setEditing(true)
-              if (inputRef.current){
-                inputRef.current.focus();
-              }
-            }}
-            color="blue"
-            variant="ghost"
-            p={0.5}
-            size="sm"
-            ml={'auto'}
-            rightIcon={<EditIcon />}
-          />
         </HStack>
       }
     </Flex>

@@ -71,7 +71,7 @@ const StoryModal: React.FC<{id: number; refreshData: Function; tags: StoriesTag[
               flexDirection={{ base: 'column', md: 'row' }}
             >
               <Stack
-                p={4}
+                p={1.5}
                 w={'100%'}
                 flexBasis={'70%'}
                 spacing={6}

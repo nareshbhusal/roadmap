@@ -5,11 +5,13 @@ const DragHandle = ({ listeners, attributes }: { listeners: any; attributes: any
     <Flex
       alignItems={'center'}
       justifyContent={'center'}
-      __hover={{
-        cursor: 'grab',
+      _hover={{
+        cursor: 'pointer',
+        backgroundColor: 'gray.200',
       }}
-      __focus={{
-        cursor: 'grab',
+      _focus={{
+        cursor: 'pointer',
+        outline: 'none',
       }}
       p={'0.25rem'}
       paddingLeft={'0.1rem'}

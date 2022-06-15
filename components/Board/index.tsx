@@ -305,13 +305,6 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
     </DndContext>
   );
 
-  function handleDragEnd({ active, over }: any) {
-    const activeContainer = findContainer(active.id);
-    // following line causes some funny behavior
-    // -- not replicable now in the future
-    setActiveDragItem(null);
-  }
-
   function onDragCancel() {
     setActiveDragItem(null);
   }
