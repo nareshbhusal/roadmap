@@ -20,19 +20,28 @@ import { useRef, useState } from 'react';
 import TagEditForm from './TagEditForm';
 import { TAG_COLORS } from '../../../lib/constants';
 
+import { lightenColor } from '../../../lib/utils';
+
 const StoryTag = ({ tag, removeHandler }: any) => {
-  const [ isOpen, setIsOpen ] = useBoolean(false);
+  const [ isOpen, setIsOpen ] = useState(false);
+  const [ isColorPickerOpen, setIsColorPickerOpen ] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const tagRef = useRef<HTMLDivElement>(null);
 
+  const closeHandler = () => {
+    setIsOpen(false);
+    setIsColorPickerOpen(false);
+  }
+
   return (
     <Popover
       isOpen={isOpen}
-      onOpen={setIsOpen.on}
-      onClose={setIsOpen.off}
+      onOpen={() => setIsOpen(true)}
+      onClose={closeHandler}
       placement='bottom'
       closeOnBlur={true}
+      gutter={10}
       // initialFocusRef={firstFieldRef}
       arrowSize={13}
       returnFocusOnClose={false}
@@ -42,32 +51,31 @@ const StoryTag = ({ tag, removeHandler }: any) => {
       <PopoverAnchor>
         <Tag
           padding={'0.45rem 0.45rem'}
-          colorScheme={TAG_COLORS[1]}
+          color={tag.color}
+          backgroundColor={lightenColor(tag.color)}
           ref={tagRef}
           variant={'subtle'}
           mb={'3px'}
           size={'sm'}
-          mr={'3px'}
           borderRadius={'1rem'}
           display={'flex'}
           cursor={'default'}
           onClick={(e) => {
-            console.log('clicked');
             if (e.target === closeButtonRef.current ||
                 closeButtonRef.current!.contains(e.target)
                ) {
                  console.log('clicked close button');
                  if (isOpen) {
-                   setIsOpen.off();
+                   closeHandler();
                  }
                  return;
                }
                console.log('===')
                console.log(`isOpen: ${isOpen}`);
                if (isOpen){
-                 return setIsOpen.off();
+                 return closeHandler();
                }
-               setIsOpen.on();
+               setIsOpen(true);
                console.log(`isOpen: ${isOpen}`);
                console.log('===')
           }}
@@ -107,8 +115,10 @@ const StoryTag = ({ tag, removeHandler }: any) => {
         <PopoverBody>
           <TagEditForm
             closeForm={() => {
-              setIsOpen.off();
+              closeHandler();
             }}
+            isOpen={isColorPickerOpen}
+            setIsOpen={setIsColorPickerOpen}
             firstFieldRef={firstFieldRef} tag={tag} />
         </PopoverBody>
       </PopoverContent>

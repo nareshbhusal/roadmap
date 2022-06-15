@@ -16,12 +16,14 @@ import { StoriesTag } from '../../../types';
 import { SmallAddIcon } from '@chakra-ui/icons';
 import StoryTag from './StoryTag';
 
-// TODO: Add color mechanism to tags
-// TODO: Refactor into files like /Tasks
+import { lightenColor } from '../../../lib/utils';
+import sample from 'lodash.sample';
+import { TAG_COLORS } from '../../../lib/constants';
 
 const Option = (props: any) => {
-  const { innerRef, innerProps } = props;
+  const { innerRef, innerProps, data } = props;
   const isNew = props.data.__isNew__;
+  const color = isNew ? '#319795' : props.data.color;
 
   return (
     <Flex
@@ -46,7 +48,8 @@ const Option = (props: any) => {
             null}
         <Tag
           padding={'0.3rem 0.5rem'}
-          colorScheme={'teal'}
+          color={color}
+          backgroundColor={lightenColor(color)}
           variant={'subtle'}
           size={'sm'}
           borderRadius={'1rem'}
@@ -104,7 +107,8 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
   const selectedTags = tags.map(tag => {
     return {
       value: tag.id,
-      label: tag.text
+      label: tag.text,
+      color: tag.color,
     }
   });
   console.log('running Tags component');
@@ -116,7 +120,8 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
 
     if (isTagCreated) {
       const newTagLabel = values[values.length - 1].label;
-      const newTag = await db.addStoriesTag(newTagLabel, storyID);
+      const randomColor = sample(TAG_COLORS);
+      const newTag = await db.addStoriesTag(newTagLabel, randomColor,  storyID);
       const oldTags = values.filter((v: any) => !v.__isNew__).map((v: any) => v.value);
       await db.updateStory(storyID, {
         tags: [...oldTags, newTag]
@@ -143,9 +148,7 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
   }
 
   return (
-    <Stack
-      spacing={'10px'}
-    >
+    <Stack spacing={'10px'}>
       <Heading
         fontWeight={'semibold'}
         fontSize={'15px'}>
@@ -163,10 +166,12 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
               alignItems={'center'}
               justifyContent={'flex-start'}
               flexWrap={'wrap'}
-              spacing={'0.35rem'}>
+              spacing={'0rem'}
+            >
               <Flex
                 // alignSelf={'flex-start'}
                 justifyContent={'flex-start'}
+                gap={'3px'}
                 flexWrap={'wrap'}>
                 {selectedTags.map((tag: any) => {
                   return (
@@ -196,7 +201,8 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
                 options={allTags.map((tag: StoriesTag) => {
                   return {
                     value: tag.id,
-                    label: tag.text
+                    label: tag.text,
+                    color: tag.color
                   }
                 })}
                 onChange={changeHandler}

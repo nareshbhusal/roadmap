@@ -25,6 +25,7 @@ export interface IdeaData {
 export interface StoriesTag {
   id?: number;
   text: string;
+  color: string;
 }
 
 export interface Task {

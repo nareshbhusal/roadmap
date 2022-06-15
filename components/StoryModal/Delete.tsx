@@ -50,9 +50,9 @@ const Delete: React.FC<{ refreshData: Function }> = ({ refreshData }) => {
       <Button
         size={'sm'}
         variant={'outline'}
+        leftIcon={<DeleteIcon />}
         colorScheme='red'
         onClick={onOpen}>
-        <DeleteIcon mr={'3px'} />
         Delete Story
       </Button>
 

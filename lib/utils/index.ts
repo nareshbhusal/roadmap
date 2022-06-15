@@ -19,3 +19,11 @@ export const getDistanceBetweenElements = (a: Element, b: Element) => {
 
   return Math.hypot(aPosition.x - bPosition.x, aPosition.y - bPosition.y);
 }
+
+
+export const lightenColor = (color: string, amount?: number) => {
+  amount = amount || 100;
+  return '#' + color.replace(/^#/, '')
+  .replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount!))
+                            .toString(16)).substr(-2));
+}

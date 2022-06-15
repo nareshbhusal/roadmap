@@ -568,7 +568,8 @@ class IdeasDB extends Dexie {
         const tag = await this.storiesTags.get(tagID);
         return {
           id: tagID,
-          text: tag!.text
+          text: tag!.text,
+          color: tag!.color
         }
       })),
       tasks: await Promise.all(story!.tasks.map(async taskID => {
@@ -692,11 +693,12 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async addStoriesTag(text: string, storyID: number) {
+  public async addStoriesTag(text: string, color: string, storyID: number) {
     // use transaction: add tag to storiesTag table, to stories table, and to the board of the story with the storyID
     return await this.transaction("rw", this.storiesTags, this.stories, this.boards, async () => {
       const tagId = await this.storiesTags.add({
-        text
+        text,
+        color
       });
       const story = await this.stories.get(storyID);
       const tagIDs = [...story!.tags, tagId];
@@ -721,7 +723,8 @@ class IdeasDB extends Dexie {
       const tag = await this.storiesTags.get(tagID);
       return {
         id: tagID,
-        text: tag!.text
+        text: tag!.text,
+        color: tag!.color
       }
     }
     ));
@@ -779,9 +782,10 @@ class IdeasDB extends Dexie {
     });
   }
 
-  public async editStoriesTag(tagID: number, text: string) {
+  public async editStoriesTag(tagID: number, text: string, color: string) {
     await this.storiesTags.update(tagID, {
-      text
+      text,
+      color
     });
   }
 

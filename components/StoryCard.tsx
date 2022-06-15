@@ -15,6 +15,7 @@ import { StoriesTag } from '../types';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Priority from './StoryPriority';
+import { lightenColor } from '../lib/utils';
 
 import { MdTaskAlt as TaskIcon, MdLightbulb as IdeaIcon } from 'react-icons/md';
 import { BsTextLeft as DescriptionIcon } from 'react-icons/bs';
@@ -74,17 +75,17 @@ const Tags: React.FC<any> = ({ tags }) => {
     return null;
   }
   return (
-    <Flex wrap={'wrap'}>
+    <Flex gap={'2px'} wrap={'wrap'}>
       {tags.map((tag: StoriesTag) => (
         <Tag
           key={tag.id}
           fontSize={'xs'}
           variant={'subtle'}
-          mr={'2px'}
           mb={'2px'}
           borderRadius={'10px'}
           p={'0.2rem 0.5rem'}
-          colorScheme="teal">
+          color={tag.color}
+          backgroundColor={lightenColor(tag.color)}>
           {tag.text}
         </Tag>
       ))}
