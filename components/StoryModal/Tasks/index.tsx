@@ -102,7 +102,7 @@ const Tasks: React.FC<{ storyID: number; tasks: TaskType[] }> = ({ storyID, task
     }
 
     updatedTasks.find(task => task.id === draggingTask.id)!.position = destinationPosition;
-    tasks = updatedTasks;
+    tasks = [...updatedTasks];
     // console.log('client updated tasks');
     // console.log(tasks);
 
@@ -172,6 +172,14 @@ const Tasks: React.FC<{ storyID: number; tasks: TaskType[] }> = ({ storyID, task
             </DragOverlay>
           </DndContext>
 
+          {tasks.length === 0 ?
+            <Text
+              color={'gray.600'}
+              fontSize={'xs'}
+              marginTop={'10px'}>
+              No tasks added yet
+            </Text>
+            : null}
 
           {newTaskOpen?
             <Flex

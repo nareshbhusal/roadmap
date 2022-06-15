@@ -1,13 +1,35 @@
 import {
   Flex,
   Stack,
+  HStack,
   Box,
   Heading,
-  Button
+  Input,
+  Button,
+  IconButton,
+  InputGroup,
+  InputAddon,
+  InputRightAddon,
+  InputRightElement,
+
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
 } from '@chakra-ui/react';
 import { useSortable } from "@dnd-kit/sortable";
+import { useState, useRef, useEffect } from 'react';
 import {CSS} from '@dnd-kit/utilities';
-import { db } from '../db';
+import { db } from '../../db';
+import { GoKebabHorizontal as MenuIcon } from 'react-icons/go';
+import { CheckIcon } from '@chakra-ui/icons';
+import { MdEdit } from 'react-icons/md';
+
+import Delete from './Delete';
 
 export const listStringToId = (listString: string) => parseInt(listString.replace('list-', ''));
 export const listIdToString = (listId: number) => `list-${listId}`;
@@ -73,8 +95,10 @@ export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> =
   );
 }
 
+// TODO: Add better ui to add story at the end of column
+// TODO: Add better drag styling
 
-export default function Panel({ list, children, refreshData }: any) {
+export default function Column({ list, children, refreshData }: any) {
   const {
     active,
     attributes,
@@ -93,8 +117,24 @@ export default function Panel({ list, children, refreshData }: any) {
       items.includes(over.id)
     : false;
 
-    // console.log("panel: ", panel.id);
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(list.name);
+  const nameRef = useRef<HTMLInputElement>(null);
   const opacity = isDragging ? 0.5 : undefined;
+
+  const changeName = async () => {
+    await db.updateBoardList(listStringToId(list.id), {
+      name: name,
+    });
+    refreshData();
+    setEditing(false);
+  }
+
+  useEffect(() => {
+    if (nameRef.current) {
+      nameRef.current.focus();
+    }
+  }, [editing]);
 
   return (
     <Stack
@@ -123,23 +163,68 @@ export default function Panel({ list, children, refreshData }: any) {
           opacity,
         }}
         dataType={'list'}>
-      <Box
+      <HStack
         className={`column-header ${list.id}`}
+        p={'0.1rem 0.5rem'}
+        {...(editing ? {} : listeners)}
+        {...(editing ? {} : attributes)}
+        justifyContent={'space-between'}
       >
+        {editing?
+          <InputGroup>
+          <Input
+            defaultValue={name}
+            onKeyUp={(e: any) => {
+              if (e.key === 'Enter') {
+                changeName();
+              }
+            }}
+            onChange={(e) => setName(e.target.value)}
+            ref={nameRef} />
+          <InputRightElement
+            onClick={changeName}
+            cursor={'pointer'}
+            children={<CheckIcon />}
+          />
+          </InputGroup>
+          :
+          <>
         <Heading
           as={'h3'}
           mb={'3px'}
           p={'4px'}
-          {...listeners}
-          {...attributes}
-          className="panel__title"
           cursor={'pointer'}
           fontWeight={'semibold'}
-          textAlign={'center'}
+          flex={1}
           size={'sm'}>
           {list.name}
         </Heading>
-      </Box>
+        <Menu matchWidth={true}>
+          <MenuButton
+            as={IconButton}
+            aria-label='Options'
+            color={'gray.500'}
+            icon={<MenuIcon />}
+            _hover={{
+              backgroundColor: 'inherit',
+              color: 'gray.800',
+            }}
+            _focus={{
+              backgroundColor: 'inherit',
+              color: 'gray.800',
+            }}
+            variant='outline'
+          />
+          <MenuList>
+            <MenuItem icon={<MdEdit />} onClick={() => setEditing(true)}>
+              Edit
+            </MenuItem>
+            <Delete id={listStringToId(list.id)} refreshData={refreshData} />
+          </MenuList>
+        </Menu>
+          </>
+        }
+      </HStack>
         <Stack
           px={'7px'}
           spacing={'5px'}

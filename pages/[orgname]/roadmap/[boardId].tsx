@@ -13,7 +13,7 @@ import {
 
 import Board from '../../../components/Board';
 import StoryModal from '../../../components/StoryModal/';
-import { listIdToString } from '../../../components/Column';
+import { listIdToString } from '../../../components/Column/';
 import { db } from '../../../db';
 import { useLiveQuery } from 'dexie-react-hooks';
 

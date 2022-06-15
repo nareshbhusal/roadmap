@@ -34,6 +34,14 @@ const Ideas: React.FC<any> = ({ ideas }) => {
               </Flex>
             )}
           )}
+          {ideas.length === 0 ?
+            <Text
+              color={'gray.600'}
+              fontSize={'xs'}
+              marginTop={'10px'}>
+              No ideas linked yet
+            </Text> :
+            null}
         </Flex>
       </Flex>
     </Stack>

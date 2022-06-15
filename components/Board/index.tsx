@@ -6,7 +6,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 
-import Column, { CreateColumn, listStringToId } from '../Column';
+import Column, { CreateColumn, listStringToId } from '../Column/';
 import StoryCard from '../StoryCard';
 
 import { db } from '../../db';
