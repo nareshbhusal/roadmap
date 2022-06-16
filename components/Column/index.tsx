@@ -27,6 +27,8 @@ import { CheckIcon, SmallCloseIcon, CloseIcon } from '@chakra-ui/icons';
 import { MdEdit } from 'react-icons/md';
 
 import Delete from './Delete';
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 
 export const listStringToId = (listString: string) => parseInt(listString.replace('list-', ''));
 export const listIdToString = (listId: number) => `list-${listId}`;
@@ -186,13 +188,13 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
     <Stack
       className={`column ${list.id}`}
       ref={setNodeRef}
-          style={{
-            transition,
-            transform: isOverlay ? 'translate(-7px, -4px) rotate(4deg)': '',
-            opacity: isDragging ? 0.05 : 1,
-            filter: isDragging ? 'saturate(5%) brightness(0%)' : '',
-          }}
-          transition={'all 0.1s ease-in-out'}
+      style={{
+        transition,
+        transform: isOverlay ? 'translate(-7px, -4px) rotate(4deg)': '',
+        opacity: isDragging ? 0.05 : 1,
+        filter: isDragging ? 'saturate(5%) brightness(0%)' : '',
+      }}
+      transition={'all 0.1s ease-in-out'}
     >
       <ColumnWrapper
         styleProps={{
@@ -262,13 +264,27 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
           </>
         }
       </HStack>
-        <Stack
-          px={'7px'}
-          spacing={'5px'}
-          mb={'2px'}
+        <SimpleBar
+          style={{
+            height: '100%',
+            width: '100%',
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            maxHeight: '72vh',
+          }}
+          autoHide={false}
         >
-          {children}
-        </Stack>
+          <Stack
+            px={'7px'}
+            spacing={'5px'}
+            mb={'2px'}
+            // border={'1px solid green'}
+            maxHeight={'72vh'}
+            //overflowY={'auto'}
+          >
+            {children}
+          </Stack>
+        </SimpleBar>
         <Flex
           px={'7px'}
           w={'100%'}

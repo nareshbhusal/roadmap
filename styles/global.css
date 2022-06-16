@@ -5,7 +5,15 @@
 .simplebar-scrollbar {
   background-color: #aaa;
   border-radius: 100px;
+  height: 8px;
 }
+
+
+.column .simplebar-scrollbar {
+  width: 5px;
+  margin-left: 5px;
+}
+
 .simplebar-scrollbar.simplebar-visible::before {
   background-color: transparent;
   border-radius: 100px;
