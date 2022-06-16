@@ -31,6 +31,8 @@ import Delete from './Delete';
 export const listStringToId = (listString: string) => parseInt(listString.replace('list-', ''));
 export const listIdToString = (listId: number) => `list-${listId}`;
 
+// TODO: Don't allow empty string for new column title
+
 export interface ColumnWrapperProps {
   children: React.ReactNode;
   styleProps: Object;

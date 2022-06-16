@@ -10,6 +10,8 @@ import Column, { CreateColumn, listStringToId } from '../Column/';
 import StoryCard from '../StoryCard';
 
 import { db } from '../../db';
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 
 import {
   DndContext,
@@ -109,27 +111,27 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
     { active, over, handler }:
       { active: any; over: any; handler: 'onDragEnd' | 'onDragOver'}) => {
 
-    if (!over) return;
+      if (!over) return;
 
-    const overType = over!.data.current!.sortable.containerId;
+      const overType = over!.data.current!.sortable.containerId;
 
-    if (!canMove) return;
-    if (activeDragItem!.type === overType && activeDragItem!.id === over!.id) return;
-    if (activeDragItem!.type === 'list' && overType === 'story') return;
+      if (!canMove) return;
+      if (activeDragItem!.type === overType && activeDragItem!.id === over!.id) return;
+      if (activeDragItem!.type === 'list' && overType === 'story') return;
 
-    const shouldBeRunByOnDragOver = () => {
-      if (activeDragItem!.type === 'story' && overType === 'story') {
-        const isListSame = findContainer(activeDragItem!.id)!.id === findContainer(over.id)!.id;
-        if (isListSame) {
+      const shouldBeRunByOnDragOver = () => {
+        if (activeDragItem!.type === 'story' && overType === 'story') {
+          const isListSame = findContainer(activeDragItem!.id)!.id === findContainer(over.id)!.id;
+          if (isListSame) {
             return false;
+          }
         }
+        return true;
       }
-      return true;
-    }
 
-    if ((shouldBeRunByOnDragOver() && handler === 'onDragOver') ||
-        (!shouldBeRunByOnDragOver() && handler === 'onDragEnd')) {
-    } else return;
+      if ((shouldBeRunByOnDragOver() && handler === 'onDragOver') ||
+          (!shouldBeRunByOnDragOver() && handler === 'onDragEnd')) {
+      } else return;
 
     // to prevent these set of db calls if the last call of the kind hasn't finished yet
     // we're limiting the drags to one request per backend at a time, not ideal but it's ok for now
@@ -213,100 +215,111 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
     if(handler === 'onDragEnd') {
       setActiveDragItem(null);
     }
-  }
+    }
 
-  return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={(event) => {
-        const { active } = event;
-        const type = active.data.current!.sortable.containerId;
-        setActiveDragItem({
-          type,
-          id: active.id,
-        });
-      }}
-      onDragEnd={(event) =>
-        dragHandler({ ...event, handler: 'onDragEnd' })
-      }
-      onDragCancel={onDragCancel}
-      onDragOver={(event) =>
-        dragHandler({ ...event, handler: 'onDragOver' })
-      }
-    >
-      <Flex
-        height={'100%'}
+    return (
+      <DndContext
+        sensors={sensors}
+        onDragStart={(event) => {
+          const { active } = event;
+          const type = active.data.current!.sortable.containerId;
+          setActiveDragItem({
+            type,
+            id: active.id,
+          });
+        }}
+        onDragEnd={(event) =>
+          dragHandler({ ...event, handler: 'onDragEnd' })
+        }
+        onDragCancel={onDragCancel}
+        onDragOver={(event) =>
+          dragHandler({ ...event, handler: 'onDragOver' })
+        }
       >
-        <SortableContext
-          id={'list'}
-          items={[...boardData.lists
-            .sort((a: BoardList, b: BoardList) => a.position - b.position)
-            .map((list: BoardList) => list.id)]}
-          strategy={horizontalListSortingStrategy}
+        <Flex
+          height={'100%'}
         >
-          <Flex
-            height={'100%'}
-            width={'100%'}
+          <SortableContext
+            id={'list'}
+            items={[...boardData.lists
+              .sort((a: BoardList, b: BoardList) => a.position - b.position)
+              .map((list: BoardList) => list.id)]}
+            strategy={horizontalListSortingStrategy}
           >
             <Flex
               backgroundColor={'gray.50'}
-              alignItems= {'flex-start'}
-              flexGrow={'1'}
-              py={'15px'}
-              // minHeight={'300px'}
               height={'100%'}
-              overflowX={'auto'}
+              width={'100%'}
             >
-              {boardData.lists.sort((a: BoardList, b: BoardList) => a.position - b.position)
-                .map((list: BoardList) => (
-                  <Column
-                    key={list.id}
-                    list={list}
-                    refreshData={refreshData}
-                  >
-                    <SortableContext
-                      id={'story'}
-                      items={[...list.stories
-                        .sort((a: StoryPreview, b: StoryPreview) => a.position - b.position)
-                        .map((story: StoryPreview) => story.id)]}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {boardData.lists
-                        .find((l: BoardList) => l.id === list.id)!.stories.map(
-                          (story: StoryPreview) => (
-                            <StoryCard
-                              refreshData={refreshData}
-                              key={story.id}
-                              story={story}
-                            />
-                          )
-                        )}
-                    </SortableContext>
-                  </Column>
-                ))}
-              <CreateColumn refreshData={refreshData} boardId={boardData.id} />
+              <SimpleBar
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  overflowX: 'auto',
+                  overflowY: 'hidden',
+                }}
+                autoHide={false}
+              >
+                <Flex
+                  // backgroundColor={'gray.50'}
+                  alignItems= {'flex-start'}
+                  flexGrow={'1'}
+                  py={'15px'}
+                  // minHeight={'300px'}
+                  height={'100%'}
+                  // overflowX={'auto'}
+                >
+                  {boardData.lists.sort((a: BoardList, b: BoardList) => a.position - b.position)
+                    .map((list: BoardList) => (
+                      <Column
+                        key={list.id}
+                        list={list}
+                        refreshData={refreshData}
+                      >
+                        <SortableContext
+                          id={'story'}
+                          items={[...list.stories
+                            .sort((a: StoryPreview, b: StoryPreview) => a.position - b.position)
+                            .map((story: StoryPreview) => story.id)]}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          {boardData.lists
+                            .find((l: BoardList) => l.id === list.id)!.stories.map(
+                              (story: StoryPreview) => (
+                                <StoryCard
+                                  refreshData={refreshData}
+                                  key={story.id}
+                                  story={story}
+                                />
+                              )
+                            )}
+                        </SortableContext>
+                      </Column>
+                    ))}
+                  <CreateColumn refreshData={refreshData} boardId={boardData.id} />
+                </Flex>
+              </SimpleBar>
             </Flex>
-          </Flex>
-        </SortableContext>
-      </Flex>
-      {createPortal(
-        <DragOverlay
-          adjustScale={false}
-          dropAnimation={{
-            ...defaultDropAnimation,
-          }}
-        >
-          {activeDragItem && activeDragItem.type === 'list' && renderContainerDragOverlay(activeDragItem.id)}
-          {activeDragItem && activeDragItem.type === 'story' && renderSortableItemDragOverlay(activeDragItem.id)}
-        </DragOverlay>,
-        document.body
-      )}
-    </DndContext>
-  );
+          </SortableContext>
+        </Flex>
+        {createPortal(
+          <DragOverlay
+            adjustScale={false}
+            dropAnimation={{
+              ...defaultDropAnimation,
+            }}
+          >
+            {activeDragItem && activeDragItem.type === 'list' && renderContainerDragOverlay(activeDragItem.id)}
+            {activeDragItem && activeDragItem.type === 'story' && renderSortableItemDragOverlay(activeDragItem.id)}
+          </DragOverlay>,
+          document.body
+        )}
+      </DndContext>
+    );
 
-  function onDragCancel() {
-    setActiveDragItem(null);
-  }
+    function onDragCancel() {
+      setActiveDragItem(null);
+    }
 }
 
 export default Board;

@@ -32,6 +32,7 @@
     "react-hook-form": "^7.12.2",
     "react-icons": "^4.3.1",
     "react-select": "^5.3.2",
+    "simplebar-react": "^2.4.1",
     "url-slug": "^3.0.4",
     "uuid": "^8.3.2"
   },

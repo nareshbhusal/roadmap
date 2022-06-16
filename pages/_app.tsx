@@ -7,6 +7,7 @@ import '@fontsource/inter/600.css'
 import '@fontsource/open-sans/400.css'
 import '@fontsource/open-sans/500.css'
 import '@fontsource/open-sans/700.css'
+import '../styles/global.css';
 
 import { ReactNode } from 'react';
 import { NextPageWithLayout } from '../types/page';
@@ -22,9 +23,6 @@ export type Props = AppProps & {
 };
 
 // TODO: Redirect /[orgname]/ to /[orgname]/roadmap/
-// TODO: Model the data
-// -- Model the entire db
-// -- Model for redux and then for the views
 
 const App = ({ Component, pageProps }: Props) => {
   const [isAuthenticated, setIsAuthenticated] = useState<null | boolean>(null);
