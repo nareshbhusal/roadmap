@@ -2,6 +2,7 @@ import {
   Flex,
   Stack,
   HStack,
+  Textarea,
   Box,
   Heading,
   Input,
@@ -16,17 +17,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
 } from '@chakra-ui/react';
 import { useSortable } from "@dnd-kit/sortable";
 import { useState, useRef, useEffect } from 'react';
 import {CSS} from '@dnd-kit/utilities';
 import { db } from '../../db';
 import { GoKebabHorizontal as MenuIcon } from 'react-icons/go';
-import { CheckIcon } from '@chakra-ui/icons';
+import { CheckIcon, SmallCloseIcon, CloseIcon } from '@chakra-ui/icons';
 import { MdEdit } from 'react-icons/md';
 
 import Delete from './Delete';
@@ -65,37 +62,75 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({ children, styleProps, inn
 
 
 export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> = ({ boardId, refreshData }) => {
+  const [columnName, setColumnName] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+
+  const submitHandler = async () => {
+    await db.addBoardList(columnName, boardId);
+    refreshData();
+    setIsCreating(false);
+    setColumnName('');
+  }
 
   return (
     <ColumnWrapper
       styleProps={{
-        mb: '3rem'
+        mb: '3rem',
+        mr: '3rem',
       }}>
-      <Button
-        bg={'gray.200'}
-        _hover={{ opacity: 1 }}
-        opacity={0.7}
-        variant="outline"
-        color={'black'}
-        onClick={async () => {
-          const columnName = window.prompt('Enter a column name:');
-          if (columnName != null) {
-            await db.addBoardList(columnName, boardId);
-            refreshData();
-          } else {
-            console.log('cancelled');
-          }
-        }}
-        textAlign={'left'}
-        fontWeight={'regular'}
-        display={'block'}>
-        + Create Column
-      </Button>
+      {!isCreating ?
+        <Button
+          bg={'gray.200'}
+          _hover={{ opacity: 1 }}
+          opacity={0.7}
+          variant="outline"
+          color={'black'}
+          onClick={() => setIsCreating(true)}
+          textAlign={'left'}
+          fontWeight={'regular'}
+          display={'block'}>
+          + Create Column
+        </Button> :
+          <InputGroup>
+            <Input
+              placeholder="Enter a column name"
+              value={columnName}
+              onChange={(e) => setColumnName(e.target.value)}
+              onKeyPress={async (e) => {
+                if (e.key === 'Enter') {
+                  submitHandler();
+                }
+              }}
+            />
+            <HStack>
+              <InputRightElement
+              >
+                <IconButton
+                  variant="ghost"
+                  aria-label="Add"
+                  icon={<CheckIcon />}
+                  size={'xs'}
+                  onClick={submitHandler}
+                />
+                <IconButton
+                  variant="ghost"
+                  aria-label="Cancel"
+                  mr={'5px'}
+                  icon={<CloseIcon />}
+                  size={'xs'}
+                  onClick={() => {
+                    setIsCreating(false);
+                    setColumnName('');
+                  }}
+                />
+              </InputRightElement>
+            </HStack>
+          </InputGroup>
+      }
+
     </ColumnWrapper>
   );
 }
-
-// TODO: Add better ui to add story at the end of column
 
 export default function Column({ list, children, refreshData, isOverlay }: any) {
   const {
@@ -118,7 +153,11 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
 
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(list.name);
+  const [addingStory, setAddingStory] = useState(false);
+  const [newStory, setNewStory] = useState('');
+
   const nameRef = useRef<HTMLInputElement>(null);
+  const newStoryRef = useRef<HTMLTextAreaElement>(null);
   const opacity = isDragging ? 0.5 : undefined;
 
   const changeName = async () => {
@@ -134,6 +173,12 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
       nameRef.current.focus();
     }
   }, [editing]);
+
+  useEffect(() => {
+    if (newStoryRef.current) {
+      newStoryRef.current.focus();
+    }
+  }, [addingStory]);
 
   return (
     <Stack
@@ -227,18 +272,9 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
           w={'100%'}
           className={`column-footer ${list.id}`}
         >
+          {!addingStory ?
           <Button
-            onClick={async () => {
-              const storyTitle = window.prompt('Enter a story title:');
-              if (storyTitle != null) {
-                await db.addStory({
-                  title: storyTitle,
-                  listId: listStringToId(list.id),
-                  boardId: list.boardId
-                });
-                refreshData();
-              }
-            }}
+            onClick={() => setAddingStory(true)}
             bg={'gray.200'}
             _hover={{
               bg: 'gray.300',
@@ -248,6 +284,52 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
           >
             + Add Story
           </Button>
+          :
+          <Flex
+            position={'relative'}
+          >
+          <Textarea
+            background={'#fff'}
+            borderRadius={'2px'}
+            placeholder={'Enter a story title'}
+            ref={newStoryRef}
+            p={1.5}
+            minHeight={'4.5rem'}
+            // replace trailing newlines
+            value={newStory.replace(/^\n|\n$/g, '')}
+            onChange={(e) => setNewStory(e.target.value)}
+            onKeyUp={async (e) => {
+              if (e.key === 'Enter' && newStory.trim()) {
+                await db.addStory({
+                  title: newStory,
+                  listId: listStringToId(list.id),
+                  boardId: list.boardId
+                });
+                setAddingStory(false);
+                setNewStory('');
+                refreshData();
+              }
+            }}
+            mb={1.5}
+          />
+            <IconButton
+              position={'absolute'}
+              opacity={0.7}
+              p={0}
+              top={'0px'}
+              right={'0px'}
+              borderRadius={0}
+              zIndex={'100'}
+              aria-label='Cancel adding story'
+              size={'xs'}
+              onClick={() => {
+                setNewStory('');
+                setAddingStory(false);
+              }}
+              icon={<CloseIcon />}
+            />
+          </Flex>
+          }
         </Flex>
       </ColumnWrapper>
     </Stack>
