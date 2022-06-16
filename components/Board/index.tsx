@@ -76,7 +76,7 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
       return list.id === id;
     })!;
     return (
-      <Column key={list.id} list={list}>
+      <Column key={list.id} isOverlay={true} list={list}>
         {list.stories.sort((a: StoryPreview, b: StoryPreview) => a.position - b.position)
           .map((story: StoryPreview) => (
             <StoryCard
@@ -249,8 +249,7 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
             width={'100%'}
           >
             <Flex
-              border={'1px solid #ccc'}
-              backgroundColor={'gray.600'}
+              backgroundColor={'gray.50'}
               alignItems= {'flex-start'}
               flexGrow={'1'}
               py={'15px'}

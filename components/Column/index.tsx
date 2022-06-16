@@ -96,9 +96,8 @@ export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> =
 }
 
 // TODO: Add better ui to add story at the end of column
-// TODO: Add better drag styling
 
-export default function Column({ list, children, refreshData }: any) {
+export default function Column({ list, children, refreshData, isOverlay }: any) {
   const {
     active,
     attributes,
@@ -139,22 +138,14 @@ export default function Column({ list, children, refreshData }: any) {
   return (
     <Stack
       className={`column ${list.id}`}
-      // background={'gray.200'}
       ref={setNodeRef}
-      style={{
-        transition,
-        transform: CSS.Transform.toString(transform),
-        // backgroundColor: isOverContainer && "rgb(235, 235, 235, 1)",
-        opacity
-        // "--translatePanel-x": transform
-        //   ? `${Math.round(transform.x)}px`
-        //   : undefined,
-        // "--translatePanel-y": transform
-        //   ? `${Math.round(transform.y)}px`
-        //   : undefined,
-        // "--scalePanel-x": transform?.scaleX ? `${transform.scaleX}` : undefined,
-        // "--scalePanel-y": transform?.scaleY ? `${transform.scaleY}` : undefined,
-      }}
+          style={{
+            transition,
+            transform: isOverlay ? 'translate(-7px, -4px) rotate(4deg)': '',
+            opacity: isDragging ? 0.05 : 1,
+            filter: isDragging ? 'saturate(5%) brightness(0%)' : '',
+          }}
+          transition={'all 0.1s ease-in-out'}
     >
       <ColumnWrapper
         styleProps={{
@@ -167,7 +158,6 @@ export default function Column({ list, children, refreshData }: any) {
         className={`column-header ${list.id}`}
         p={'0.1rem 0.5rem'}
         {...(editing ? {} : listeners)}
-        {...(editing ? {} : attributes)}
         justifyContent={'space-between'}
       >
         {editing?
