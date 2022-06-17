@@ -19,7 +19,7 @@ export interface IdeaData {
   storyID: number | null;
   tags: IdeasTag[];
   status: IdeaStatus;
-  comments: string[]
+  comments: string[];
 }
 
 export interface StoriesTag {

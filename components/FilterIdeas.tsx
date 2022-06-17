@@ -49,8 +49,8 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
 
   return (
     <HStack
-      display={'flex'}
-      direction={'row'}
+      justifyContent={'flex-start'}
+      alignSelf={'flex-start'}
       spacing={'12px'}>
       <Input
         size={'sm'}
@@ -117,7 +117,7 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
         leftIcon={<SmallCloseIcon />}
         onClick={resetFilters}
         padding={'0px'}
-        // border={'1px solid gray'}
+        justifySelf={'flex-end'}
         color={'gray.500'}
         variant={'link'}
         _hover={{

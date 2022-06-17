@@ -858,11 +858,13 @@ class IdeasDB extends Dexie {
     await this.transaction("rw", this.ideas, this.stories, async () => {
       const idea = await this.ideas.get(ideaID);
       const storyID = idea!.storyID!;
-      const story = await this.stories.get(storyID);
-      const ideaIDs = story!.ideas.filter(id => id !== ideaID);
-      await this.stories.update(storyID, {
-        ideas: ideaIDs
-      });
+      if (storyID) {
+        const story = await this.stories.get(storyID);
+        const ideaIDs = story!.ideas.filter(id => id !== ideaID);
+        await this.stories.update(storyID, {
+          ideas: ideaIDs
+        });
+      }
       await this.ideas.delete(ideaID);
     });
   }
