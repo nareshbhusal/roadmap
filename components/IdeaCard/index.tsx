@@ -111,7 +111,6 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
               width={'100%'}
               maxWidth={'170px'}
               noOfLines={2}
-              // isTruncated // TODO: truncate somehow
             >
               {title}
             </Text>

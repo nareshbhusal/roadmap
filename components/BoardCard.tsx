@@ -13,7 +13,6 @@ import {
 import { BoardPreview } from '../types';
 import { db } from '../db';
 
-
 import { SettingsIcon, EditIcon} from '@chakra-ui/icons';
 
 import { useRouter } from 'next/router'
@@ -56,91 +55,89 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
     }, 0);
   }
 
+  const cardPadding = '15px';
+
   return (
     <Stack
       display={'flex'}
       direction={'row'}
-      spacing={'40px'}
-      minWidth={'300px'}
+      spacing={'0px'}
+      minWidth={'250px'}
       maxWidth={'400px'}
       border={'1px solid transparent'}
       borderColor={'gray.100'}
       boxShadow={'sm'}
       borderRadius={'12px'}
-      justify={'space-between'}
-      align={'space-between'}
       background={'white'}
       _hover={{
         cursor: 'default'
       }}
-      padding={'15px'}
       flexDirection={'row'}>
 
-      <Stack
-        display={'flex'}
-        direction={'column'}
-        spacing={'25px'}
-        flexDirection={'column'}>
-        <NextLink href={ideaURL}>
-          <Link
-            _hover={{
-              textDecoration: 'none'
-            }}
-            _focus={{
-              textDecoration: 'underline',
-              outline: 'none'
-            }}
-            href={ideaURL}>
+      <NextLink href={ideaURL}>
+        <a
+          style={{
+            textDecoration: 'none',
+            width: '100%',
+            height: '100%',
+            cursor: 'pointer',
+          }}
+        >
+          <Stack
+            display={'flex'}
+            direction={'column'}
+            padding={cardPadding}
+            w={'100%'}
+            h={'100%'}
+            flexDirection={'column'}>
             <Text
               as={'h2'}
               size={'md'}
               fontWeight={'semibold'}
               maxWidth={'170px'}
-              // isTruncated // TODO: truncate somehow
             >
               {name}
             </Text>
-          </Link>
-        </NextLink>
-      </Stack>
+          </Stack>
+        </a>
+      </NextLink>
 
       <Flex
         justify={'space-between'}
         align={'flex-end'}
+        padding={cardPadding}
+        pl={0}
         flexDirection={'column'}>
         {archived ?
 
-        <Badge
-          textTransform={'capitalize'}
-          variant={`badge-${status}`}
-          size={'sm'}>
-          {'archived'}
-        </Badge>
-        : null}
+          <Badge
+            textTransform={'capitalize'}
+            variant={`badge-archived`}
+            size={'sm'}>
+            {'archived'}
+          </Badge>
+          : null}
         <Menu onClose={removeMenuFocus}>
           <MenuButton
             as={IconButton}
             background={'transparent'}
             isRound={true}
             outline='none'
-            //            _focus={{
-            //              outline: 'none',
-            //              background: 'transparent'
-            //            }}
+            _focus={{
+              outline: 'none',
+              background: '#eee'
+            }}
             _hover={{
               outline: 'none',
-              background: 'transparent'
+              background: '#eee'
             }}
             _active={{
               outline: 'none',
-              background: 'transparent'
+              background: '#eee'
             }}
             padding={'0px'}>
             <SettingsIcon
               color={'gray.700'}
-              _focus={{
-                color: 'red'
-              }}
               padding={'0px'} />
           </MenuButton>
           <MenuList fontSize={'sm'}>
@@ -162,12 +159,6 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
             <MenuItem icon={<IoClose />} onClick={deleteBoard}>Delete</MenuItem>
           </MenuList>
         </Menu>
-        {/* <Text
-            fontWeight={'bold'}
-          // TODO options icon
-          fontSize={'xl'}>
-          ...
-          </Text> */}
       </Flex>
     </Stack>
   );
