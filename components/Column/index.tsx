@@ -99,10 +99,19 @@ export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> =
             <Input
               placeholder="Enter a column name"
               value={columnName}
+              color={'#fff'}
               onChange={(e) => setColumnName(e.target.value)}
               onKeyPress={async (e) => {
                 if (e.key === 'Enter') {
                   submitHandler();
+                }
+              }}
+              _focus={{
+                border: '1px solid #eee'
+              }}
+              css={{
+                '::placeholder': {
+                  color: '#fff',
                 }
               }}
             />

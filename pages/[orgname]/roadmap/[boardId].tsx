@@ -30,7 +30,9 @@ const BoardHeading: React.FC<{ name: string; boardId: number; }> = ({ name, boar
   }, [isRenaming]);
 
   return (
-    <>
+    <Flex
+      pl={'30px'}
+    >
       {isRenaming ?
         <Input
           width={'300px'}
@@ -63,7 +65,7 @@ const BoardHeading: React.FC<{ name: string; boardId: number; }> = ({ name, boar
             {boardName}
           </Heading>
       }
-    </>
+    </Flex>
   );
 }
 
@@ -110,7 +112,7 @@ const Kanban: NextPageWithLayout = () => {
       }
       {boardData ?
         <Stack
-          pl={'30px'}
+          //pl={'30px'}
           flexGrow={1}>
           <BoardHeading boardId={Number(boardId)} name={boardData.name} />
           <Board refreshData={refreshData} boardData={boardData} />

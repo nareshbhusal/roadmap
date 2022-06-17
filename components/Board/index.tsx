@@ -263,16 +263,14 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
                 autoHide={false}
               >
                 <Flex
-                  // backgroundColor={'gray.50'}
                   alignItems= {'flex-start'}
                   flexGrow={'1'}
                   py={'15px'}
-                  // minHeight={'300px'}
                   height={'100%'}
-                  // overflowX={'auto'}
+                  pl={'30px'}
                 >
                   {boardData.lists.sort((a: BoardList, b: BoardList) => a.position - b.position)
-                    .map((list: BoardList) => (
+                    .map((list: BoardList, ) => (
                       <Column
                         key={list.id}
                         list={list}
