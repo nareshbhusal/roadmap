@@ -1,5 +1,7 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
+import { useRouter } from 'next/router';
+import { TAG_COLORS } from '../lib/constants';
 
 import {
   Flex,
@@ -12,16 +14,21 @@ export interface ILayout {
 }
 
 const Layout: React.FC<ILayout> = ({ children }) => {
+  const router = useRouter();
+  const isBoardPage = Boolean(router.query.boardId);
+
     return (
     <Flex>
-      <Sidebar />
+      <Sidebar
+        passedBg={isBoardPage ? TAG_COLORS[2] : ''}
+      />
       <Stack
         flexDirection={'column'}
         flex={'1'}
         overflowX={'hidden'}
         alignItems={'flex-start'}
         spacing={'35px'}
-        // background={'gray.50'}
+        bg={isBoardPage ? TAG_COLORS[2] : ''}
         // paddingTop={'15px'}
         // px={'30px'}
       >

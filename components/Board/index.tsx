@@ -12,6 +12,7 @@ import StoryCard from '../StoryCard';
 import { db } from '../../db';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
+import { TAG_COLORS } from '../../lib/constants';
 
 import {
   DndContext,
@@ -237,6 +238,7 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
         }
       >
         <Flex
+          // backgroundColor={TAG_COLORS[1]}
           height={'100%'}
         >
           <SortableContext
@@ -247,7 +249,7 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
             strategy={horizontalListSortingStrategy}
           >
             <Flex
-              backgroundColor={'gray.50'}
+              // backgroundColor={'gray.50'}
               height={'100%'}
               width={'100%'}
             >

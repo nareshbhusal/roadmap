@@ -191,7 +191,7 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
       style={{
         transition,
         transform: isOverlay ? 'translate(-7px, -4px) rotate(4deg)': '',
-        opacity: isDragging ? 0.05 : 1,
+        opacity: isDragging ? 0.15 : 1,
         filter: isDragging ? 'saturate(5%) brightness(0%)' : '',
       }}
       transition={'all 0.1s ease-in-out'}

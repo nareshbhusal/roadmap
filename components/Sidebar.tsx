@@ -17,8 +17,9 @@ import { useLiveQuery } from "dexie-react-hooks";
 import Logo from './Logo';
 import SidebarLink, { LINK_MARGIN_LEFT, SidebarExternalLink } from './SidebarLink';
 import { defaultSearchValues } from '../components/FilterBoards';
+import { lightenColor } from '../lib/utils/';
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<{ passedBg?: string; }> = ({ passedBg }) => {
   const router = useRouter();
   const { orgname } = router.query;
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
@@ -31,6 +32,9 @@ const Sidebar: React.FC = () => {
       sortBy: defaultSearchValues.sortBy
     })
   );
+
+  passedBg = passedBg || 'gray.20';
+  const backgroundColor = isOpen ? 'gray.20' : lightenColor(passedBg, 20);
 
   return (
     <Flex
@@ -51,7 +55,8 @@ const Sidebar: React.FC = () => {
       paddingTop={'15px'}
       transition={'0.15s ease-in-out width'}
       width={isOpen ? '220px': '20px'}
-      background={'gray.20'}
+      // opacity={isOpen? 1 : '0.7'}
+      background={backgroundColor}
     >
       <Flex
         align={'center'}
@@ -64,12 +69,12 @@ const Sidebar: React.FC = () => {
           justifyContent={'center'}
           h={'100%'}
           w={'100%'}>
-        {isOpen ?
-          <Logo /> :
-          null}
-        <IconButton
-          aria-label={'close'}
-          icon={<ArrowIcon />}
+          {isOpen ?
+            <Logo /> :
+            null}
+          <IconButton
+            aria-label={'close'}
+            icon={<ArrowIcon />}
           isRound={true}
           ref={toggleButtonRef}
           onClick={() => setIsOpen(!isOpen)}

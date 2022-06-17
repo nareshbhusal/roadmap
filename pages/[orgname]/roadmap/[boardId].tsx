@@ -16,6 +16,7 @@ import StoryModal from '../../../components/StoryModal/';
 import { listIdToString } from '../../../components/Column/';
 import { db } from '../../../db';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { TAG_COLORS } from '../../../lib/constants';
 
 const Kanban: NextPageWithLayout = () => {
   const router = useRouter();
@@ -60,11 +61,12 @@ const Kanban: NextPageWithLayout = () => {
       }
       {boardData ?
         <Stack
-          px={'30px'}
+          pl={'30px'}
           flexGrow={1}>
           <Heading
             p={'4px'}
             as={'h2'}
+            color={'#fff'}
             size={'md'}
           >
             {boardData.name}
