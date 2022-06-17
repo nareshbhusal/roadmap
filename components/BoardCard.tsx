@@ -45,10 +45,6 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
     db.archiveBoard(id!);
   }
 
-  // TODO: We should prolly first grab the list of ids and then individually fetch their data, even if in overview form
-  // -- but maybe that's overkill since the parent component is listening to the data anyway
-  // -- and how does pagination fit into that consideration?
-
   const unarchiveBoard = (): void => {
     db.unarchiveBoard(id!);
   }
@@ -69,9 +65,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
       maxWidth={'400px'}
       border={'1px solid transparent'}
       borderColor={'gray.100'}
-      boxShadow= {'rgba(0, 0, 0, 0.05) 0px 0px 0px 1px'}
-      //      boxShadow= {'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px'}
-      //      boxShadow= {'rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px'}
+      boxShadow={'sm'}
       borderRadius={'12px'}
       justify={'space-between'}
       align={'space-between'}

@@ -5,15 +5,19 @@ export default {
       fontWeight: "semibold",
       color: "gray.500"
     },
-    "badge-live": {
-      background: "green.100",
+    "badge-active": {
       fontWeight: "semibold",
-      color: "green.500"
+      color: "green.700",
     },
     "badge-archived": {
       background: "yellow.100",
       fontWeight: "semibold",
       color: "yellow.500"
+    },
+    "badge-completed": {
+      background: "green.100",
+      fontWeight: "semibold",
+      color: "green.500"
     }
   }
 }

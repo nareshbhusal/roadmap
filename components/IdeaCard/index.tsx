@@ -5,6 +5,7 @@ import {
   Link,
   Text,
   Badge,
+  Tag,
   Menu,
   MenuButton,
   MenuList,
@@ -65,18 +66,18 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
     }, 0);
   }
 
+  const cardPadding = '15px';
+
   return (
     <Stack
-      display={'flex'}
-      direction={'row'}
-      spacing={'40px'}
+      as={'article'}
+      spacing={'0px'}
       minWidth={'300px'}
       maxWidth={'400px'}
       border={'1px solid transparent'}
       borderColor={'gray.100'}
-      boxShadow= {'rgba(0, 0, 0, 0.05) 0px 0px 0px 1px'}
-      //      boxShadow= {'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px'}
-      //      boxShadow= {'rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px'}
+      // boxShadow= {'rgba(0, 0, 0, 0.05) 0px 0px 0px 1px'}
+      boxShadow={'sm'}
       borderRadius={'12px'}
       justify={'space-between'}
       align={'space-between'}
@@ -84,76 +85,86 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
       _hover={{
         cursor: 'default'
       }}
-      padding={'15px'}
       flexDirection={'row'}>
 
+      <NextLink href={ideaURL}>
+        <a
+          style={{
+            textDecoration: 'none',
+            width: '100%',
+            height: '100%',
+            cursor: 'pointer',
+          }}
+        >
       <Stack
         display={'flex'}
         direction={'column'}
-        spacing={'25px'}
+        w={'100%'}
+        h={'100%'}
+        spacing={'15px'}
+        padding={cardPadding}
         flexDirection={'column'}>
-        <NextLink href={ideaURL}>
-          <Link
-            _hover={{
-              textDecoration: 'none'
-            }}
-            _focus={{
-              textDecoration: 'underline',
-              outline: 'none'
-            }}
-            href={ideaURL}>
             <Text
-              as={'h2'}
+              as={'h3'}
               size={'md'}
               fontWeight={'semibold'}
+              width={'100%'}
               maxWidth={'170px'}
+              noOfLines={2}
               // isTruncated // TODO: truncate somehow
             >
               {title}
             </Text>
-          </Link>
-        </NextLink>
         <Stack
-          spacing={'0'}
+          spacing={'10px'}
           color={'gray.500'}
           fontSize={'sm'}
           flexDirection={'column'}>
-          <Text
-            suppressHydrationWarning>
-            Created on: {new Date(Number(createdOn)).toLocaleDateString()}
-          </Text>
-          <Text
-            suppressHydrationWarning>
-            Updated on: {new Date(Number(updatedOn)).toLocaleDateString()}
-          </Text>
+          <Stack color={'gray.500'} spacing={'2px'}>
+            {/*dates*/}
+            <Text
+              fontSize={'xs'}
+              suppressHydrationWarning>
+              Created on: {new Date(Number(createdOn)).toLocaleDateString()}
+            </Text>
+            <Text
+              fontSize={'xs'}
+              suppressHydrationWarning>
+              Updated on: {new Date(Number(updatedOn)).toLocaleDateString()}
+            </Text>
+          </Stack>
+          {tags.length ?
           <Flex
-            marginTop={'5px'}
+            flexWrap={'wrap'}
           >
             {tags.map((tag, index) => (
-              <Badge
+              <Tag
                 key={index}
-                bg={'teal'}
-                variant={'solid'}
-                fontSize={'sm'}
+                colorScheme={'teal'}
+                variant={'outline'}
+                size={'sm'}
                 fontWeight={'semibold'}
-                marginRight={'5px'}
-                marginBottom={'5px'}
-                borderRadius={'10px'}
-                padding={'6px'}
+                marginRight={'4px'}
+                borderRadius={'20px'}
+                padding={'6px 8px'}
                 _hover={{
                   cursor: 'default'
                 }}>
                 {tag.text}
-              </Badge>
+              </Tag>
             ))}
-          </Flex>
+          </Flex> :
+            null}
         </Stack>
       </Stack>
+        </a>
+      </NextLink>
 
-      <Flex
+      <Stack
         justify={'space-between'}
-        align={'flex-end'}
-        flexDirection={'column'}>
+        padding={cardPadding}
+        paddingLeft={0}
+        align={'flex-end'}>
         <Badge
           textTransform={'capitalize'}
           variant={`badge-${status}`}
@@ -163,28 +174,28 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
         <Menu onClose={removeMenuFocus}>
           <MenuButton
             as={IconButton}
-            background={'transparent'}
-            isRound={true}
-            outline='none'
-            //            _focus={{
-            //              outline: 'none',
-            //              background: 'transparent'
-            //            }}
-            _hover={{
-              outline: 'none',
-              background: 'transparent'
-            }}
-            _active={{
-              outline: 'none',
-              background: 'transparent'
-            }}
-            padding={'0px'}>
-            <SettingsIcon
+            icon={<SettingsIcon
               color={'gray.700'}
               _focus={{
                 color: 'red'
               }}
-              padding={'0px'} />
+              padding={'0px'} />}
+            background={'transparent'}
+            isRound={true}
+            outline='none'
+            _focus={{
+              outline: 'none',
+              background: '#eee'
+            }}
+            _hover={{
+              outline: 'none',
+              background: '#eee'
+            }}
+            _active={{
+              outline: 'none',
+              background: '#eee'
+            }}
+            padding={'0px'}>
           </MenuButton>
           <MenuList fontSize={'sm'}>
             <MenuItem onClick={addToStory} icon={<MdTaskAlt />}>Add to story</MenuItem>
@@ -210,13 +221,7 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
             <MenuItem icon={<IoClose />} onClick={deleteIdea}>Delete</MenuItem>
           </MenuList>
         </Menu>
-        {/* <Text
-            fontWeight={'bold'}
-          // TODO options icon
-          fontSize={'xl'}>
-          ...
-          </Text> */}
-      </Flex>
+      </Stack>
     </Stack>
   );
 }
