@@ -1,11 +1,15 @@
 import {
   Flex,
   Divider,
+  Button,
+  IconButton,
   Text,
   Heading,
   Stack
 } from '@chakra-ui/react';
+import { MdArrowBackIosNew as ArrowIcon } from 'react-icons/md';
 
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '../db';
 import { useLiveQuery } from "dexie-react-hooks";
@@ -14,14 +18,13 @@ import Logo from './Logo';
 import SidebarLink, { LINK_MARGIN_LEFT, SidebarExternalLink } from './SidebarLink';
 import { defaultSearchValues } from '../components/FilterBoards';
 
-// TODO: Add option to close and open sidebar
-
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const { orgname } = router.query;
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
 
-  // TODO: Fetch filtering by recently opened
-  // -- add lastOpened prop to boards table which updates every time getBoard is called
+  // Fetch filtering by recently opened
   const boards = useLiveQuery(
     () => db.getBoards({
       searchTerm: '',
@@ -46,24 +49,46 @@ const Sidebar: React.FC = () => {
       borderLeft={'none'}
       flexDirection={'column'}
       paddingTop={'15px'}
-      width={'202px'}
-      // TODO change ^
-      // width={'215px'}
+      transition={'0.15s ease-in-out width'}
+      width={isOpen ? '220px': '20px'}
       background={'gray.20'}
-      // TODO change ^
-      // background={'white'}
     >
-
       <Flex
-        // logo area
         align={'center'}
-        // border={'1px solid blue'}
-        flexDirection={'column'}
+        flexDirection={'row'}
+        position={'relative'}
         width={'100%'}
         marginBottom={'10px'}
         justify={'center'}>
-        <Logo />
+        <Flex
+          justifyContent={'center'}
+          h={'100%'}
+          w={'100%'}>
+        {isOpen ?
+          <Logo /> :
+          null}
+        <IconButton
+          aria-label={'close'}
+          icon={<ArrowIcon />}
+          isRound={true}
+          ref={toggleButtonRef}
+          onClick={() => setIsOpen(!isOpen)}
+          bg={'#fff'}
+          color={'#111'}
+          _focus={{
+            outline: 'none',
+            background: '#eee',
+          }}
+          boxShadow={'sm'}
+          variant={'outline'}
+          position={'absolute'}
+          right={isOpen ? '0px' : `-${toggleButtonRef.current!.clientWidth/2}px`}
+          size={'sm'}
+        />
+        </Flex>
       </Flex>
+      {!isOpen ?
+        null:
 
       <Flex
         // links
@@ -146,6 +171,7 @@ const Sidebar: React.FC = () => {
             name={'Github'} />
         </Flex>
       </Flex>
+      }
     </Flex>
   );
 }

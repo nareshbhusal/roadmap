@@ -276,6 +276,7 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
         >
           <Stack
             px={'7px'}
+            pt={'2px'}
             spacing={'5px'}
             mb={'2px'}
             // border={'1px solid green'}

@@ -49,9 +49,7 @@ const Kanban: NextPageWithLayout = () => {
       width={'100%'}
       height={'100%'}
     >
-      <Stack
-        padding={'2px'}
-      >
+      <Stack>
         <Head>
           <title>Roadmap</title>
         </Head>
@@ -61,7 +59,9 @@ const Kanban: NextPageWithLayout = () => {
         null
       }
       {boardData ?
-        <Stack flexGrow={1}>
+        <Stack
+          px={'30px'}
+          flexGrow={1}>
           <Heading
             p={'4px'}
             as={'h2'}
