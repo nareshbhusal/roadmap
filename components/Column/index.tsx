@@ -93,7 +93,7 @@ export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> =
           textAlign={'left'}
           fontWeight={'regular'}
           display={'block'}>
-          + Create Column
+          + Add Column
         </Button> :
           <InputGroup>
             <Input

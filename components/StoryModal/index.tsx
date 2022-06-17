@@ -44,7 +44,7 @@ const StoryModal: React.FC<{id: number; refreshData: Function; tags: StoriesTag[
   );
 
   const updateTitle = async (e: any) => {
-    await db.updateStory(id, { title: e.target.innerText });
+    await db.updateStory(id, { title: e.target.innerText.trim() });
   };
   const updateDescription = async (e: any) => {
     await db.updateStory(id, { description: e.target.innerHTML });
@@ -79,6 +79,11 @@ const StoryModal: React.FC<{id: number; refreshData: Function; tags: StoriesTag[
                 <ModalHeader
                   p={1}
                   onBlur={updateTitle}
+                  onKeyUp={(e) => {
+                    if (e.key === 'Enter') {
+                      updateTitle(e);
+                    }
+                  }}
                   suppressContentEditableWarning={true}
                   borderRadius={'md'}
                   transitionDuration={'0.2s'}

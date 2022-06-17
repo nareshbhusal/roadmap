@@ -173,7 +173,7 @@ class IdeasDB extends Dexie {
   }
 
   public async addBoard(name: string) {
-    await this.boards.add({
+    const boardId = await this.boards.add({
       name,
       createdOn: Date.now(),
       lists: [] as number[],
@@ -181,6 +181,7 @@ class IdeasDB extends Dexie {
       archived: false,
       lastAccessed: Date.now()
     });
+    return boardId;
   }
 
   public async archiveBoard(boardId: number) {
