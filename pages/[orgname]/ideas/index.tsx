@@ -6,6 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import {
   Flex,
   Heading,
+  HStack,
   Grid,
   Stack,
   Link,
@@ -48,14 +49,13 @@ const IdeasArea: React.FC<IdeasAreaProps> = ({ ideas, totalIdeas }) => {
     );
   }
   return (
-    <Grid
-      templateColumns={{"base": "repeat(2, 1fr)", "xl": "repeat(3, 1fr)"}}
-      marginBottom={"10px"}
-      gap={8} rowGap={12}>
+    <HStack
+      alignItems={'stretch'}
+      spacing={0} gap={'20px'} flexWrap={'wrap'}>
       {ideas.map((ideaData: IdeaPreview) => {
         return <IdeaCard key={ideaData.id} idea={ideaData} />
       })}
-    </Grid>
+    </HStack>
   );
 }
 

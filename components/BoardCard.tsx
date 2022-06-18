@@ -49,7 +49,6 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
   }
 
   const removeMenuFocus = (): void => {
-    // window.alert('removing focus');
     setTimeout(() => {
       (document.activeElement as HTMLElement).blur();
     }, 0);
@@ -63,7 +62,8 @@ const BoardCard: React.FC<BoardCardProps> = ({ board }) => {
       direction={'row'}
       spacing={'0px'}
       minWidth={'250px'}
-      maxWidth={'400px'}
+      maxWidth={'350px'}
+      flex={1}
       border={'1px solid transparent'}
       borderColor={'gray.100'}
       boxShadow={'sm'}

@@ -60,7 +60,6 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
     db.setIdeaStatus(id!, 'active');
   }
   const removeMenuFocus = (): void => {
-    // window.alert('removing focus');
     setTimeout(() => {
       (document.activeElement as HTMLElement).blur();
     }, 0);
@@ -72,12 +71,13 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
     <Stack
       as={'article'}
       spacing={'0px'}
+      flex={1}
       minWidth={'300px'}
-      maxWidth={'400px'}
+      maxWidth={'360px'}
       border={'1px solid transparent'}
       borderColor={'gray.100'}
-      // boxShadow= {'rgba(0, 0, 0, 0.05) 0px 0px 0px 1px'}
-      boxShadow={'sm'}
+      boxShadow= {'rgba(0, 0, 0, 0.05) 0px 0px 0px 1px'}
+      // boxShadow={'sm'}
       borderRadius={'12px'}
       justify={'space-between'}
       align={'space-between'}
@@ -144,6 +144,7 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
                 size={'sm'}
                 fontWeight={'semibold'}
                 marginRight={'4px'}
+                mb={'2px'}
                 borderRadius={'20px'}
                 padding={'6px 8px'}
                 _hover={{

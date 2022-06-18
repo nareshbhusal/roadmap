@@ -5,6 +5,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { useRef } from 'react';
 import {
   Flex,
+  HStack,
   Heading,
   Grid,
   Stack,
@@ -51,17 +52,16 @@ const BoardsArea: React.FC<BoardsAreaProps> = ({ boards, totalBoards }) => {
       </Flex>
     );
   }
+
   return (
-    <Grid
-      templateColumns={{"base": "repeat(2, 1fr)", "xl": "repeat(3, 1fr)"}}
-      marginBottom={"10px"}
-      gap={8}
-      rowGap={12}>
+    <HStack
+      alignItems={'stretch'}
+      spacing={0} gap={'20px'} flexWrap={'wrap'}>
       {boards.map((boardData: BoardPreview) => {
         return <BoardCard key={boardData.id} board={boardData} />
       })}
-    </Grid>
-  );
+    </HStack>
+  )
 }
 
 export interface HeaderProps {
