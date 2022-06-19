@@ -183,12 +183,12 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
               </Flex>
               <CreatableSelect
                 isMulti
-                isClearable={false}
-                placeholder={'Add tags'}
                 styles={customStyles}
                 backspaceRemovesValue={false}
                 closeMenuOnScroll={false}
                 noOptionsMessage={noOptionsMessage}
+                isClearable={false}
+                placeholder={'Add tags'}
                 name="tagIDs"
                 components={{
                   MultiValue: () => null,

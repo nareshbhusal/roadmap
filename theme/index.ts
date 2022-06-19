@@ -10,6 +10,7 @@ import shadows from "./foundations/shadows";
 //
 import Button from "./components/button";
 import Link from "./components/link";
+import FormLabel from "./components/formlabel";
 import Heading from "./components/heading";
 import Badge from "./components/badge";
 import Popover from "./components/popover";
@@ -27,7 +28,8 @@ const overrides = {
     Link,
     Heading,
     Badge,
-    Popover
+    Popover,
+    FormLabel
     // Other components go here
   },
 };

@@ -24,6 +24,7 @@ import { VscFile } from 'react-icons/vsc';
 import { HiOutlineDuplicate } from 'react-icons/hi';
 import { MdTaskAlt } from 'react-icons/md';
 import { db } from '../../db';
+import IdeaTag from '../IdeaTag';
 
 export interface IdeaCardProps {
   idea: IdeaPreview;
@@ -137,21 +138,7 @@ const IdeaCard: React.FC<IdeaCardProps> = ({ idea }) => {
             flexWrap={'wrap'}
           >
             {tags.map((tag, index) => (
-              <Tag
-                key={index}
-                colorScheme={'teal'}
-                variant={'outline'}
-                size={'sm'}
-                fontWeight={'semibold'}
-                marginRight={'4px'}
-                mb={'2px'}
-                borderRadius={'20px'}
-                padding={'6px 8px'}
-                _hover={{
-                  cursor: 'default'
-                }}>
-                {tag.text}
-              </Tag>
+              <IdeaTag key={tag.id} tag={tag.text} />
             ))}
           </Flex> :
             null}

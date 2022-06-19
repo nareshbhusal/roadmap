@@ -174,6 +174,7 @@ const IdeaForm: NextPageWithLayout = () => {
       </Heading>
       <Stack
         spacing={'25px'}
+        alignItems={'flex-start'}
         direction={'column'}>
         <FormControl
           isInvalid={errors.title}
