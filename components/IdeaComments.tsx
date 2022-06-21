@@ -20,7 +20,7 @@ import { SmallCloseIcon, CheckIcon } from '@chakra-ui/icons';
 
 import NextLink from 'next/link';
 import { MdCheck, MdEdit } from 'react-icons/md';
-import { FiTrash } from 'react-icons/fi';
+import { FiTrash, FiPlus } from 'react-icons/fi';
 
 const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: any; watch: any; }> = (
   { register, fields, append, remove, watch }
@@ -61,7 +61,9 @@ const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: an
               return (
                 <Flex key={fieldName}>
                   {editingCommentIndex === index ?
-                    <FormControl key={fieldName}>
+                    <FormControl
+                      alignItems={'flex-start'}
+                      key={fieldName}>
                       <Textarea
                         size={'sm'}
                         id={'comment'}
@@ -72,17 +74,25 @@ const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: an
                         })}
                         name={`${fieldName}.value`}
                       />
-                      <ButtonGroup>
+                      <ButtonGroup
+                        display={'flex'}
+                        alignItems={'flex-start'}
+                        spacing={'0.2rem'}
+                      >
                         <IconButton
                           aria-label={'Remove comment'}
                           icon={<FiTrash />}
+                          bg={'transparent'}
                           size={'sm'}
-                          marginLeft={'5px'}
                           type="button"
-                          onClick={() => remove(index)} />
+                          onClick={() => {
+                            remove(index);
+                            setEditingCommentIndex(null);
+                          }} />
                         {watch('comments', 'fields')[index].value.trim() ?
                           <IconButton
                             aria-label={'Save comment'}
+                            bg={'transparent'}
                             icon={<CheckIcon />}
                             onClick={() => {
                               if (!item.value.trim()) {
@@ -106,7 +116,7 @@ const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: an
                       </Text>
                       <ButtonGroup
                         spacing={'0.1rem'}
-                        alignSelf={'flex-end'}>
+                        alignSelf={'flex-start'}>
                         <IconButton
                           aria-label={'Delete Comment'}
                           icon={<FiTrash />}
@@ -166,8 +176,8 @@ const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: an
                 aria-label={'Cancel comment'}
                 icon={<SmallCloseIcon />}
                 size={'sm'}
-                marginLeft={'5px'}
                 type="button"
+                bg={'transparent'}
                 onClick={() => {
                   setIsAdding(false);
                 }}
@@ -192,7 +202,9 @@ const Comments: React.FC<{ register: any; fields: any[]; append: any; remove: an
           <Button
             mt={'1rem'}
             size={'sm'}
+            leftIcon={<FiPlus />}
             type="button"
+            variant={'outline'}
             colorScheme={'blue'}
             py={'0.7remrem'}
             onClick={() => {

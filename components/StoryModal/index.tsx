@@ -34,6 +34,8 @@ import Delete from './Delete';
 
 import { PriorityValue, StoriesTag } from '../../types';
 
+// TODO: Replace heading tags with FormLabel
+
 const StoryModal: React.FC<{id: number; refreshData: Function; tags: StoriesTag[]}> = ({ id, refreshData, tags}) => {
   const router = useRouter();
   const { orgname, boardId } = router.query;

@@ -40,6 +40,7 @@ const Sidebar: React.FC<{ passedBg?: string; }> = ({ passedBg }) => {
     <Flex
       as={'aside'}
       minHeight={'100vh'}
+      zIndex={220}
       height={'100vh'}
       position={'sticky'}
       flex={'0 0 auto'}
@@ -63,6 +64,7 @@ const Sidebar: React.FC<{ passedBg?: string; }> = ({ passedBg }) => {
         flexDirection={'row'}
         position={'relative'}
         width={'100%'}
+        opacity={isOpen? 1: 0.8}
         marginBottom={'10px'}
         justify={'center'}>
         <Flex

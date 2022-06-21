@@ -1,19 +1,19 @@
-import { Stack, Flex, Heading, Text } from '@chakra-ui/react';
+import { Stack, Flex, FormLabel, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-
-// TODO: Styles the ideas better
+import { AiOutlineLink } from 'react-icons/ai';
 
 const Ideas: React.FC<any> = ({ ideas }) => {
   const router = useRouter();
   const { orgname } = router.query;
   return (
-    <Stack spacing={'10px'}>
-      <Heading
-        fontWeight={'semibold'}
-        fontSize={'15px'}>
+    <Stack>
+      <FormLabel
+        requiredIndicator={<Text></Text>}
+        variant={'small'}
+        htmlFor="ideas">
         Ideas
-      </Heading>
+      </FormLabel>
       <Flex
         marginTop={'10px'}>
         <Flex
@@ -25,15 +25,22 @@ const Ideas: React.FC<any> = ({ ideas }) => {
             return (
               <Flex
                 key={idea.id}
-                marginBottom={'5px'}>
+                marginBottom={'8px'}>
                 <NextLink
                   color={'blue'}
                   href={url}>
-                  {idea.title}
+                  <a>
+                    <Flex alignItems={'center'}>
+                      <AiOutlineLink />
+                      <Text ml={'3px'}>
+                        {idea.title}
+                      </Text>
+                    </Flex>
+                  </a>
                 </NextLink>
               </Flex>
             )}
-          )}
+                    )}
           {ideas.length === 0 ?
             <Text
               color={'gray.600'}
@@ -41,7 +48,7 @@ const Ideas: React.FC<any> = ({ ideas }) => {
               marginTop={'10px'}>
               No ideas linked yet
             </Text> :
-            null}
+              null}
         </Flex>
       </Flex>
     </Stack>

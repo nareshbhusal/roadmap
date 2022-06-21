@@ -1,5 +1,6 @@
 import {
   Flex,
+  FormLabel,
   Text,
   Box,
   HStack,
@@ -148,11 +149,12 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
 
   return (
     <Stack spacing={'10px'}>
-      <Heading
-        fontWeight={'semibold'}
-        fontSize={'15px'}>
+      <FormLabel
+        requiredIndicator={<Text></Text>}
+        variant={'small'}
+        htmlFor="tags">
         Tags
-      </Heading>
+      </FormLabel>
       <Flex
         marginTop={'10px'}>
         <Flex

@@ -1,5 +1,6 @@
 import {
   Stack,
+  FormLabel,
   Flex,
   Heading,
   Text,
@@ -24,9 +25,12 @@ const Description: React.FC<DescriptionProps> = ({ description, updateHandler })
       <Flex
         alignItems={'center'}
       >
-        <Heading p={1} fontSize={'1rem'} as={'h3'}>
+        <FormLabel
+          requiredIndicator={<Text></Text>}
+          variant={'medium'}
+          htmlFor="description">
           Description
-        </Heading>
+        </FormLabel>
         <Button
           size={'sm'}
           mx={'1'}

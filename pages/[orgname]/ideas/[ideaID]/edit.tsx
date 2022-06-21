@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Layout from '../../../../layouts/layout';
 import { NextPageWithLayout } from '../../../../types/page';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import {
   Flex,
@@ -30,6 +30,7 @@ import {
 } from '@chakra-ui/react';
 
 import type { IdeaUpdateForm, IdeasTag, IdeaStatus } from '../../../../types';
+import useSize from '../../../../hooks/useSize';
 
 import NextLink from 'next/link';
 import { db } from '../../../../db';
@@ -38,14 +39,7 @@ import { default as ReactSelect } from 'react-select';
 import IdeaFormTags from '../../../../components/IdeaFormTags';
 import Comments from '../../../../components/IdeaComments';
 import Rating from '../../../../components/Rating';
-
-// TODO: Style this better:
-// - have the header be sticky with buttons 'go back' and 'save'
-// - how to add icons alongside FormLabel
-// - effort and impact
-// -- a slider feels like it's used to set progress, something like a rating component would suite better
-// -- I can't find them in chakra-ui, look into how they're implemented over dribbble shots and mui
-//
+import Status from '../../../../components/IdeaStatus';
 
 const LinkToStory: React.FC<{ideaID: number; storyID: number;}> = ({ ideaID, storyID }) => {
   const stories = useLiveQuery(
@@ -76,19 +70,21 @@ const LinkToStory: React.FC<{ideaID: number; storyID: number;}> = ({ ideaID, sto
         Add to Story
       </FormLabel>
       <Flex>
-      <ReactSelect
-        name="story"
-        id={'story'}
-        // defaultValue={options.find(option => option.value === storyID)}
-        value={options.filter(options => options.value === storyID)}
-        onChange={linkToStory}
-        options={options}
+        <ReactSelect
+          name="story"
+          id={'story'}
+          // defaultValue={options.find(option => option.value === storyID)}
+          value={options.filter(options => options.value === storyID)}
+          placeholder={'Select a story'}
+          onChange={linkToStory}
+          options={options}
         />
         {storyID?
           <Button
             marginLeft={'5px'}
             type="button"
-            colorScheme={'green'}
+            colorScheme={'gray'}
+            // variant={'outline'}
             onClick={unlinkFromStory}
           >
             Remove from story
@@ -100,55 +96,64 @@ const LinkToStory: React.FC<{ideaID: number; storyID: number;}> = ({ ideaID, sto
   );
 }
 
-const Status: React.FC<{ status: IdeaStatus; ideaID: number }> = ({ status, ideaID }) => {
-  if (status === 'active') {
-    // display 2 buttons with click handlers that
-    // - change the status to archived
-    // - change the status to completed
-    return (
-      <Flex>
-        <Button
-          type="button"
-          colorScheme={'green'}
-          marginRight={'5px'}
-          onClick={() => db.setIdeaStatus(ideaID, 'archived')}
-        >
-          Archive
-        </Button>
-        <Button
-          type="button"
-          colorScheme={'green'}
-          onClick={() => db.setIdeaStatus(ideaID, 'completed')}
-        >
-          Complete
-        </Button>
-      </Flex>
-    );
-  } else if (status === 'archived') {
-    // display a button that changes the status to active
-    return (
-      <Button
-        type="button"
-        colorScheme={'green'}
-        onClick={() => db.setIdeaStatus(ideaID, 'active')}
-      >
-        Activate
-      </Button>
-    );
-  } else if (status === 'completed') {
-    // display a button that changes the status to active
-    return (
-      <Button
-        type="button"
-        colorScheme={'green'}
-        onClick={() => db.setIdeaStatus(ideaID, 'active')}
-      >
-        Activate
-      </Button>
-    );
-  }
-  return null;
+export interface HeaderProps {
+  submitHandler: React.MouseEventHandler<HTMLButtonElement>;
+  headerRef: React.RefObject<HTMLDivElement>;
+  containerWidth: number;
 }
+
+const Header: React.FC<HeaderProps> = ({ submitHandler, headerRef, containerWidth }) => {
+  const router = useRouter();
+  const { orgname } = router.query;
+  return (
+    <HStack
+      border={'1px solid transparent'}
+      borderBottomColor={'#eee'}
+      boxShadow={'xs'}
+      position={'fixed'}
+      bg={'#fff'}
+      px={'1rem'}
+      zIndex={200}
+      ref={headerRef}
+      w={`${containerWidth}px`}
+      justifyContent={'space-between'}
+    >
+      <Heading
+        fontSize={'1.25rem'}
+        my={'15px'}
+        fontWeight={'semibold'}
+      >
+        Edit Idea
+      </Heading>
+      <ButtonGroup>
+        <Button
+          type="button"
+          variant={'outline'}
+          colorScheme={'gray'}
+          onClick={() => {
+            // go back to ideas
+            router.push(`/${orgname}/ideas`);
+          }}
+        >
+          Go to Ideas
+        </Button>
+        <Button
+          onClick={submitHandler}
+          color={'white'}
+          _hover={{
+            background: 'blue.500'
+          }}
+          _active={{
+            background: 'blue.500'
+          }}
+          background={'blue.400'}>
+          Save
+        </Button>
+      </ButtonGroup>
+    </HStack>
+  );
+}
+
 
 const defaultFormValues = {
   title: '',
@@ -163,6 +168,7 @@ const EditIdea: NextPageWithLayout = () => {
   const {
     register,
     handleSubmit,
+    getValues,
     control,
     watch,
     reset,
@@ -174,6 +180,9 @@ const EditIdea: NextPageWithLayout = () => {
     shouldUnregister: false,
   });
 
+  const headerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "comments",
@@ -184,10 +193,15 @@ const EditIdea: NextPageWithLayout = () => {
   const ideaID = router.query.ideaID;
 
   const idea = useLiveQuery(
-    () => db.getIdea(parseInt(ideaID as string)
-  ), [ideaID]);
+    () => db.getIdea(parseInt(ideaID as string)), [ideaID]
+  );
 
   const onSubmit = async (data: any) => {
+  // when comments' array is empty, it doesn't appear in onSubmit data prop
+    data = {
+      ...data,
+      ...getValues()
+    };
     const idea: IdeaUpdateForm = {
       title: data.title,
       description: data.description,
@@ -218,23 +232,25 @@ const EditIdea: NextPageWithLayout = () => {
     populateForm();
   }, [ideaID]);
 
+  const size = useSize(containerRef);
+
   return (
     <Stack
-      px={'30px'}
       width={'100%'}
       mb={'50px'}
+      ref={containerRef}
     >
       <Head>
         <title>Edit Idea</title>
       </Head>
-      <Heading
-        fontSize={'2rem'}
-        my={'15px'}
-      >
-        Edit Idea
-      </Heading>
+      <Header
+        containerWidth={size ? size.width : 0}
+        headerRef={headerRef}
+        submitHandler={handleSubmit(onSubmit)} />
       <Stack
         spacing={'25px'}
+        px={'30px'}
+        pt={headerRef.current ? `${headerRef.current.offsetHeight+4}px` : '0px'}
         alignItems={'flex-start'}
         direction={'column'}>
         <FormControl
@@ -268,16 +284,6 @@ const EditIdea: NextPageWithLayout = () => {
             htmlFor="impact">
             Impact
           </FormLabel>
-          {/* <Select
-            id="impact"
-            placeholder="Impact"
-            {...register("impact")}
-            name="impact"
-          >
-            {[1, 2, 3, 4, 5].map(i => (
-              <option key={i} value={i}>{i}</option>
-            ))}
-          </Select> */}
           <Controller
             control={control}
             name={'impact'}
@@ -317,13 +323,18 @@ const EditIdea: NextPageWithLayout = () => {
         <IdeaFormTags
           control={control}
           register={register} />
-        <Comments watch={watch} fields={fields} append={append} remove={remove} register={register} />
         {idea?
           <>
-          <LinkToStory storyID={idea.storyID} ideaID={parseInt(ideaID as string)} />
             <Status status={idea.status} ideaID={parseInt(ideaID as string)} />
+            <LinkToStory storyID={idea.storyID} ideaID={parseInt(ideaID as string)} />
           </>:
           <></>}
+        <Comments
+          watch={watch}
+          fields={fields}
+          append={append}
+          remove={remove}
+          register={register} />
         <FormControl
           isInvalid={errors.description}
           isRequired
@@ -343,18 +354,6 @@ const EditIdea: NextPageWithLayout = () => {
             name="description"
           />
         </FormControl>
-        <Button
-          onClick={handleSubmit(onSubmit)}
-          color={'white'}
-          _hover={{
-            background: 'blue.500'
-          }}
-          _active={{
-            background: 'blue.500'
-          }}
-          background={'blue.400'}>
-          Update Idea
-        </Button>
       </Stack>
     </Stack>
   );

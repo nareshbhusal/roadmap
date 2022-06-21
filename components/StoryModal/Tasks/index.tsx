@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { createPortal } from "react-dom";
 import {
   Stack,
+  FormLabel,
   Flex,
   Heading,
   Text,
@@ -119,14 +120,13 @@ const Tasks: React.FC<{ storyID: number; tasks: TaskType[] }> = ({ storyID, task
   }, [newTaskOpen]);
 
   return (
-    <Stack
-      spacing={'10px'}
-    >
-      <Heading
-        fontWeight={'semibold'}
-        fontSize={'15px'}>
+    <Stack>
+      <FormLabel
+        requiredIndicator={<Text></Text>}
+        variant={'small'}
+        htmlFor="tasks">
         Tasks
-      </Heading>
+      </FormLabel>
       <Flex
         marginTop={'10px'}>
         <Flex

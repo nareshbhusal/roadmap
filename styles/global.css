@@ -10,6 +10,7 @@
 
 
 .column .simplebar-scrollbar {
+  background-color: #aaa;
   width: 5px;
   margin-left: 5px;
 }

@@ -29,9 +29,7 @@ import { db } from '../db';
 import { useLiveQuery } from "dexie-react-hooks";
 import CreatableSelect from 'react-select/creatable';
 import { ActionMeta, OnChangeValue, components } from 'react-select';
-import { default as ReactSelect } from 'react-select';
 import IdeaTag from './IdeaTag';
-
 
 const Option = (props: any) => {
   const { innerRef, innerProps, data } = props;
@@ -118,17 +116,19 @@ const customStyles = {
   // TODO: Can we get these to obey the parent elements' maxWidth?
   menu: (base: any) => ({
     ...base,
-    width: "max-content",
-    maxWidth: '280px',
+    // width: "max-content",
+    // maxWidth: '280px',
   }),
   control: (base: any) => ({
     ...base,
     cursor: 'pointer',
-    width: 'max-content',
-    maxWidth: '280px',
+    // width: 'max-content',
+    // maxWidth: '280px',
   }),
+  valueContainer: (base: any, state: any) => ({
+    ...base,
+  })
 }
-
 
 export interface IdeaFormTagsProps {
   register: any;
@@ -184,16 +184,17 @@ const IdeaFormTags: React.FC<IdeaFormTagsProps> = ({ register, control }) => {
       width={'100%'}
       spacing={'15px'}
     >
-      <Heading
-        fontWeight={'semibold'}
-        fontSize={'15px'}>
+      <FormLabel
+        requiredIndicator={<Text></Text>}
+        variant={'small'}
+        htmlFor="tagIDs">
         Tags
-      </Heading>
+      </FormLabel>
       <Flex
         alignSelf={'flex-start'}>
         <Flex
           flexDirection={'column'}
-          width={'300px'}
+          alignItems={'flex-start'}
           justifyContent={'flex-left'}>
           {selectorTags?
             <Controller
@@ -218,8 +219,8 @@ const IdeaFormTags: React.FC<IdeaFormTagsProps> = ({ register, control }) => {
                   noOptionsMessage={noOptionsMessage}
                   isClearable={false}
                   placeholder={'Add tags'}
-                  // value={selectedTags}
                   className="basic-multi-select"
+                  theme={'neutral170'}
                   classNamePrefix="select"
                 />
               )}

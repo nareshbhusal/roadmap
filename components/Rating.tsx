@@ -39,7 +39,7 @@ const RatingIcon = (props: any) => {
         outline={'1px solid blue'}
         outlineColor={'blue.500'}
         borderWidth='1px'
-        boxShadow='md'
+        boxShadow='sm'
         _checked={{
           // borderColor: 'teal.600',
         }}

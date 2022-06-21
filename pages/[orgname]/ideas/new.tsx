@@ -1,13 +1,15 @@
 import Head from 'next/head';
-import React from 'react'
+import React, { useRef } from 'react'
 import Layout from '../../../layouts/layout';
 import { NextPageWithLayout } from '../../../types/page';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import { useForm, Controller } from "react-hook-form";
 import {
   Flex,
+  HStack,
   Heading,
-  Grid,
+  ButtonGroup,
   Stack,
   Select,
   Link,
@@ -25,93 +27,67 @@ import type { IdeaCreateForm, IdeasTag } from '../../../types';
 
 import NextLink from 'next/link';
 import { db } from '../../../db';
-import { useLiveQuery } from "dexie-react-hooks";
-import CreatableSelect from 'react-select/creatable';
-import { ActionMeta, OnChangeValue } from 'react-select';
+import useSize from '../../../hooks/useSize';
+import Rating from '../../../components/Rating';
+import IdeaFormTags from '../../../components/IdeaFormTags';
 
-// TODO: Change the data type with react-hook-form of `effort` and `impact` to numbers
 // TODO: Schema validation with react-hook-form and yup
 
-export interface IdeaFormTagsProps {
-  register: any;
-  control: any;
+export interface HeaderProps {
+  submitHandler: React.MouseEventHandler<HTMLButtonElement>;
+  headerRef: React.RefObject<HTMLDivElement>;
+  containerWidth: number;
 }
 
-const IdeaFormTags: React.FC<IdeaFormTagsProps> = ({ register, control }) => {
-
-  const selectableTags = useLiveQuery(
-    () => db.getIdeasTags()
-  );
-
-  const [selectedTags, setSelectedTags] = useState<IdeasTag[]>([]);
-
-  const selectorTags = selectableTags?.map(tag => {
-    return { value: tag.id, label: tag.text }
-  });
-
-  const handleSelect = async (
-    newValues: OnChangeValue<any, true>,
-    onChange: Function) => {
-
-    const isTagCreated = newValues.some(v => v.__isNew__);
-    if (!isTagCreated) {
-      return onChange(newValues);
-    }
-
-    const newTagLabel = newValues.find(v => v.__isNew__).label;
-    try {
-      const tagID = await db.addIdeasTag(newTagLabel);
-      onChange([...selectedTags, {
-        value: tagID,
-        label: newTagLabel
-      }]);
-    } catch(err) {
-      console.log(err);
-      return console.log('error creating tag');
-    }
-  }
-
+const Header: React.FC<HeaderProps> = ({ submitHandler, headerRef, containerWidth }) => {
+  const router = useRouter();
+  const { orgname } = router.query;
   return (
-    <Flex
+    <HStack
+      border={'1px solid transparent'}
+      borderBottomColor={'#eee'}
+      boxShadow={'xs'}
+      position={'fixed'}
+      bg={'#fff'}
+      px={'1rem'}
+      zIndex={200}
+      ref={headerRef}
+      w={`${containerWidth}px`}
+      justifyContent={'space-between'}
     >
       <Heading
+        fontSize={'1.25rem'}
+        my={'15px'}
         fontWeight={'semibold'}
-        fontSize={'15px'}
-        marginBottom={'15px'}>
-        Tags
+      >
+        New Idea
       </Heading>
-      <Flex
-        marginTop={'10px'}>
-        <Flex
-          flexDirection={'column'}
-          width={'300px'}
-          justifyContent={'flex-left'}
-          marginTop={'20px'}>
-          {selectorTags?
-            <Controller
-              control={control}
-              defaultValue={selectorTags}
-              name="tagIDs"
-              render={({ field: { value, ref, onChange } }) => (
-                <CreatableSelect
-                  isMulti
-                  name="tagIDs"
-                  value={value}
-                  {...register("tagIDs")}
-                  options={selectorTags}
-                  onChange={(v: any[]) => handleSelect(v, onChange)}
-                  inputRef={ref}
-                  // value={selectedTags}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                />
-              )}
-            />:
-              <Text>Searching for tags...</Text>
-          }
-        </Flex>
-      </Flex>
-    </Flex>
+      <ButtonGroup>
+        <Button
+          type="button"
+          variant={'outline'}
+          colorScheme={'gray'}
+          onClick={() => {
+            // go back to ideas
+            router.push(`/${orgname}/ideas`);
+          }}
+        >
+          Go to Ideas
+        </Button>
+        <Button
+          onClick={submitHandler}
+          color={'white'}
+          _hover={{
+            background: 'blue.500'
+          }}
+          _active={{
+            background: 'blue.500'
+          }}
+          background={'blue.400'}>
+          Add Idea
+        </Button>
+      </ButtonGroup>
+    </HStack>
   );
 }
 
@@ -138,7 +114,10 @@ const IdeaForm: NextPageWithLayout = () => {
     shouldUnregister: false,
   });
 
+  const headerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { errors }: { errors: any } = formState;
+  const size = useSize(containerRef);
 
   const onSubmit = async (data: any) => {
     const idea: IdeaCreateForm = {
@@ -159,28 +138,33 @@ const IdeaForm: NextPageWithLayout = () => {
 
   return (
     <Stack
-      px={'30px'}
       width={'100%'}
       mb={'50px'}
+      ref={containerRef}
     >
       <Head>
         <title>Add Idea</title>
       </Head>
-      <Heading
-        fontSize={'2rem'}
-        my={'15px'}
-      >
-        Create Idea
-      </Heading>
+      <Header
+        submitHandler={handleSubmit(onSubmit)}
+        headerRef={headerRef}
+        containerWidth={size ? size.width : 0} />
       <Stack
         spacing={'25px'}
+        px={'30px'}
+        pt={headerRef.current ? `${headerRef.current.offsetHeight+4}px` : '0px'}
         alignItems={'flex-start'}
         direction={'column'}>
         <FormControl
           isInvalid={errors.title}
           isRequired
         >
-          <FormLabel htmlFor="title">Title</FormLabel>
+          <FormLabel
+            requiredIndicator={<Text></Text>}
+            variant={'small'}
+            htmlFor="title">
+            Title
+          </FormLabel>
           <Input
             id="title"
             placeholder="Title"
@@ -195,7 +179,12 @@ const IdeaForm: NextPageWithLayout = () => {
           isInvalid={errors.description}
           isRequired
         >
-          <FormLabel htmlFor="description">Description</FormLabel>
+          <FormLabel
+            requiredIndicator={<Text></Text>}
+            variant={'small'}
+            htmlFor="description">
+            Description
+          </FormLabel>
           <Input
             id="description"
             isRequired={false}
@@ -208,49 +197,51 @@ const IdeaForm: NextPageWithLayout = () => {
           isInvalid={errors.impact}
           isRequired
         >
-          <FormLabel htmlFor="impact">Impact</FormLabel>
-          <Select
-            id="impact"
-            placeholder="Impact"
-            {...register("impact")}
-            name="impact"
-          >
-            {[1, 2, 3, 4, 5].map(i => (
-              <option key={i} value={i}>{i}</option>
-            ))}
-          </Select>
+          <FormLabel
+            requiredIndicator={<Text></Text>}
+            variant={'small'}
+            htmlFor="impact">
+            Impact
+          </FormLabel>
+          <Controller
+            control={control}
+            name={'impact'}
+            render={({field: { onChange, value }}) => (
+              <Rating
+                scale={5}
+                name='impact'
+                value={value}
+                onChange={onChange}
+              />)
+            }
+          />
         </FormControl>
         <FormControl
           isInvalid={errors.effort}
           isRequired
         >
-          <FormLabel htmlFor="effort">Effort</FormLabel>
-          <Select
-            id="effort"
-            placeholder="Effort"
-            {...register("effort")}
-            name="effort"
-          >
-            {[1, 2, 3, 4, 5].map(i => (
-              <option key={i} value={i}>{i}</option>
-            ))}
-          </Select>
+          <FormLabel
+            variant={'small'}
+            requiredIndicator={<Text></Text>}
+            htmlFor="effort">
+            Effort
+          </FormLabel>
+          <Controller
+            control={control}
+            name={'effort'}
+            render={({field: { onChange, value }}) => (
+              <Rating
+                scale={5}
+                name='effort'
+                value={value}
+                onChange={onChange}
+              />)
+            }
+          />
         </FormControl>
         <IdeaFormTags
           control={control}
           register={register} />
-        <Button
-          onClick={handleSubmit(onSubmit)}
-          color={'white'}
-          _hover={{
-            background: 'blue.500'
-          }}
-          _active={{
-            background: 'blue.500'
-          }}
-          background={'blue.400'}>
-          Add Idea
-        </Button>
       </Stack>
     </Stack>
   );

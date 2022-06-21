@@ -5,5 +5,10 @@ export default {
       fontSize: "sm",
       requiredIndicator: false
     },
+    "medium": {
+      fontWeight: "bold",
+      fontSize: "md",
+      requiredIndicator: false
+    },
   }
 }

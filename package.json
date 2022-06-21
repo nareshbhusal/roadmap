@@ -18,6 +18,7 @@
     "@fontsource/inter": "^4.5.10",
     "@fontsource/open-sans": "^4.5.10",
     "@fontsource/raleway": "^4.5.8",
+    "@react-hook/resize-observer": "^1.2.5",
     "dexie": "^3.2.2",
     "dexie-react-hooks": "^1.1.1",
     "framer-motion": "^6.3.3",

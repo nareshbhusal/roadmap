@@ -2,6 +2,7 @@ import {
   Stack,
   Flex,
   Tag,
+  FormLabel,
   Heading,
   Text,
   Checkbox,
@@ -94,12 +95,14 @@ const Priority: React.FC<{ id: number; priority: PriorityValue; }> = ({ id, prio
   }))
 
   return (
-    <Stack spacing={'10px'}>
-      <Heading
-        fontWeight={'semibold'}
-        fontSize={'15px'}>
+    <Stack>
+      <FormLabel
+        requiredIndicator={<Text></Text>}
+        variant={'small'}
+        fontSize={'0.95rem'}
+        htmlFor="priority">
         Priority
-      </Heading>
+      </FormLabel>
       <ReactSelect
         options={options}
         components={{
