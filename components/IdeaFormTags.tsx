@@ -113,7 +113,6 @@ const MultiValue = (props: any) => {
 }
 
 const customStyles = {
-  // TODO: Can we get these to obey the parent elements' maxWidth?
   menu: (base: any) => ({
     ...base,
     // width: "max-content",

@@ -33,8 +33,6 @@ import 'simplebar-react/dist/simplebar.min.css';
 export const listStringToId = (listString: string) => parseInt(listString.replace('list-', ''));
 export const listIdToString = (listId: number) => `list-${listId}`;
 
-// TODO: Don't allow empty string for new column title
-
 export interface ColumnWrapperProps {
   children: React.ReactNode;
   styleProps: Object;
@@ -64,13 +62,13 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({ children, styleProps, inn
   );
 }
 
-
 export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> = ({ boardId, refreshData }) => {
   const [columnName, setColumnName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
   const submitHandler = async () => {
-    await db.addBoardList(columnName, boardId);
+    if (!columnName.trim()) return;
+    await db.addBoardList(columnName.trim(), boardId);
     refreshData();
     setIsCreating(false);
     setColumnName('');
@@ -99,6 +97,7 @@ export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> =
             <Input
               placeholder="Enter a column name"
               value={columnName}
+              isRequired={true}
               color={'#fff'}
               onChange={(e) => setColumnName(e.target.value)}
               onKeyPress={async (e) => {

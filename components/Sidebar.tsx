@@ -47,8 +47,6 @@ const Sidebar: React.FC<{ passedBg?: string; }> = ({ passedBg }) => {
       top={'0%'}
       bottom={'0%'}
       align={'center'}
-      // border={'2px solid transparent'}
-      // TODO change ^
       border={'1px solid transparent'}
       borderRightColor={'blackAlpha.50'}
       borderLeft={'none'}
@@ -100,8 +98,6 @@ const Sidebar: React.FC<{ passedBg?: string; }> = ({ passedBg }) => {
       <Flex
         // links
         align={'center'}
-        //TODO remove padding
-        // padding={'7.5px'}
         flexDirection={'column'}
         width={'100%'}
         py={'10px'}
