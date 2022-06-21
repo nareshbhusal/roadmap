@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Layout from '../../layouts/layout';
 import { NextPageWithLayout } from '../../types/page';
 import { useForm, useWatch } from "react-hook-form";
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import {
   Flex,
   HStack,

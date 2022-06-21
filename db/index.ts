@@ -801,6 +801,14 @@ class IdeasDB extends Dexie {
     };
   }
 
+  public async getLastAccessedBoard() {
+    const boards = await this.boards.toArray();
+    if (boards.length === 0) {
+      return null;
+    }
+    return boards.sort((a, b) => b.lastAccessed - a.lastAccessed)[0].id;
+  }
+
   public async updateAccountInfo(organization: Organization, user: User) {
     await this.transaction("rw", this.organizations, this.users, async () => {
       // there's only one organization and one user, update those sole records

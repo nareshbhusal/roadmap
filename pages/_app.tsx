@@ -22,8 +22,6 @@ export type Props = AppProps & {
   Component: NextPageWithLayout;
 };
 
-// TODO: Redirect /[orgname]/ to /[orgname]/roadmap/
-
 const App = ({ Component, pageProps }: Props) => {
   const [isAuthenticated, setIsAuthenticated] = useState<null | boolean>(null);
   const router = useRouter();
@@ -33,17 +31,26 @@ const App = ({ Component, pageProps }: Props) => {
 
     (async () => {
       const { user, organization } = await db.getRegisterationInfo();
+      const lastAccessedBoard = await db.getLastAccessedBoard();
       const isLoggedIn = !!user && !!organization;
       setIsAuthenticated(isLoggedIn);
 
       const isPublicRoute = publicRoutes.includes(router.pathname);
 
       if (isPublicRoute && isLoggedIn) {
-        router.push(`/${organization.urlKey}/ideas`);
+        if (lastAccessedBoard) {
+          router.push(`/${organization.urlKey}/roadmap/${lastAccessedBoard}`);
+        } else {
+          router.push(`/${organization.urlKey}/boards`);
+        }
       } else if (!isPublicRoute && !isLoggedIn) {
         router.push('/register');
       } else if (!isPublicRoute && isLoggedIn && router.query.orgname !== organization.urlKey && router.isReady) {
-        router.push(`/${organization.urlKey}/ideas`);
+        if (lastAccessedBoard) {
+          router.push(`/${organization.urlKey}/roadmap/${lastAccessedBoard}`);
+        } else {
+          router.push(`/${organization.urlKey}/boards`);
+        }
       }
     })();
   }, [router.pathname, router.isReady]);
