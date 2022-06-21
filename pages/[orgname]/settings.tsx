@@ -33,7 +33,23 @@ type FormValues = {
 // TODO: How do you validate these form/data values, especially across different places in the app,
 // including FE to BE full-cover?
 
-// TODO: https://www.30secondsofcode.org/css/p/1
+// NOTE: https://www.30secondsofcode.org/css/p/1
+
+const Header: React.FC = () => {
+  return (
+    <Flex
+      justify={'space-between'}
+      paddingTop={'15px'}
+      px={'30px'}
+      width={'100%'}
+    >
+      <Heading
+        variant={"page-main-heading"}>
+        Update Account Info
+      </Heading>
+    </Flex>
+  );
+}
 
 const Settings: NextPageWithLayout = () => {
   const {
@@ -120,20 +136,20 @@ const Settings: NextPageWithLayout = () => {
   }, [toChangeSlug, org]);
 
   return (
-    <Flex
+    <Stack
       minHeight={'100vh'}
       width={'100%'}
-      align={'center'}
-      justify={'center'}>
+      align={'flex-start'}>
+      <Header />
       <Head>
         <title>Roadmap App | Settings</title>
       </Head>
       <Stack
         as={'form'}
         onSubmit={handleSubmit(onSubmit)}
-        align={'center'}
+        align={'flex-start'}
+        px={'30px'}
         // width={{'base': '100%', 'sm': 'auto'}}
-        // width={'100%'}
         justify={'center'}
         flexDirection={'column'}
         spacing={{'base': '2', 'md': '6'}}
@@ -142,19 +158,11 @@ const Settings: NextPageWithLayout = () => {
           align={'center'}
           justify={'center'}
           width={{'base': '100%', 'sm': '480px', 'md': '640px'}}
-          // width={'100%'}
+          maxW={'520px'}
           flexDirection={'column'}
-          // boxShadow={{'md':'formborder'}}
-          px={{"base": "20px", "md": "100px"}}
           py={'54px'}
           spacing={'5'}
           background={'white'}>
-          <Heading
-            lineHeight={'9'}
-            fontWeight={'semibold'}
-            fontSize={'3xl'}>
-            Update Account info
-          </Heading>
           <Stack
             align={'center'}
             justify={'center'}
@@ -174,7 +182,6 @@ const Settings: NextPageWithLayout = () => {
               isRequired={false}>
               <Input
                 // fix that animation
-                autoFocus={true}
                 boxShadow={'sm'}
                 transition={'none'}
                 borderColor={'gray.200'}
@@ -260,7 +267,7 @@ const Settings: NextPageWithLayout = () => {
           </Button>
         </Stack>
       </Stack>
-    </Flex>
+    </Stack>
   );
 }
 

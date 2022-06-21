@@ -10,7 +10,6 @@ import {
   FormControl,
   FormLabel,
 
-
   Popover,
   PopoverContent,
   PopoverBody,
@@ -111,7 +110,12 @@ const TagEditForm = ({ tag, firstFieldRef, closeForm, isOpen, setIsOpen }: any) 
           spacing={5}
         >
           <FormControl>
-            <FormLabel htmlFor={'tag-name'}>Name</FormLabel>
+            <FormLabel
+              variant={'small'}
+              fontWeight={'regular'}
+              htmlFor={'tag-name'}>
+              Name
+            </FormLabel>
             <Input
               id={'tag-name'}
               ref={firstFieldRef}

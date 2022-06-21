@@ -70,14 +70,10 @@ const StoryTag = ({ tag, removeHandler }: any) => {
                  }
                  return;
                }
-               console.log('===')
-               console.log(`isOpen: ${isOpen}`);
                if (isOpen){
                  return closeHandler();
                }
                setIsOpen(true);
-               console.log(`isOpen: ${isOpen}`);
-               console.log('===')
           }}
         >
             {tag.label}

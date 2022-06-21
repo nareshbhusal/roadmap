@@ -1,8 +1,6 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 
-// TODO: tailwind ui vs chakra ui
-// -- headless ui
 const Home: NextPage = () => {
   return (
     <div>
