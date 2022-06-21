@@ -40,7 +40,7 @@ const Header: React.FC = () => {
     <Flex
       justify={'space-between'}
       paddingTop={'15px'}
-      px={'30px'}
+      px={{ base: '10px', md: '30px' }}
       width={'100%'}
     >
       <Heading
@@ -148,8 +148,7 @@ const Settings: NextPageWithLayout = () => {
         as={'form'}
         onSubmit={handleSubmit(onSubmit)}
         align={'flex-start'}
-        px={'30px'}
-        // width={{'base': '100%', 'sm': 'auto'}}
+        px={{ base: '10px', md: '30px' }}
         justify={'center'}
         flexDirection={'column'}
         spacing={{'base': '2', 'md': '6'}}
@@ -160,7 +159,7 @@ const Settings: NextPageWithLayout = () => {
           width={{'base': '100%', 'sm': '480px', 'md': '640px'}}
           maxW={'520px'}
           flexDirection={'column'}
-          py={'54px'}
+          py={{ base: '20px', md: '40px' }}
           spacing={'5'}
           background={'white'}>
           <Stack

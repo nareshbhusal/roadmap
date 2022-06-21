@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({ onModalOpen }) => {
     <Flex
       justify={'space-between'}
       paddingTop={'15px'}
-      px={'30px'}
+      px={{ base: '10px', md: '30px' }}
       width={'100%'}
     >
       <Heading
@@ -145,7 +145,7 @@ const Boards: NextPageWithLayout = () => {
       <Header onModalOpen={onModalOpen} />
       <Stack
         width={'100%'}
-        px={'30px'}
+        px={{ base: '10px', md: '30px' }}
         spacing={'35px'}>
         {boards?
           <Stack>

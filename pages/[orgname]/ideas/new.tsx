@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ submitHandler, headerRef, containerWidt
       boxShadow={'xs'}
       position={'fixed'}
       bg={'#fff'}
-      px={'1rem'}
+      px={{ base: '0.4rem', md: '1rem' }}
       zIndex={200}
       ref={headerRef}
       w={`${containerWidth}px`}
@@ -118,6 +118,8 @@ const IdeaForm: NextPageWithLayout = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { errors }: { errors: any } = formState;
   const size = useSize(containerRef);
+  const router = useRouter();
+  const { orgname } = router.query;
 
   const onSubmit = async (data: any) => {
     const idea: IdeaCreateForm = {
@@ -134,6 +136,7 @@ const IdeaForm: NextPageWithLayout = () => {
         return tag.value;
       }),
     });
+    router.push(`/${orgname}/ideas`);
   }
 
   return (
@@ -151,7 +154,7 @@ const IdeaForm: NextPageWithLayout = () => {
         containerWidth={size ? size.width : 0} />
       <Stack
         spacing={'25px'}
-        px={'30px'}
+        px={{ base: '10px', md: '30px' }}
         pt={headerRef.current ? `${headerRef.current.offsetHeight+4}px` : '0px'}
         alignItems={'flex-start'}
         direction={'column'}>

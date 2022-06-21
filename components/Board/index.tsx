@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createPortal } from "react-dom";
 import { BoardData, StoryPreview, BoardList } from '../../types';
 import { getDistanceBetweenElements } from '../../lib/utils';
+import { useRouter } from 'next/router';
 import {
   Flex,
 } from '@chakra-ui/react';
@@ -44,6 +45,8 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
 
   const [activeDragItem, setActiveDragItem] = useState<null | ActiveDragItem>(null);
   const [canMove, setCanMove] = useState<boolean>(true);
+
+  const router = useRouter();
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -238,7 +241,6 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
         }
       >
         <Flex
-          // backgroundColor={TAG_COLORS[1]}
           height={'100%'}
         >
           <SortableContext

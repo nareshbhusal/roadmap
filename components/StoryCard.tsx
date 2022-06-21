@@ -9,6 +9,7 @@ import {
 
 } from '@chakra-ui/react';
 import {CSS} from '@dnd-kit/utilities';
+import { useRef, useEffect } from 'react';
 import { StoryPreview } from '../types';
 import { StoriesTag } from '../types';
 
@@ -93,6 +94,9 @@ const Tags: React.FC<any> = ({ tags }) => {
   );
 }
 
+// BUG: Mobile issue:
+// - Click on card not registering somehow, it seems to get swallowed up by dnd-kit or something
+
 const Card: React.FC<CardProps> = ({
   story,
   isOverlay,
@@ -114,16 +118,22 @@ const Card: React.FC<CardProps> = ({
   const router = useRouter();
   const { orgname, boardId } = router.query;
   const storyURL = `/${orgname}/roadmap/${boardId}?story=${story.id}`;
+  const cardLinkRef = useRef(null);
 
   return (
-    <Link href={storyURL}>
+    <Link
+      touch-action={'none'}
+      href={storyURL}>
       <a
+        touch-action={'none'}
+        ref={cardLinkRef}
         onClick={() => {
           router.push(storyURL);
         }}
       >
         <Flex
           ref={setNodeRef}
+          touch-action={'none'}
           {...listeners}
           borderRadius={'4px'}
           boxShadow={isOverlay ? 'lg' : 'sm'}
@@ -131,7 +141,7 @@ const Card: React.FC<CardProps> = ({
           borderColor={'gray.200'}
           padding={1.5}
           fontSize={'sm'}
-          className={`story-${story.id} ${isOverlay ? 'story-overlay' : ''}`}
+          className={`story story-${story.id} ${isOverlay ? 'story-overlay' : ''}`}
           background={'#fff'}
           transform={isOverlay ? 'translate(-7px, -4px) rotate(4deg)': ''}
           style={{

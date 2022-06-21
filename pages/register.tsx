@@ -91,6 +91,7 @@ const Register = (): JSX.Element => {
         width={{'base': '100%', 'sm': 'auto'}}
         justify={'center'}
         flexDirection={'column'}
+        marginTop={{base: '-40px', md: '0'}}
         spacing={{'base': '2', 'md': '6'}}
         background={'transparent'}>
         <Logo />

@@ -65,31 +65,30 @@ export interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
   return (
-
-      <Flex
-        justify={'space-between'}
-        paddingTop={'15px'}
-        px={'30px'}
-        width={'100%'}
-        // align={'center'}
-      >
-        <Heading
-          variant={"page-main-heading"}>
-          Ideas
-        </Heading>
-        <Button
-          onClick={buttonOnClick}
-          color={'white'}
-          _hover={{
-            background: 'blue.500'
-          }}
-          _active={{
-            background: 'blue.500'
-          }}
-          background={'blue.400'}>
-          Add New Idea
-        </Button>
-      </Flex>
+    <Flex
+      justify={'space-between'}
+      paddingTop={'15px'}
+      px={{ base: '10px', md: '30px' }}
+      width={'100%'}
+      // align={'center'}
+    >
+      <Heading
+        variant={"page-main-heading"}>
+        Ideas
+      </Heading>
+      <Button
+        onClick={buttonOnClick}
+        color={'white'}
+        _hover={{
+          background: 'blue.500'
+        }}
+        _active={{
+          background: 'blue.500'
+        }}
+        background={'blue.400'}>
+        Add New Idea
+      </Button>
+    </Flex>
   );
 }
 
@@ -135,7 +134,7 @@ const Ideas: NextPageWithLayout = () => {
       <Header buttonOnClick={createNewIdea} />
       <Stack
         width={'100%'}
-        px={'30px'}
+        px={{ base: '10px', md: '30px' }}
         spacing={'35px'}>
         {ideas?
           <Stack>

@@ -104,8 +104,10 @@ const StoryModal: React.FC<{id: number; refreshData: Function; tags: StoriesTag[
                 w={'100%'}
                 flexBasis={'30%'}
                 marginTop={'20px'}
+                justifyContent={'flex-start'}
                 spacing={6}
                 p={4}
+                pl={1}
               >
                 <Delete refreshData={refreshData} />
                 <Priority

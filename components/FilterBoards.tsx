@@ -45,7 +45,7 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
     <HStack
       justifyContent={'flex-start'}
       alignSelf={'flex-start'}
-      spacing={'12px'}>
+      spacing={{ base: '5px', md: '12px' }}>
       <Input
         size={'sm'}
         background={'white'}
@@ -76,8 +76,8 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
 
       <Button
         width={'100%'}
-        size={'sm'}
-        fontSize={'sm'}
+        size={{ base: 'xs', md: 'sm' }}
+        fontSize={{ base: 'xs', md: 'sm' }}
         borderRadius={'4px'}
         leftIcon={<SmallCloseIcon />}
         onClick={resetFilters}

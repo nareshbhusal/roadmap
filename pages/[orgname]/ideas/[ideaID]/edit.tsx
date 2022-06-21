@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ submitHandler, headerRef, containerWidt
       boxShadow={'xs'}
       position={'fixed'}
       bg={'#fff'}
-      px={'1rem'}
+      px={{ base: '0.4rem', md: '1rem' }}
       zIndex={200}
       ref={headerRef}
       w={`${containerWidth}px`}
@@ -249,7 +249,7 @@ const EditIdea: NextPageWithLayout = () => {
         submitHandler={handleSubmit(onSubmit)} />
       <Stack
         spacing={'25px'}
-        px={'30px'}
+        px={{ base: '10px', md: '30px' }}
         pt={headerRef.current ? `${headerRef.current.offsetHeight+4}px` : '0px'}
         alignItems={'flex-start'}
         direction={'column'}>

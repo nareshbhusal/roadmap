@@ -5,8 +5,6 @@ import {
   FormLabel,
   Heading,
   Text,
-  Checkbox,
-  CheckboxGroup
 } from '@chakra-ui/react';
 
 import ReactSelect from 'react-select';
@@ -105,6 +103,7 @@ const Priority: React.FC<{ id: number; priority: PriorityValue; }> = ({ id, prio
       </FormLabel>
       <ReactSelect
         options={options}
+        name={'priority'}
         components={{
           SingleValue,
           Option: CustomOption,
@@ -113,8 +112,8 @@ const Priority: React.FC<{ id: number; priority: PriorityValue; }> = ({ id, prio
         }}
         isSearchable={false}
         styles={customStyles}
-        onChange={(v: any) => {
-          db.updateStory(id, { priority: v.value });
+        onChange={async (v: any) => {
+          await db.updateStory(id, { priority: v.value });
         }}
         defaultValue={options.find((o: any) => o.value == priority)}
       />
