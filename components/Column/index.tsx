@@ -65,6 +65,7 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({ children, styleProps, inn
 export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> = ({ boardId, refreshData }) => {
   const [columnName, setColumnName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const newColumnInputRef = useRef<HTMLInputElement>(null);
 
   const submitHandler = async () => {
     if (!columnName.trim()) return;
@@ -73,6 +74,12 @@ export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> =
     setIsCreating(false);
     setColumnName('');
   }
+
+  useEffect(() => {
+    if (isCreating && newColumnInputRef.current) {
+      newColumnInputRef.current.focus();
+    }
+  }, [isCreating]);
 
   return (
     <ColumnWrapper
@@ -97,6 +104,7 @@ export const CreateColumn: React.FC<{boardId: number; refreshData: Function;}> =
             <Input
               placeholder="Enter a column name"
               value={columnName}
+              ref={newColumnInputRef}
               isRequired={true}
               color={'#fff'}
               onChange={(e) => setColumnName(e.target.value)}
