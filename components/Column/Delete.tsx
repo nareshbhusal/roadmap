@@ -35,7 +35,7 @@ import { db } from '../../db';
 
 const Delete: React.FC<{ id: number; refreshData: Function }> = ({ id, refreshData }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef();
+  const cancelRef = useRef(null);
 
   const deleteHandler = async () => {
     await db.deleteBoardList(id);

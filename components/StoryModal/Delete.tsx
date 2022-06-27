@@ -34,7 +34,7 @@ import { db } from '../../db';
 
 const Delete: React.FC<{ refreshData: Function }> = ({ refreshData }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef();
+  const cancelRef = useRef(null);
 
   const router = useRouter();
   const { orgname, boardId, story } = router.query;
