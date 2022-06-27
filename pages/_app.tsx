@@ -15,8 +15,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import modifiedTheme from '../theme';
 import { db } from '../db';
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { DndProvider } from 'react-dnd'
+
+// TODO: Add spinners
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;
@@ -62,11 +62,9 @@ const App = ({ Component, pageProps }: Props) => {
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <ChakraProvider theme={modifiedTheme}>
-          {getLayout(<Component {...pageProps} />)}
-      </ChakraProvider>
-    </DndProvider>
+    <ChakraProvider theme={modifiedTheme}>
+      {getLayout(<Component {...pageProps} />)}
+    </ChakraProvider>
   );
 };
 

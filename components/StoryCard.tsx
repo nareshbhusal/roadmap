@@ -6,8 +6,8 @@ import {
   Text,
   Button,
   Tag,
-
 } from '@chakra-ui/react';
+
 import {CSS} from '@dnd-kit/utilities';
 import { useRef, useEffect } from 'react';
 import { StoryPreview } from '../types';
