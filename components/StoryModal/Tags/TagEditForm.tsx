@@ -65,6 +65,7 @@ const SwatchesPicker = ({ color, onChange, presetColors }: any) => {
           boxSizing: 'border-box',
           padding: '6px',
           font: 'monospace',
+          // @ts-ignore
           '&:focus, &:hover': {
             borderColor: '#4298ef'
           }

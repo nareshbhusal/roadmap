@@ -45,7 +45,7 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
     });
   }
 
-  useEffect(() => resetFilters, []);
+  useEffect(() => resetFilters, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <HStack
@@ -95,6 +95,7 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
 
       <Button
         width={'100%'}
+        // @ts-ignore
         size={{ base: 'xs', md: 'sm' }}
         fontSize={{ base: 'xs', md: 'sm' }}
         borderRadius={'4px'}

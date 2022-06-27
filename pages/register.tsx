@@ -73,7 +73,7 @@ const Register = (): JSX.Element => {
 
   useEffect(() => {
     setFocus('org');
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Flex

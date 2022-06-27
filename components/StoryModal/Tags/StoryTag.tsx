@@ -62,6 +62,7 @@ const StoryTag = ({ tag, removeHandler }: any) => {
           cursor={'default'}
           onClick={(e) => {
             if (e.target === closeButtonRef.current ||
+                // @ts-ignore
                 closeButtonRef.current!.contains(e.target)
                ) {
                  console.log('clicked close button');

@@ -53,7 +53,7 @@ const App = ({ Component, pageProps }: Props) => {
         }
       }
     })();
-  }, [router.pathname, router.isReady]);
+  }, [router.pathname, router.isReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!pageProps.public && !isAuthenticated) {
     return <div>Loading...</div>;
@@ -69,7 +69,6 @@ const App = ({ Component, pageProps }: Props) => {
 };
 
 export const getStaticProps = () => {
-  console.log(useRouter())
 }
 
 export default App;

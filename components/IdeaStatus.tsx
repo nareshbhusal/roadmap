@@ -92,6 +92,7 @@ const Status: React.FC<{ status: IdeaStatus; ideaID: number }> = ({ status, idea
         Status
       </FormLabel>
       <ReactSelect
+        // @ts-ignore
         options={options}
         components={{
           Option: Options,

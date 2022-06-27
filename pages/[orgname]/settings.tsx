@@ -111,12 +111,12 @@ const Settings: NextPageWithLayout = () => {
 
   useEffect(() => {
     ['org', 'name'].forEach(name => updateInputErrorRender(name));
-  },);
+  },); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Fetch account info
     populateFormFromDB();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toChangeSlug = watch('toChangeSlug');
   const org = watch('org');
@@ -133,7 +133,7 @@ const Settings: NextPageWithLayout = () => {
         shouldValidate: true
       });
     }
-  }, [toChangeSlug, org]);
+  }, [toChangeSlug, org]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Stack

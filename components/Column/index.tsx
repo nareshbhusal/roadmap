@@ -236,11 +236,12 @@ export default function Column({ list, children, refreshData, isOverlay }: any) 
             }}
             onChange={(e) => setName(e.target.value)}
             ref={nameRef} />
-          <InputRightElement
-            onClick={changeName}
-            cursor={'pointer'}
-            children={<CheckIcon />}
-          />
+            <InputRightElement
+              onClick={changeName}
+              cursor={'pointer'}
+            >
+              <CheckIcon />
+            </InputRightElement>
           </InputGroup>
           :
           <>

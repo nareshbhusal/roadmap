@@ -154,7 +154,6 @@ const Header: React.FC<HeaderProps> = ({ submitHandler, headerRef, containerWidt
   );
 }
 
-
 const defaultFormValues = {
   title: '',
   description: '',
@@ -230,7 +229,7 @@ const EditIdea: NextPageWithLayout = () => {
 
   useEffect(() => {
     populateForm();
-  }, [ideaID]);
+  }, [ideaID]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const size = useSize(containerRef);
 
