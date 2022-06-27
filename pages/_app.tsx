@@ -17,6 +17,7 @@ import modifiedTheme from '../theme';
 import { db } from '../db';
 
 // TODO: Add spinners
+// TODO: Add starting db data
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;
@@ -50,6 +51,10 @@ const App = ({ Component, pageProps }: Props) => {
           router.push(`/${organization.urlKey}/roadmap/${lastAccessedBoard}`);
         } else {
           router.push(`/${organization.urlKey}/boards`);
+        }
+      } else if (isPublicRoute && !isLoggedIn) {
+        if (router.pathname === '/') {
+          router.push('/register');
         }
       }
     })();
