@@ -17,7 +17,6 @@ import modifiedTheme from '../theme';
 import { db } from '../db';
 
 // TODO: Add spinners
-// TODO: Add starting db data
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;

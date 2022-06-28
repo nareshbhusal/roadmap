@@ -1,4 +1,5 @@
 import Dexie, { Table } from "dexie";
+import defaultData from './defaultData';
 import type {
   IdeaData,
   User,
@@ -954,17 +955,26 @@ class IdeasDB extends Dexie {
 
 export const db = new IdeasDB();
 
-const populateDB = async () => {
-  // TODO: do this
-  // db.ideas.bulkAdd(ideas);
-};
-
-db.on("populate", populateDB);
+db.on("populate", async (tx) => {
+  defaultData.boards.map(board => {
+    tx.table('boards').add(board);
+  });
+  defaultData.boardLists.map(boardList => {
+    tx.table('boardLists').add(boardList);
+  });
+  defaultData.stories.map(story => {
+    tx.table('stories').add(story);
+  });
+  defaultData.storiesTags.map(tag => {
+    tx.table('storiesTags').add(tag);
+  });
+});
 
 db.open().then(function (db) {
     // Database opened successfully
 }).catch (function (err) {
     // Error occurred
+    window.alert('Your browser (or browsing mode) does not support IndexedDB. Probably...')
 });
 
 export function resetDatabase() {
