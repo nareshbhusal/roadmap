@@ -1,3 +1,9 @@
+/* purgecss start ignore */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* purgecss end ignore */
+
 .simplebar-track {
   background-color: transparent;
   border-radius: 100px;
@@ -23,3 +29,8 @@
   border: none;
   outline: none;
 }
+
+/* purgecss start ignore */
+
+@tailwind utilities;
+/* purgecss end ignore */

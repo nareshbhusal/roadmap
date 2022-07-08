@@ -15,6 +15,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import modifiedTheme from '../theme';
 import { db } from '../db';
+import Lusift from 'lusift/dev/react';
+import lusiftContent from '../lusift/content';
 
 // TODO: Add spinners
 
@@ -57,7 +59,35 @@ const App = ({ Component, pageProps }: Props) => {
         }
       }
     })();
+    // Lusift.setContent(lusiftContent);
+    // Lusift.showContent('guide1');
   }, [router.pathname, router.isReady]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  useEffect(() => {
+
+    const defaultC = {
+      tooltip: {
+        actions: {
+          navSection: {
+            dismissLink: {
+              text: 'skip this one',
+              disabled: false,
+            }
+          }
+        }
+      }
+    }
+
+    Lusift.setContent(lusiftContent, defaultC);
+    Lusift.showContent('guide1');
+    router.events.on('routeChangeComplete', () => {
+      (window['Lusift' as any] as any).refresh();
+      console.log('routeChangeComplete')
+    });
+    // Lusift.refresh();
+    setTimeout(Lusift.refresh, 500);
+  }, []);
 
   if (!pageProps.public && !isAuthenticated) {
     return <div>Loading...</div>;

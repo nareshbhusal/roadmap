@@ -43,8 +43,10 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
 
   return (
     <HStack
+      as={'section'}
       justifyContent={'flex-start'}
       alignSelf={'flex-start'}
+      className={'filter'}
       spacing={{ base: '5px', md: '12px' }}>
       <Input
         size={'sm'}
