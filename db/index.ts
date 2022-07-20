@@ -732,7 +732,7 @@ class IdeasDB extends Dexie {
   }
 
   public async removeStory(storyID: number) {
-    await this.transaction("rw", this.stories, this.boardLists, async () => {
+    await this.transaction("rw", this.stories, this.tasks, this.boardLists, async () => {
       const story = await this.stories.get(storyID);
       const boardList = await this.boardLists.get(story!.listId);
       const stories = boardList!.stories.filter(id => id !== storyID);
@@ -741,10 +741,10 @@ class IdeasDB extends Dexie {
         stories
       });
 
-      await this.stories.delete(storyID);
       // Remove associated tasks and ideas
-      story!.tasks.forEach(taskID => this.removeTask(taskID));
-      story!.ideas.forEach(ideaID => this.removeIdea(ideaID));
+      await Promise.all(story!.tasks.map(async (taskID) => await this.removeTask(taskID)));
+      await Promise.all(story!.ideas.map(async (ideaID) => await this.removeIdea(ideaID)));
+      await this.stories.delete(storyID);
 
       // also make updates to the position props of other stories in the same list
       await this.stories.where('listId').equals(story!.listId).and(r => r.position > story!.position).modify(r => {
