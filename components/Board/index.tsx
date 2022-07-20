@@ -80,7 +80,8 @@ const Board: React.FC<{ boardData: any; refreshData: Function; }> = ({ boardData
   const renderContainerDragOverlay = (id: UniqueIdentifier) => {
     const list = boardData.lists.find((list: BoardList) => {
       return list.id === id;
-    })!;
+    });
+    if (!list) return null;
     return (
       <Column key={list.id} isOverlay={true} list={list}>
         {list.stories.sort((a: StoryPreview, b: StoryPreview) => a.position - b.position)

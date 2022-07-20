@@ -16,9 +16,12 @@ import { useRouter } from 'next/router';
 import modifiedTheme from '../theme';
 import { db } from '../db';
 import Lusift from 'lusift/dev/react';
+import 'lusift/dev/lusift.css';
 import lusiftContent from '../lusift/content';
 
 // TODO: Add spinners
+// BUG: Something wrong when deleting the default created board
+// BUG: Also can't add tags to stories of boards created afterwards
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;
@@ -59,21 +62,27 @@ const App = ({ Component, pageProps }: Props) => {
         }
       }
     })();
-    // Lusift.setContent(lusiftContent);
-    // Lusift.showContent('guide1');
   }, [router.pathname, router.isReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   useEffect(() => {
+    if (window.location.search === '?lusift') {
+      // reset trackingState
+      Lusift.resetTrackingState();
+    }
 
     const defaultC = {
       tooltip: {
         actions: {
           navSection: {
+            disabled: true,
             dismissLink: {
               text: 'skip this one',
-              disabled: false,
+              disabled: true,
             }
+          },
+          closeButton: {
+            disabled: true
           }
         }
       }
@@ -85,7 +94,6 @@ const App = ({ Component, pageProps }: Props) => {
       (window['Lusift' as any] as any).refresh();
       console.log('routeChangeComplete')
     });
-    // Lusift.refresh();
     setTimeout(Lusift.refresh, 500);
   }, []);
 
@@ -101,8 +109,5 @@ const App = ({ Component, pageProps }: Props) => {
     </ChakraProvider>
   );
 };
-
-export const getStaticProps = () => {
-}
 
 export default App;

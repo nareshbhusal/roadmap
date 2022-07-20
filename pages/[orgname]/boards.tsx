@@ -83,6 +83,7 @@ const Header: React.FC<HeaderProps> = ({ onModalOpen }) => {
       <Button
         onClick={onModalOpen}
         color={'white'}
+        className={'add'}
         _hover={{
           background: 'blue.500'
         }}
@@ -123,6 +124,12 @@ const Boards: NextPageWithLayout = () => {
   const totalBoards = useLiveQuery(
     () => db.getTotalBoards()
   ) || 0;
+
+  useEffect(() => {
+    window.setTimeout(() => {
+    (window['Lusift' as any] as any).refresh();
+    }, 100);
+  }, [isModalOpen]);
 
   const newBoardTitleRef = useRef<HTMLInputElement>(null);
 
@@ -178,6 +185,7 @@ const Boards: NextPageWithLayout = () => {
                   isRequired={true}
                   onSubmit={boardCreateHandler}
                   name={'board title'}
+                  className={'board-title'}
                   ref={newBoardTitleRef}
                   onKeyUp={(e) => {
                     if(e.key === 'Enter') {
@@ -190,7 +198,7 @@ const Boards: NextPageWithLayout = () => {
 
             <ModalFooter>
               <Button onClick={onModalClose} variant='ghost'>Cancel</Button>
-              <Button ml={'4px'} colorScheme='blue' mr={3} onClick={boardCreateHandler}>
+              <Button className={'create'} ml={'4px'} colorScheme='blue' mr={3} onClick={boardCreateHandler}>
                 Create
               </Button>
             </ModalFooter>

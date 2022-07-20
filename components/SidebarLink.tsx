@@ -54,6 +54,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ href, name }) => {
       href={href}
       color={isActive? 'blue.500' : 'gray.600'}
       fontSize={'sm'}
+      className={name}
       borderRadius={'2px'}
       //TODO remove padding
       // px={'7.5px'}

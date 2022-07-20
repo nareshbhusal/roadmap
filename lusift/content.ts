@@ -1,17 +1,23 @@
 import Step1 from './Step1';
+import Step2 from './Step2';
+import Step3 from './Step3';
+import Step4 from './Step4';
+import Step5 from './Step5';
+import Hotspot from './Hotspot';
 
 const backdrop = {
   disabled: false,
   color: '#444',
-  // color: 'red',
   opacity: '0.5',
   stageGap: 5,
   nextOnOverlayClick: true
 }
 
+const guideName = 'guide1';
+
 const guide1 = {
-  id: 'guide1',
-  name: 'guide1',
+  id: guideName,
+  name: guideName,
   closeOnLastNext: false,
   steps: [
     {
@@ -19,7 +25,7 @@ const guide1 = {
       type: 'modal',
       target: {
         path: {
-          value: '/*/boards',
+          value: '/*/roadmap/*',
           comparator: 'regex'
         }
       },
@@ -33,26 +39,19 @@ const guide1 = {
       type: 'tooltip',
       target: {
         path: {
-          value: '/*/boards',
+          value: '/*/roadmap/*',
           comparator: 'regex'
         },
-        elementSelector: 'aside a'
+        elementSelector: 'aside a.Boards'
       },
       data: {
         placement: {
           position: 'right'
-          // orientation: 'fixed'
         },
         arrowSizeScale: 1.25,
         arrow: true,
         backdrop,
-        /* bodyContent: `
-           <div>
-           <p style="color:blue">Tooltip 1 body</p>
-           </div>`, */
-      },
-      styleProps: {
-        // border: '2px solid green',
+        bodyContent: Step2
       }
     },
     {
@@ -63,26 +62,78 @@ const guide1 = {
           value: '/*/boards',
           comparator: 'regex'
         },
-        elementSelector: 'section.filter input'
+        elementSelector: 'button.add'
       },
       data: {
         placement: {
-          position: 'bottom'
-          // orientation: 'fixed'
+          position: 'bottom',
+          orientation: 'auto'
         },
         arrowSizeScale: 1.25,
         arrow: true,
         backdrop,
-        /* bodyContent: `
-           <div>
-           <p style="color:blue">Tooltip 1 body</p>
-           </div>`, */
-      },
-      styleProps: {
-        // border: '2px solid green',
+        bodyContent: Step3
       }
     },
-  ]
+    {
+      index: 3,
+      type: 'tooltip',
+      target: {
+        path: {
+          value: '/*/boards',
+          comparator: 'regex'
+        },
+        elementSelector: 'button.create'
+      },
+      data: {
+        placement: {
+          position: 'bottom',
+        },
+        arrowSizeScale: 1.25,
+        arrow: true,
+        backdrop: {
+          disabled: true
+        },
+        bodyContent: Step4
+      }
+    },
+    {
+      index: 4,
+      type: 'tooltip',
+      target: {
+        path: {
+          value: '/*/roadmap/*',
+          comparator: 'regex'
+        },
+        elementSelector: 'aside .boards'
+      },
+      data: {
+        placement: {
+          position: 'right'
+        },
+        arrowSizeScale: 1.25,
+        arrow: true,
+        backdrop,
+        bodyContent: Step5,
+      }
+    },
+    {
+      index: 5,
+      type: 'hotspot',
+      target: {
+        path: {
+         value: '/*/ideas',
+         comparator: 'regex'
+        },
+        elementSelector: 'h2'
+      },
+      tip: {
+        data: {
+          bodyContent: Hotspot
+        }
+      }
+    },
+  ],
 }
 
 const content = {

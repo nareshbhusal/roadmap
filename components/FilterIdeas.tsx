@@ -49,6 +49,8 @@ const SearchAndFilters: React.FC<SearchAndFiltersProps> = ({ register, setValue 
 
   return (
     <HStack
+      as={'section'}
+      className={'filter'}
       justifyContent={'flex-start'}
       alignSelf={'flex-start'}
       spacing={{ base: '5px', md: '12px' }}>

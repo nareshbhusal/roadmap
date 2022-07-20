@@ -2,7 +2,7 @@ const defaultDbData = {
   boards: [
     {
       id: 1,
-      name: 'first board',
+      name: 'First Board 🔖',
       createdOn: Date.now(),
       lists: [],
       tags: [1, 2, 3],

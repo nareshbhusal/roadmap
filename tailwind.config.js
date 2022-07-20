@@ -5,6 +5,7 @@ module.exports = {
   content: [
     "./lusift/**/*.{js,ts,jsx,tsx}",
   ],
+  important: true,
   theme: {
     screens: {
       sm: '480px',

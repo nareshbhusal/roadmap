@@ -78,6 +78,7 @@ const Header: React.FC<HeaderProps> = ({ buttonOnClick }) => {
       </Heading>
       <Button
         onClick={buttonOnClick}
+        className={'add'}
         color={'white'}
         _hover={{
           background: 'blue.500'
