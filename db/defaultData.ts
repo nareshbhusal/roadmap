@@ -4,7 +4,7 @@ const defaultDbData = {
       id: 1,
       name: 'First Board 🔖',
       createdOn: Date.now(),
-      lists: [],
+      lists: [1, 2, 3, 4],
       tags: [1, 2, 3],
       archived: false,
       lastAccessed: Date.now()

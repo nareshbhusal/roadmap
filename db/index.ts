@@ -201,7 +201,7 @@ class IdeasDB extends Dexie {
       const board = await this.boards.get(boardId);
       // board.tags is a list of storyTag ids, delete those tags
       const storyTags = await this.storiesTags.where('id').anyOf(board!.tags).toArray();
-      await this.storiesTags.bulkDelete((storyTags as unknown) as number[]);
+      await this.storiesTags.bulkDelete((storyTags.map(storyTag => storyTag.id) as unknown) as number[]);
 
       // run all boardList through this.deleteBoardList
       const boardLists = await this.boardLists.where('boardId').equals(boardId).toArray();
