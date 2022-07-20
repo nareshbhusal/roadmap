@@ -279,7 +279,7 @@ class IdeasDB extends Dexie {
   }
 
   public async deleteBoardList(boardListId: number) {
-    await this.transaction("rw", this.boardLists, this.boards, this.stories, async () => {
+    await this.transaction("rw", this.boardLists, this.boards, this.tasks, this.stories, async () => {
       // remove all stories in list
       // run all stories with listId ids through this.removeStory
       await this.stories.where('listId').equals(boardListId).toArray().then(stories => {
