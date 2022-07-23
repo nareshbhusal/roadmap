@@ -126,6 +126,13 @@ const Tags: React.FC<TagsProps> = ({ tags, storyID, allTags }) => {
       await db.updateStory(storyID, {
         tags: [...oldTags, newTag]
       });
+      // Push new tag to `tags`
+      // NOTE: Doing this because allTags doesn't get updates from useLiveQuery without re-opening StoryModal
+      allTags.push({
+        id: newTag,
+        text: newTagLabel,
+        color: randomColor
+      });
     } else {
       await db.updateStory(storyID, {
         tags: values.map((v: any) => v.value)

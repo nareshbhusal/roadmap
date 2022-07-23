@@ -15,7 +15,7 @@ const Welcome = () => {
     return (
         <div>
             <h2 className="font-bold text-2xl text-center mt-1">
-                Welcome to Roadmap, {name} !!
+                Welcome to Roadmap, {name} !
             </h2>
             <div className="flex justify-center flex-col text-gray-800 text-md items-center my-3">
                 <div className="text-5xl text-gray-300 mb-2">
