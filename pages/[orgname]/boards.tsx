@@ -14,8 +14,6 @@ import {
   Input,
   Button,
   Text,
-
-
   Modal,
   ModalOverlay,
   ModalContent,
@@ -35,6 +33,7 @@ import type { BoardPreview } from '../../types';
 
 import { db } from '../../db';
 import { useLiveQuery } from "dexie-react-hooks";
+import Lusift from 'lusift/dev/react';
 
 export interface BoardsAreaProps {
   boards: BoardPreview[];
@@ -189,10 +188,16 @@ const Boards: NextPageWithLayout = () => {
                   ref={newBoardTitleRef}
                   onKeyUp={(e) => {
                     if(e.key === 'Enter') {
+                      const activeGuide = Lusift.getActiveGuide();
+                      if (activeGuide) {
+                        if (activeGuide.id === 'guide1') {
+                          Lusift.next();
+                        }
+                      }
                       boardCreateHandler();
                     }
                   }}
-                  placeholder={'Boad title'} />
+                  placeholder={'Board title'} />
               </FormControl>
             </ModalBody>
 

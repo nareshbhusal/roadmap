@@ -1,0 +1,13 @@
+{
+  "name": "Roadmap App",
+  "short_name": "Roadmap",
+  "theme_color": "#ffffff",
+  "background_color": "#004740",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+  ],
+  "splash_pages": null
+}

@@ -955,6 +955,21 @@ class IdeasDB extends Dexie {
 
 export const db = new IdeasDB();
 
+const populateDB = async () => {
+  defaultData.boards.map(board => {
+    db.boards.add(board);
+  });
+  defaultData.boardLists.map(boardList => {
+    db.boardLists.add(boardList);
+  });
+  defaultData.stories.map(story => {
+    db.stories.add(story as Story);
+  });
+  defaultData.storiesTags.map(tag => {
+    db.storiesTags.add(tag);
+  });
+}
+
 db.on("populate", async (tx) => {
   defaultData.boards.map(board => {
     tx.table('boards').add(board);

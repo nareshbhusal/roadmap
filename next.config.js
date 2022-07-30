@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: false, // set false for react-beautiful-dnd
-}
+const withPWA = require('next-pwa');
+const runtimeCaching = require('next-pwa/cache');
 
-module.exports = nextConfig
+module.exports = withPWA({
+  reactStrictMode: false, // set false for react-beautiful-dnd
+  pwa: {
+    dest: 'public',
+    runtimeCaching
+  }
+});
