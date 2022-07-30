@@ -20,8 +20,9 @@ import 'lusift/dev/lusift.css';
 import lusiftContent from '../lusift/content';
 
 // TODO: Add spinners
-// BUG: Something wrong when deleting the default created board
-// BUG: Also can't add tags to stories of boards created afterwards
+// TODO: Add lusift from npm registery
+// TODO: Add cypress tests
+// TODO: Add offline capability
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;
