@@ -137,7 +137,8 @@ class IdeasDB extends Dexie {
       `,
       storiesTags: `
         ++id,
-        &text
+        color,
+        text
       `,
       users: 'name',
       organizations: 'name, urlKey'
