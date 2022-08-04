@@ -158,7 +158,7 @@ const IdeaFormTags: React.FC<IdeaFormTagsProps> = ({ register, control }) => {
     const newTagLabel = newValues.find(v => v.__isNew__).label;
     try {
       const tagID = await db.addIdeasTag(newTagLabel);
-      onChange([...selectedTags, {
+      onChange([...newValues.slice(0, newValues.length-1), {
         value: tagID,
         label: newTagLabel
       }]);
