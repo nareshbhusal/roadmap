@@ -83,6 +83,7 @@ const Header: React.FC<HeaderProps> = ({ onModalOpen }) => {
         onClick={onModalOpen}
         color={'white'}
         className={'add'}
+        data-cy={'add'}
         _hover={{
           background: 'blue.500'
         }}

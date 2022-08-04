@@ -124,6 +124,7 @@ const Sidebar: React.FC<{ passedBg?: string; }> = ({ passedBg }) => {
               <Divider my={'1rem'} color={'red'} />
               <Stack
                 className={'boards'}
+                data-cy={'boards'}
                 width={'100%'}
               >
                 <Heading

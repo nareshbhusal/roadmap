@@ -22,7 +22,6 @@ import lusiftContent from '../lusift/content';
 // TODO: Add spinners
 // TODO: Add lusift from npm registery
 // TODO: Add cypress tests
-// TODO: Add offline capability
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;

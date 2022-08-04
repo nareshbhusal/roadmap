@@ -175,6 +175,7 @@ const Register = (): JSX.Element => {
             color={'white'}
             loadingText={'Logging you in...'}
             lineHeight={'7'}
+            data-cy="submit"
             fontWeight={'semibold'}
             fontSize={'md'}
             _active={{

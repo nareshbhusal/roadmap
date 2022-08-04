@@ -23,6 +23,7 @@ const Layout: React.FC<ILayout> = ({ children }) => {
         passedBg={isBoardPage ? TAG_COLORS[2] : ''}
       />
       <Stack
+        as={'main'}
         flexDirection={'column'}
         flex={'1'}
         overflowX={'hidden'}
