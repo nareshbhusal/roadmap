@@ -8,6 +8,7 @@ describe('Authentication', function () {
     const name  = 'Naresh';
     const USER_NAME = 'Anon';
 
+    //@ts-ignore
     cy.register(USER_NAME, ORG_NAME);
 
     cy.url().should('include', '/evil-org/roadmap/1')
@@ -19,3 +20,5 @@ describe('Authentication', function () {
       .should('have.value', USER_NAME)
   })
 })
+
+export {}

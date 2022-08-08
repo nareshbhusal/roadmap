@@ -4,6 +4,7 @@ describe('Settings', function () {
 
   beforeEach(() => {
     window.indexedDB.deleteDatabase('roadmapDB')
+    //@ts-ignore
     cy.register(USER_NAME, ORG_NAME);
   });
 
@@ -24,3 +25,5 @@ describe('Settings', function () {
     cy.visit(`${NEW_ORG_NAME}/settings`)
   })
 });
+
+export {}

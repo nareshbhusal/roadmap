@@ -33,7 +33,8 @@ import type { BoardPreview } from '../../types';
 
 import { db } from '../../db';
 import { useLiveQuery } from "dexie-react-hooks";
-import Lusift from 'lusift/dev/react';
+// import Lusift from 'lusift/dev/react';
+import Lusift from 'lusiftx/react';
 
 export interface BoardsAreaProps {
   boards: BoardPreview[];
@@ -127,7 +128,7 @@ const Boards: NextPageWithLayout = () => {
 
   useEffect(() => {
     window.setTimeout(() => {
-    (window['Lusift' as any] as any).refresh();
+      Lusift.refresh();
     }, 100);
   }, [isModalOpen]);
 

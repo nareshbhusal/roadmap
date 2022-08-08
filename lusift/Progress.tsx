@@ -1,8 +1,9 @@
-import Lusift from 'lusift/dev/react';
+// import Lusift from 'lusift/dev/react';
+import Lusift from 'lusiftx/react';
 
 const Progress = () => {
-    const progress = Lusift.getActiveGuide().instance.getProgress();
-    const currentStepIndex = Lusift.getActiveGuide().instance.getTrackingState().currentStepIndex;
+    const progress = Lusift.getActiveGuide()!.instance.getProgress();
+    const currentStepIndex = Lusift.getActiveGuide()!.instance.getTrackingState().currentStepIndex;
     const totalSteps = Math.floor((100/progress)*(currentStepIndex+1));
     return (
         <div className="text-sm text-gray-700 mt-1">

@@ -1,4 +1,3 @@
-import Lusift from 'lusift/dev/react';
 import Progress from './Progress';
 
 const Step2 = () => {

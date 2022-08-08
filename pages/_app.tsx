@@ -15,13 +15,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import modifiedTheme from '../theme';
 import { db } from '../db';
-import Lusift from 'lusift/dev/react';
-import 'lusift/dev/lusift.css';
+import Lusift from 'lusiftx/react';
+// import Lusift from 'lusift/react';
+import 'lusiftx/dist/lusift.css';
 import lusiftContent from '../lusift/content';
 
 // TODO: Add spinners
-// TODO: Add lusift from npm registery
-// TODO: Add cypress tests
 
 export type Props = AppProps & {
   Component: NextPageWithLayout;
@@ -87,8 +86,9 @@ const App = ({ Component, pageProps }: Props) => {
         }
       }
     }
-
+    //@ts-ignore
     Lusift.setContent(lusiftContent, defaultC);
+    // Lusift.setContent(lusiftContent);
     Lusift.showContent('guide1');
     router.events.on('routeChangeComplete', () => {
       (window['Lusift' as any] as any).refresh();

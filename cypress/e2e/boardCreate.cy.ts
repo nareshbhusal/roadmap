@@ -4,6 +4,7 @@ describe('Create Board', function () {
 
   beforeEach(() => {
     window.indexedDB.deleteDatabase('roadmapDB')
+    //@ts-ignore
     cy.register(USER_NAME, ORG_NAME);
   });
 
@@ -23,3 +24,5 @@ describe('Create Board', function () {
       .contains(NEW_BOARD_NAME)
   });
 });
+
+export {}
