@@ -2,7 +2,7 @@
 A kanban board, project and idea management app built with React and IndexedDB.
 
 ## Demo
-![Roadmap App Screencast](assets/demo.gif)
+![Roadmap App Screencast](assets/screencast.gif)
 
 **[Visit the live app](https://roadmap-app.vercel.app)**
 
