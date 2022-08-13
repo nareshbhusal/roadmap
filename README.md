@@ -1,19 +1,36 @@
 # Roadmap
-A brief description of what this project does and what it's for
+A kanban board, project and idea management app built with React and IndexedDB.
 
 ## Demo
-<Demo Video>
-[Visit the live app](https://nareshbhusal.github.com/roadmap)
+![Roadmap App Screencast](assets/demo.gif)
+![Roadmap App Screencast](./assets/demo.gif)
+[Visit the live app](https://roadmap-app.vercel.app)
 
 ## Features
 
-## Tech
+## Tech Stack
+- Javascript, Typescript
+- React, NextJS
+- IndexedDB
+- TailwindCSS, Chakra-ui
+- Cypress
 
 ## Development
+Clone the repository and install dependencies;
+```bash
+  git clone https://github.com/nareshbhusal/roadmap
+  cd roadmap
+  npm install
+```
+
+Run the dev server:
+```bash
+npm run dev
+```
 
 ## Running Tests
 
-To run tests, run the following command
+To run tests, set up the development environment and then run the following command
 
 ```bash
   npm run test
