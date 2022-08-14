@@ -15,9 +15,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import modifiedTheme from '../theme';
 import { db } from '../db';
-import Lusift from 'lusiftx/react';
+import Lusift from 'lusift/react';
 // import Lusift from 'lusift/react';
-import 'lusiftx/dist/lusift.css';
+import 'lusift/dist/lusift.css';
 import lusiftContent from '../lusift/content';
 
 // TODO: Add spinners

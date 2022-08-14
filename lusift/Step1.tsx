@@ -1,7 +1,7 @@
 import { db } from '../db';
 import { useState, useEffect } from 'react';
 // import Lusift from 'lusift/dev/react';
-import Lusift from 'lusiftx/react';
+import Lusift from 'lusift/react';
 import { BsFillKanbanFill } from 'react-icons/bs';
 
 const Welcome = () => {

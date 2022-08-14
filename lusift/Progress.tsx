@@ -1,5 +1,5 @@
 // import Lusift from 'lusift/dev/react';
-import Lusift from 'lusiftx/react';
+import Lusift from 'lusift/react';
 
 const Progress = () => {
     const progress = Lusift.getActiveGuide()!.instance.getProgress();
