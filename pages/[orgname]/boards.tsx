@@ -34,7 +34,7 @@ import type { BoardPreview } from '../../types';
 import { db } from '../../db';
 import { useLiveQuery } from "dexie-react-hooks";
 // import Lusift from 'lusift/dev/react';
-import Lusift from 'lusiftx/react';
+import Lusift from 'lusift/react';
 
 export interface BoardsAreaProps {
   boards: BoardPreview[];
