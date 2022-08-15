@@ -87,7 +87,12 @@ const App = ({ Component, pageProps }: Props) => {
     if (window.location.search === '?lusift') {
       // reset trackingState
       Lusift.resetTrackingState();
-      Lusift.showContent('guide1');
+
+      // @ts-ignore
+      const hook = window['__REACT_DEVTOOLS_GLOBAL_HOOK__'];
+      if (typeof hook != 'undefined') {
+        Lusift.showContent('guide1');
+      }
     }
 
     router.events.on('routeChangeComplete', () => {
