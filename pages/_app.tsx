@@ -16,7 +16,6 @@ import { useRouter } from 'next/router';
 import modifiedTheme from '../theme';
 import { db } from '../db';
 import Lusift from 'lusift/react';
-// import Lusift from 'lusift/react';
 import 'lusift/dist/lusift.css';
 import lusiftContent from '../lusift/content';
 
@@ -65,10 +64,6 @@ const App = ({ Component, pageProps }: Props) => {
 
 
   useEffect(() => {
-    if (window.location.search === '?lusift') {
-      // reset trackingState
-      Lusift.resetTrackingState();
-    }
 
     const defaultC = {
       tooltip: {
@@ -88,10 +83,15 @@ const App = ({ Component, pageProps }: Props) => {
     }
     //@ts-ignore
     Lusift.setContent(lusiftContent, defaultC);
-    // Lusift.setContent(lusiftContent);
-    Lusift.showContent('guide1');
+
+    if (window.location.search === '?lusift') {
+      // reset trackingState
+      Lusift.resetTrackingState();
+      Lusift.showContent('guide1');
+    }
+
     router.events.on('routeChangeComplete', () => {
-      (window['Lusift' as any] as any).refresh();
+      Lusift.refresh();
       console.log('routeChangeComplete')
     });
     setTimeout(Lusift.refresh, 500);
